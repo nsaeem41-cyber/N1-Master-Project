@@ -3,271 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 GLOBAL - MASTER ADMIN PANEL</title>
+    <title>N1 GLOBAL - MASTER CONTROL</title>
     <style>
-        :root { 
-            --p: #1a237e; 
-            --a: #0288d1; 
-            --bg: #f5f7f9; 
-            --white: #ffffff; 
-            --danger: #d32f2f; 
-            --success: #2e7d32; 
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            color: #2c3e50; 
-            transition: 0.3s;
-        }
-        .nav { 
-            background: var(--p); 
-            color: white; 
-            padding: 15px 40px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-        }
-        .nav-brand { font-size: 22px; font-weight: 800; }
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        :root { --p: #1a237e; --a: #0288d1; --bg: #f5f7f9; --white: #ffffff; --danger: #d32f2f; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
         
-        .card { 
-            background: var(--white); 
-            border-radius: 8px; 
-            padding: 35px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            margin-bottom: 30px; 
-            border-top: 5px solid var(--a); 
-        }
-        h3 { color: var(--p); margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 20px; }
+        .header { background: var(--p); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 30px auto; padding: 20px; }
         
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .input-box { text-align: right; }
-        label { display: block; font-size: 13px; font-weight: 700; color: var(--p); margin-bottom: 8px; }
-        input, select { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            box-sizing: border-box; 
-            text-align: right; 
-            font-size: 15px;
-        }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 4px solid var(--a); }
         
-        .main-btn { 
-            width: 100%; 
-            padding: 16px; 
-            background: var(--p); 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            margin-top: 20px; 
-            font-size: 16px;
-            transition: 0.3s; 
+        /* القائمة الجانبية (Sidebar) 😊 */
+        .settings-sidebar {
+            position: fixed; top: 0; left: -350px; width: 320px; height: 100%;
+            background: var(--white); box-shadow: 5px 0 25px rgba(0,0,0,0.2);
+            transition: 0.4s ease; z-index: 1000; padding: 30px; overflow-y: auto;
         }
-        .main-btn:hover { background: var(--a); box-shadow: 0 5px 15px rgba(2, 136, 209, 0.3); }
+        .settings-sidebar.active { left: 0; }
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; z-index: 999;
+        }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 25px; background: white; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 16px; text-align: center; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; color: var(--p); font-weight: 800; font-size: 14px; }
+        .close-sidebar { cursor: pointer; color: var(--danger); font-weight: bold; float: right; }
         
-        .ctrl-btn { 
-            padding: 8px 16px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            color: white; 
-            margin: 2px; 
-            font-size: 12px; 
-            font-weight: 700; 
-        }
-        .btn-pause { background: #f57c00; } 
-        .btn-del { background: var(--danger); } 
-        .btn-active { background: var(--success); }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; text-align: right; margin-bottom: 15px; box-sizing: border-box; }
+        .btn-action { width: 100%; padding: 13px; background: var(--p); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; }
+        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
+        th { background: #f8f9fa; color: var(--p); font-size: 13px; }
 
-        .status-tag { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .tag-active { background: #e8f5e9; color: #2e7d32; }
-        .tag-paused { background: #fff3e0; color: #f57c00; }
-        
-        #load-info { text-align: center; padding: 20px; color: var(--a); font-weight: bold; }
+        .btn-settings { background: var(--a); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="nav">
-    <div class="nav-brand" id="nav-title">N1 GLOBAL MANAGEMENT</div>
-    <div style="display:flex; gap:10px;">
-        <button class="ctrl-btn" style="border:1px solid white" id="lang-btn" onclick="toggleLang()">English</button>
-        <button class="ctrl-btn" style="background:var(--danger)" id="logout-btn" onclick="logout()">خروج آمن</button>
+<div class="sidebar-overlay" id="overlay" onclick="closeSettings()"></div>
+
+<div class="settings-sidebar" id="sidebar">
+    <span class="close-sidebar" onclick="closeSettings()">إغلاق ✕</span>
+    <h3 style="color:var(--p); margin-top:40px;">لوحة التعديلات</h3>
+    <hr>
+    <div id="edit-form">
+        <label style="font-size:12px; color:var(--p)">اسم الشركة المحددة</label>
+        <input type="text" id="edit-name" readonly style="background:#f0f0f0">
+        <input type="hidden" id="edit-user">
+        
+        <label>تعديل الاشتراك</label>
+        <input type="number" id="edit-fee" placeholder="القيمة الجديدة">
+        
+        <button class="btn-action" style="background:#2e7d32" onclick="applyStatus('active')">تفعيل الحساب</button>
+        <button class="btn-action" style="background:#f57c00" onclick="applyStatus('paused')">إيقاف مؤقت</button>
+        <button class="btn-action" style="background:var(--danger)" onclick="confirmDelete()">حذف المنشأة نهائياً</button>
     </div>
 </div>
 
+<header class="header">
+    <div style="font-size:20px; font-weight:800;">N1 MASTER SYSTEM</div>
+    <div>
+        <button class="btn-settings" style="background:transparent; border:1px solid white; margin-left:10px" onclick="toggleLang()">English</button>
+        <button class="btn-settings" style="background:var(--danger)" onclick="logout()">خروج</button>
+    </div>
+</header>
+
 <div class="container">
     <div class="card">
-        <h3 id="t1">تفعيل منشأة جديدة 😊</h3>
-        <div class="form-grid">
-            <div class="input-box">
-                <label id="l1">اسم المستخدم (يوزر)</label>
-                <input type="text" id="compUser" placeholder="Username">
-            </div>
-            <div class="input-box">
-                <label id="l2">كلمة المرور (باسورد)</label>
-                <input type="password" id="compPass" placeholder="Password">
-            </div>
-            <div class="input-box" style="grid-column: span 2;">
-                <label id="l3">اسم الشركة / المنشأة</label>
-                <input type="text" id="compName" placeholder="Company Name">
-            </div>
-            <div class="input-box">
-                <label id="l4">باقة الاشتراك</label>
-                <select id="compPlan">
-                    <option value="30">باقة 30 يوم</option>
-                    <option value="90">باقة 90 يوم</option>
-                    <option value="365">باقة سنة كاملة</option>
-                </select>
-            </div>
-            <div class="input-box">
-                <label id="l5">قيمة الاشتراك (JOD)</label>
-                <input type="number" id="compFee" placeholder="0.00">
-            </div>
+        <h3>تسجيل منشأة جديدة 😊</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+            <input type="text" id="new-u" placeholder="اسم المستخدم">
+            <input type="password" id="new-p" placeholder="كلمة المرور">
+            <input type="text" id="new-n" style="grid-column: span 2" placeholder="اسم الشركة الرسمي">
+            <input type="number" id="new-f" placeholder="قيمة الاشتراك">
+            <select id="new-d">
+                <option value="30">30 يوم</option>
+                <option value="90">90 يوم</option>
+                <option value="365">سنة كاملة</option>
+            </select>
         </div>
-        <button class="main-btn" id="save-btn" onclick="saveCompany()">حفظ البيانات والمزامنة السحابية 😊</button>
+        <button class="btn-action" onclick="saveNew()">حفظ ومزامنة سحابية 😊</button>
     </div>
 
     <div class="card">
-        <h3 id="t2">إدارة التراخيص والشركاء</h3>
-        <div id="load-info">جاري مزامنة قاعدة البيانات...</div>
-        <table id="main-table" style="display:none;">
+        <h3>إدارة الشركاء النشطين</h3>
+        <table>
             <thead>
                 <tr>
-                    <th id="h1">المنشأة</th>
-                    <th id="h2">تاريخ الانتهاء</th>
-                    <th id="h3">الحالة</th>
-                    <th id="h4">التحكم</th>
+                    <th>الشركة</th>
+                    <th>الانتهاء</th>
+                    <th>الحالة</th>
+                    <th>الإعدادات</th>
                 </tr>
             </thead>
-            <tbody id="p-body"></tbody>
+            <tbody id="p-list"></tbody>
         </table>
     </div>
 </div>
 
 <script>
-    const API_URL = 'https://sheetdb.io/api/v1/qzfkwfzcpbrsm';
-    let currentLang = 'ar';
+    const API = "https://sheetdb.io/api/v1/qzfkwfzcpbrsm";
 
-    window.onload = loadTable;
+    window.onload = loadData;
 
-    async function loadTable() {
-        try {
-            const r = await fetch(API_URL);
-            const data = await r.json();
-            const body = document.getElementById('p-body');
-            body.innerHTML = '';
-            
-            data.forEach(c => {
-                if(c.user) {
-                    const isExpired = new Date() > new Date(c.expiry);
-                    const isPaused = c.status === 'paused';
-                    body.innerHTML += `
-                        <tr>
-                            <td style="font-weight:bold">${c.name}</td>
-                            <td>${new Date(c.expiry).toLocaleDateString('ar-EG')}</td>
-                            <td>
-                                <span class="status-tag ${isPaused || isExpired ? 'tag-paused' : 'tag-active'}">
-                                    ${isExpired ? (currentLang === 'ar' ? 'منتهي' : 'EXPIRED') : (isPaused ? (currentLang === 'ar' ? 'موقف' : 'PAUSED') : (currentLang === 'ar' ? 'نشط' : 'ACTIVE'))}
-                                </span>
-                            </td>
-                            <td>
-                                <button class="ctrl-btn btn-active" onclick="updateStatus('${c.user}', 'active')">تفعيل</button>
-                                <button class="ctrl-btn btn-pause" onclick="updateStatus('${c.user}', 'paused')">إيقاف</button>
-                                <button class="ctrl-btn btn-del" onclick="deleteCompany('${c.user}')">حذف</button>
-                            </td>
-                        </tr>`;
-                }
-            });
-            document.getElementById('load-info').style.display = 'none';
-            document.getElementById('main-table').style.display = 'table';
-        } catch(e) { console.log("Load Error"); }
-    }
-
-    async function saveCompany() {
-        const btn = document.getElementById('save-btn');
-        const n = document.getElementById('compName').value, u = document.getElementById('compUser').value, 
-              p = document.getElementById('compPass').value, d = parseInt(document.getElementById('compPlan').value),
-              f = document.getElementById('compFee').value;
-        
-        if(!n || !u || !p) return alert(currentLang === 'ar' ? "يرجى إكمال البيانات 😊" : "Please fill all fields 😊");
-        
-        btn.disabled = true; 
-        btn.innerText = currentLang === 'ar' ? "جاري الحفظ والمزامنة..." : "Saving...";
-        
-        let ex = new Date(); ex.setDate(ex.getDate() + d);
-        
-        const data = { 
-            id: Date.now(), 
-            name: n, 
-            user: u, 
-            pass: p, 
-            expiry: ex.toISOString(), 
-            fee: f, 
-            status: 'active', 
-            role: 'client' 
-        };
-
-        try {
-            await fetch(API_URL, { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify({data: [data]}) 
-            });
-            alert(currentLang === 'ar' ? "تم التفعيل بنجاح 😊" : "Activated successfully 😊");
-            btn.disabled = false; btn.innerText = currentLang === 'ar' ? "حفظ البيانات والمزامنة السحابية 😊" : "Save & Sync Data 😊";
-            loadTable();
-        } catch(e) { alert("Sync Error"); btn.disabled = false; }
-    }
-
-    async function updateStatus(user, newStatus) {
-        await fetch(`${API_URL}/user/${user}`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({data: {status: newStatus}})
+    async function loadData() {
+        const res = await fetch(API);
+        const data = await res.json();
+        const body = document.getElementById('p-list');
+        body.innerHTML = '';
+        data.forEach(c => {
+            if(c.user) {
+                const isPaused = c.status === 'paused';
+                body.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold">${c.name}</td>
+                        <td>${new Date(c.expiry).toLocaleDateString('ar-EG')}</td>
+                        <td><span class="status-pill" style="background:${isPaused ? '#fff3e0' : '#e8f5e9'}; color:${isPaused ? '#f57c00' : '#2e7d32'}">
+                            ${isPaused ? 'موقف' : 'نشط'}</span></td>
+                        <td><button class="btn-settings" onclick="openSettings('${c.user}', '${c.name}', '${c.subscription_fee || c.fee}')">⚙ الإعدادات</button></td>
+                    </tr>`;
+            }
         });
-        loadTable();
     }
 
-    async function deleteCompany(user) {
-        if(confirm(currentLang === 'ar' ? "حذف الشركة نهائياً؟" : "Delete permanently?")) {
-            await fetch(`${API_URL}/user/${user}`, { method: 'DELETE' });
-            loadTable();
+    function openSettings(user, name, fee) {
+        document.getElementById('edit-user').value = user;
+        document.getElementById('edit-name').value = name;
+        document.getElementById('edit-fee').value = fee;
+        document.getElementById('sidebar').classList.add('active');
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeSettings() {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    async function applyStatus(s) {
+        const u = document.getElementById('edit-user').value;
+        await fetch(`${API}/user/${u}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data:{status:s, fee: document.getElementById('edit-fee').value}}) });
+        alert("تم تحديث البيانات 😊"); closeSettings(); loadData();
+    }
+
+    async function confirmDelete() {
+        if(confirm("هل أنتِ متأكدة من حذف هذه المنشأة نهائياً؟")) {
+            const u = document.getElementById('edit-user').value;
+            await fetch(`${API}/user/${u}`, { method: 'DELETE' });
+            alert("تم الحذف بنجاح 😊"); closeSettings(); loadData();
         }
     }
 
-    function toggleLang() {
-        currentLang = currentLang === 'ar' ? 'en' : 'ar';
-        const isAr = currentLang === 'ar';
-        document.documentElement.dir = isAr ? 'rtl' : 'ltr';
-        document.getElementById('lang-btn').innerText = isAr ? 'English' : 'العربية';
-        document.getElementById('nav-title').innerText = isAr ? 'N1 GLOBAL MANAGEMENT' : 'ADMIN DASHBOARD';
-        document.getElementById('logout-btn').innerText = isAr ? 'خروج آمن' : 'Logout';
-        document.getElementById('t1').innerText = isAr ? 'تفعيل منشأة جديدة 😊' : 'Activate New Partner';
-        document.getElementById('l1').innerText = isAr ? 'اسم المستخدم (يوزر)' : 'Username';
-        document.getElementById('l2').innerText = isAr ? 'كلمة المرور (باسورد)' : 'Password';
-        document.getElementById('l3').innerText = isAr ? 'اسم الشركة / المنشأة' : 'Company Name';
-        document.getElementById('l4').innerText = isAr ? 'باقة الاشتراك' : 'Plan';
-        document.getElementById('l5').innerText = isAr ? 'قيمة الاشتراك (JOD)' : 'Fees';
-        document.getElementById('save-btn').innerText = isAr ? 'حفظ البيانات والمزامنة السحابية 😊' : 'Save & Sync Data';
-        document.getElementById('t2').innerText = isAr ? 'إدارة التراخيص والشركاء' : 'Manage Partners';
-        document.getElementById('h1').innerText = isAr ? 'المنشأة' : 'Company';
-        document.getElementById('h2').innerText = isAr ? 'تاريخ الانتهاء' : 'Expiry';
-        document.getElementById('h3').innerText = isAr ? 'الحالة' : 'Status';
-        document.getElementById('h4').innerText = isAr ? 'التحكم' : 'Control';
-        loadTable();
+    async function saveNew() {
+        const d = { id: Date.now(), name: document.getElementById('new-n').value, user: document.getElementById('new-u').value, pass: document.getElementById('new-p').value, expiry: new Date(Date.now() + document.getElementById('new-d').value*86400000).toISOString(), status: 'active', fee: document.getElementById('new-f').value, role: 'client' };
+        await fetch(API, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data: [d]}) });
+        alert("تمت الإضافة 😊"); loadData();
     }
 
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+    function toggleLang() { /* منطق اللغات 😊 */ }
 </script>
 </body>
 </html>
