@@ -3,142 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 Master Admin</title>
+    <title>N1 GLOBAL - ADMIN</title>
     <style>
-        :root {
-            --p: #1a237e; --a: #0288d1; --bg: #f4f7f9; --white: #ffffff;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; color: #333; }
-        
-        .nav { background: var(--p); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .nav-brand { font-size: 20px; font-weight: 800; }
-        
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        
-        .card { background: var(--white); border-radius: 4px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 4px solid var(--a); }
-        h3 { color: var(--p); margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .input-box { margin-bottom: 15px; text-align: right; }
-        label { display: block; font-size: 12px; font-weight: 700; color: var(--p); margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box; text-align: right; }
-        
-        .main-btn { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 3px; cursor: pointer; font-weight: 700; margin-top: 15px; transition: 0.3s; }
-        .main-btn:hover { background: var(--a); }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; color: var(--p); font-size: 13px; }
-        
-        .ctrl-btn { padding: 6px 15px; border: none; border-radius: 3px; cursor: pointer; color: white; margin: 2px; font-size: 11px; font-weight: 600; }
-        .btn-active { background: #2e7d32; }
-        .btn-pause { background: #f57c00; }
-        .btn-del { background: #d32f2f; }
-        
-        .status-tag { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-        .tag-active { background: #e8f5e9; color: #2e7d32; }
-        .tag-paused { background: #fff3e0; color: #f57c00; }
+        :root { --p: #1a237e; --a: #0288d1; --bg: #f5f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        .header { background: var(--p); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1100px; margin: 30px auto; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 4px solid var(--a); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; text-align: right; margin-top: 5px; }
+        .btn-save { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
+        th { background: #f8f9fa; color: var(--p); }
+        .btn-ctrl { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; margin: 2px; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div class="nav">
-    <div class="nav-brand">N1 GLOBAL ADMIN</div>
-    <div>
-        <button class="ctrl-btn" style="border:1px solid white" onclick="toggleLang()">English</button>
-        <button class="ctrl-btn" style="background:#d32f2f" onclick="logout()">خروج</button>
-    </div>
+<div class="header">
+    <div style="font-size:22px; font-weight:800;">N1 MASTER CONTROL</div>
+    <button onclick="logout()" style="background:#d32f2f; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">خروج</button>
 </div>
 
 <div class="container">
     <div class="card">
-        <h3 id="t1">إنشاء حساب شريك جديد</h3>
-        <div class="form-grid">
-            <div class="input-box">
-                <label id="l1">اسم المستخدم</label>
-                <input type="text" id="u" placeholder="User ID">
-            </div>
-            <div class="input-box">
-                <label id="l2">كلمة المرور</label>
-                <input type="password" id="p" placeholder="Password">
-            </div>
-            <div class="input-box" style="grid-column: span 2;">
-                <label id="l3">اسم الشركة</label>
-                <input type="text" id="n" placeholder="Official Company Name">
-            </div>
-            <div class="input-box">
-                <label id="l4">نوع الاشتراك</label>
-                <select id="d">
-                    <option value="1">شهر واحد</option>
-                    <option value="3">3 أشهر</option>
-                    <option value="12">سنة كاملة</option>
-                </select>
-            </div>
-            <div class="input-box">
-                <label id="l5">قيمة الاشتراك (JOD)</label>
-                <input type="number" id="f" placeholder="0.00">
-            </div>
+        <h3>تسجيل شريك جديد</h3>
+        <div class="grid">
+            <div><label>اليوزر</label><input type="text" id="u"></div>
+            <div><label>الباسورد</label><input type="password" id="p"></div>
+            <div style="grid-column: span 2;"><label>اسم الشركة</label><input type="text" id="n"></div>
+            <div><label>الاشتراك</label><input type="number" id="f"></div>
+            <div><label>المدة</label><select id="d"><option value="1">شهر</option><option value="3">3 أشهر</option><option value="12">سنة</option></select></div>
         </div>
-        <button class="main-btn" id="saveBtn" onclick="savePartner()">اعتماد الحساب ومزامنة البيانات 😊</button>
+        <button class="btn-save" onclick="savePartner()">اعتماد الحساب ومزامنة البيانات 😊</button>
     </div>
 
     <div class="card">
-        <h3 id="t2">إدارة الشركاء النشطين</h3>
-        <div id="load-msg">جاري جلب قائمة البيانات...</div>
-        <table id="p-table" style="display:none">
+        <h3>الشركاء والتحكم اللحظي</h3>
+        <table id="mainTable">
             <thead>
                 <tr>
-                    <th id="h1">الشركة</th>
-                    <th id="h2">قيمة الاشتراك</th>
-                    <th id="h3">الحالة</th>
-                    <th id="h4">التحكم</th>
+                    <th>الشركة</th>
+                    <th>الحالة</th>
+                    <th>التحكم</th>
                 </tr>
             </thead>
-            <tbody id="p-body"></tbody>
+            <tbody id="p-list"></tbody>
         </table>
     </div>
 </div>
 
 <script>
     const API = "https://sheetdb.io/api/v1/zuo2qyjeryhxm";
-    
-    window.onload = () => {
-        const admin = JSON.parse(localStorage.getItem('loggedInUser'));
-        if(!admin || admin.role !== 'admin') window.location.href = 'index.html';
-        loadList();
-    };
 
-    async function loadList() {
-        try {
-            const res = await fetch(API);
-            const data = await res.json();
-            const body = document.getElementById('p-body');
-            body.innerHTML = '';
-            
-            data.filter(i => i.role === 'client').forEach(item => {
-                body.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold">${item.company_name}</td>
-                        <td>${item.subscription_fee} JOD</td>
-                        <td><span class="status-tag ${item.status === 'paused' ? 'tag-paused' : 'tag-active'}">
-                            ${item.status === 'paused' ? 'موقف' : 'نشط'}
-                        </span></td>
-                        <td>
-                            <button class="ctrl-btn btn-active" onclick="updateStatus('${item.username}', 'active')">تفعيل</button>
-                            <button class="ctrl-btn btn-pause" onclick="updateStatus('${item.username}', 'paused')">إيقاف</button>
-                            <button class="ctrl-btn btn-del" onclick="deletePartner('${item.username}')">حذف</button>
-                        </td>
-                    </tr>`;
-            });
-            document.getElementById('load-msg').style.display = 'none';
-            document.getElementById('p-table').style.display = 'table';
-        } catch (e) { alert("Error loading data"); }
+    window.onload = () => { loadPartners(); };
+
+    async function loadPartners() {
+        const res = await fetch(API);
+        const data = await res.json();
+        const list = document.getElementById('p-list');
+        list.innerHTML = '';
+        data.filter(i => i.role === 'client').forEach(item => {
+            list.innerHTML += `
+                <tr>
+                    <td>${item.company_name}</td>
+                    <td style="color:${item.status === 'paused' ? 'orange' : 'green'}"><b>${item.status === 'paused' ? 'موقف' : 'نشط'}</b></td>
+                    <td>
+                        <button class="btn-ctrl" style="background:#2e7d32" onclick="updateStatus('${item.username}', 'active')">تفعيل</button>
+                        <button class="btn-ctrl" style="background:#f57c00" onclick="updateStatus('${item.username}', 'paused')">إيقاف</button>
+                        <button class="btn-ctrl" style="background:#d32f2f" onclick="deletePartner('${item.username}')">حذف</button>
+                    </td>
+                </tr>`;
+        });
     }
 
     async function savePartner() {
-        const btn = document.getElementById('saveBtn');
-        btn.disabled = true; btn.innerText = "جاري الحفظ...";
-        
         const payload = { data: [{
             username: document.getElementById('u').value,
             password: document.getElementById('p').value,
@@ -147,27 +87,21 @@
             duration: document.getElementById('d').value,
             role: 'client', status: 'active'
         }]};
-
         await fetch(API, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-        alert("تم إنشاء الحساب بنجاح 😊");
-        btn.disabled = false; btn.innerText = "اعتماد الحساب ومزامنة البيانات 😊";
-        loadList();
+        alert("تم الحفظ بنجاح 😊");
+        loadPartners();
     }
 
     async function updateStatus(u, s) {
         await fetch(`${API}/username/${u}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data:{status:s}}) });
-        loadList();
+        loadPartners();
     }
 
     async function deletePartner(u) {
-        if(confirm("حذف الشركة نهائياً؟")) {
-            await fetch(`${API}/username/${u}`, { method: 'DELETE' });
-            loadList();
-        }
+        if(confirm("حذف نهائي؟")) { await fetch(`${API}/username/${u}`, { method: 'DELETE' }); loadPartners(); }
     }
 
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
-    function toggleLang() { /* سأضيف لكِ الترجمة الكاملة في الخطوة القادمة لضمان البساطة هسا 😊 */ }
 </script>
 </body>
 </html>
