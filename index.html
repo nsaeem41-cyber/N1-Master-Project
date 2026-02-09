@@ -3,130 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 Global - Administrative Control Panel</title>
+    <title>N1 Global - Secure Gateway</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --success-color: #27ae60;
-            --danger-color: #c0392b;
-            --bg-light: #f4f7f6;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); margin: 0; padding: 20px; }
-        .admin-wrapper { max-width: 800px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); overflow: hidden; }
-        .nav-bar { background: var(--primary-color); color: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-bar h1 { margin: 0; font-size: 20px; letter-spacing: 1px; }
-        .logout-btn { background: var(--danger-color); color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .logout-btn:hover { background: #a93226; }
-        .content-body { padding: 30px; }
-        .form-section { border: 1px solid #ddd; padding: 25px; border-radius: 8px; }
-        .form-section h3 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
-        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .submit-btn { width: 100%; background: var(--success-color); color: #fff; border: none; padding: 12px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .submit-btn:hover { background: #219150; }
-        #status-display { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; text-align: center; font-weight: bold; }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #ecf0f1; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .login-box { background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
+        .login-box h2 { color: var(--primary); margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        .field { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 5px; color: var(--primary); font-weight: bold; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: var(--accent); color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #2980b9; }
+        #error { color: #e74c3c; margin-top: 15px; display: none; font-size: 14px; }
     </style>
 </head>
 <body>
-
-<div class="admin-wrapper">
-    <div class="nav-bar">
-        <h1>N1 SYSTEM - ADMINISTRATION</h1>
-        <button class="logout-btn" onclick="terminateSession()">Logout</button>
-    </div>
-
-    <div class="content-body">
-        <div class="form-section">
-            <h3>Register New Client / Company</h3>
-            <form id="registration-form">
-                <div class="input-group">
-                    <label>Username (Login ID)</label>
-                    <input type="text" id="reg-username" required>
-                </div>
-                <div class="input-group">
-                    <label>Access Password</label>
-                    <input type="password" id="reg-password" required>
-                </div>
-                <div class="input-group">
-                    <label>Company Name</label>
-                    <input type="text" id="reg-company" required>
-                </div>
-                <div class="input-group">
-                    <label>Subscription Fee (Monthly)</label>
-                    <input type="number" id="reg-fee" step="0.01" required>
-                </div>
-                <input type="hidden" id="reg-role" value="client">
-                <button type="submit" class="submit-btn" id="reg-btn">Create Official Account</button>
-            </form>
-            <div id="status-display"></div>
+<div class="login-box">
+    <h2>N1 SECURE LOGIN</h2>
+    <form id="auth-form">
+        <div class="field">
+            <label>Username</label>
+            <input type="text" id="user" required>
         </div>
-    </div>
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="pass" required>
+        </div>
+        <button type="submit" id="login-btn">Secure Access</button>
+    </form>
+    <div id="error">Access Denied: Invalid Credentials.</div>
 </div>
-
 <script>
-    const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/zuo2qyjeryhxm";
-
-    // Authentication Guard
-    window.addEventListener('DOMContentLoaded', () => {
-        const sessionData = JSON.parse(sessionStorage.getItem('loggedInUser'));
-        if (!sessionData || sessionData.role !== 'admin') {
-            window.location.href = 'index.html';
-        }
-    });
-
-    // Session Management
-    function terminateSession() {
-        sessionStorage.clear();
-        window.location.href = 'index.html';
-    }
-
-    // Data Synchronization
-    const regForm = document.getElementById('registration-form');
-    const statusBox = document.getElementById('status-display');
-
-    regForm.addEventListener('submit', async (e) => {
+    const DB_URL = "https://sheetdb.io/api/v1/zuo2qyjeryhxm";
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const btn = document.getElementById('reg-btn');
-        btn.disabled = true;
-        btn.innerText = "Synchronizing Data...";
-
-        const payload = {
-            data: [{
-                username: document.getElementById('reg-username').value,
-                password: document.getElementById('reg-password').value,
-                role: 'client',
-                company_name: document.getElementById('reg-company').value,
-                subscription_fee: document.getElementById('reg-fee').value
-            }]
-        };
-
+        const btn = document.getElementById('login-btn');
+        btn.disabled = true; btn.innerText = "Authenticating...";
         try {
-            const response = await fetch(SHEETDB_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-
-            if (result.created === 1) {
-                statusBox.style.display = "block";
-                statusBox.style.backgroundColor = "#d4edda";
-                statusBox.style.color = "#155724";
-                statusBox.innerText = "Account successfully registered and synchronized.";
-                regForm.reset();
+            const response = await fetch(DB_URL);
+            const data = await response.json();
+            const account = data.find(acc => acc.username === document.getElementById('user').value && acc.password === document.getElementById('pass').value);
+            if (account) {
+                sessionStorage.setItem('loggedInUser', JSON.stringify(account));
+                window.location.href = account.role === 'admin' ? 'admin.html' : 'client_dashboard.html';
+            } else {
+                document.getElementById('error').style.display = "block";
+                btn.disabled = false; btn.innerText = "Secure Access";
             }
-        } catch (error) {
-            statusBox.style.display = "block";
-            statusBox.style.backgroundColor = "#f8d7da";
-            statusBox.style.color = "#721c24";
-            statusBox.innerText = "System Error: Failed to sync with database.";
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "Create Official Account";
-        }
+        } catch (err) { alert("Connection Error."); btn.disabled = false; }
     });
 </script>
-
 </body>
 </html>
