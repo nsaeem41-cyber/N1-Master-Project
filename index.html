@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار نظام N1 اللوجستي 😊</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; }
+        button { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>نظام N1 - فحص القاعدة 😊</h1>
+    <p>اضغطي على الزر لإرسال بيانات الاختبار للإكسل</p>
+    <button onclick="sendTestData()">إرسال البيانات الآن 😊</button>
+    <p id="resultStatus"></p>
+</div>
+
+<script>
+// الرابط الخاص بكِ في SheetDB الذي قمتِ بتزويدي به 😊
+const SHEETDB_URL = "https://sheetdb.io/api/v1/zuo2qyjeryhxm"
+
+async function sendTestData() {
+    const statusText = document.getElementById("resultStatus")
+    statusText.innerText = "جاري الإرسال يا حبة السكر... 😊"
+
+    // البيانات مطابقة تماماً للأعمدة اللي جهزتيها في الإكسل 😊
+    const dataToSend = {
+        "data": [
+            {
+                "name": "نسيم - N1",
+                "phone": "2026",
+                "message": "تم فحص الرابط بنجاح والقاعدة متينة 100% 😊"
+            }
+        ]
+    }
+
+    try {
+        const response = await fetch(SHEETDB_URL, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+
+        const result = await response.json()
+        
+        if (result.created === 1) {
+            statusText.style.color = "green"
+            statusText.innerText = "يا مية مبروك! البيانات وصلت الإكسل بنجاح 😊"
+            alert("تم التوصيل بنجاح! روحي شوفي الجوجل شيت يا بطة 😊")
+        } else {
+            statusText.style.color = "red"
+            statusText.innerText = "في شي بسيط محتاج مراجعة 😊"
+        }
+    } catch (error) {
+        console.error("خطأ في الاتصال:", error)
+        statusText.style.color = "red"
+        statusText.innerText = "حدث خطأ في الاتصال بالقاعدة 😊"
+    }
+}
+</script>
+
+</body>
+</html>
