@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N1 Global - Client Operations Portal</title>
+    <style>
+        :root {
+            --client-primary: #34495e;
+            --accent-blue: #3498db;
+            --logout-red: #e74c3c;
+        }
+        body { font-family: 'Arial', sans-serif; background-color: #ecf0f1; margin: 0; padding: 20px; }
+        .portal-header { background: #fff; padding: 20px 40px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 3px 10px rgba(0,0,0,0.05); }
+        .company-info h2 { margin: 0; color: var(--client-primary); font-size: 22px; }
+        .company-info span { color: var(--accent-blue); font-size: 14px; font-weight: bold; }
+        .logout-action button { background: var(--logout-red); color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .logout-action button:hover { background: #c0392b; }
+        .workspace { margin-top: 40px; background: #fff; padding: 50px; border-radius: 10px; text-align: center; border: 1px dashed #bdc3c7; }
+        .workspace p { color: #7f8c8d; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div class="portal-header">
+    <div class="company-info">
+        <h2 id="display-company-name">N1 - Authorized Client</h2>
+        <span id="display-user-status">Status: Operational - 2026</span>
+    </div>
+    <div class="logout-action">
+        <button onclick="executeLogout()">Secure Logout</button>
+    </div>
+</div>
+
+<div class="workspace">
+    <div id="dynamic-content">
+        <p>Awaiting synchronized operational data...</p>
+        <p style="font-size: 14px;">[ N1 Logistic System Connection Active ]</p>
+    </div>
+</div>
+
+<script>
+    // Security and Access Control
+    window.addEventListener('DOMContentLoaded', () => {
+        const activeUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+        
+        if (!activeUser || activeUser.role !== 'client') {
+            window.location.href = 'index.html';
+        } else {
+            // Personalizing the view based on logged-in company
+            document.getElementById('display-company-name').innerText = activeUser.company_name;
+            document.title = `${activeUser.company_name} - N1 Portal`;
+        }
+    });
+
+    // Official Logout Procedure
+    function executeLogout() {
+        sessionStorage.clear();
+        window.location.href = 'index.html';
+    }
+</script>
+
+</body>
+</html>
