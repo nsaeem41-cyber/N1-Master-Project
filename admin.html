@@ -3,164 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 GLOBAL - MASTER CONTROL</title>
+    <title>N1 GLOBAL | مركز التحكم</title>
     <style>
-        :root { --p: #1a237e; --a: #0288d1; --bg: #f5f7f9; --white: #ffffff; --danger: #d32f2f; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
-        
-        .header { background: var(--p); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .container { max-width: 1100px; margin: 30px auto; padding: 20px; }
-        
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 4px solid var(--a); }
-        
-        /* القائمة الجانبية (Sidebar) 😊 */
-        .settings-sidebar {
-            position: fixed; top: 0; left: -350px; width: 320px; height: 100%;
-            background: var(--white); box-shadow: 5px 0 25px rgba(0,0,0,0.2);
-            transition: 0.4s ease; z-index: 1000; padding: 30px; overflow-y: auto;
-        }
-        .settings-sidebar.active { left: 0; }
-        .sidebar-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: none; z-index: 999;
+        :root {
+            --main-bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.95);
+            --primary: #0f172a;
+            --accent: #3b82f6;
+            --text: #334155;
+            --danger: #ef4444;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
 
-        .close-sidebar { cursor: pointer; color: var(--danger); font-weight: bold; float: right; }
-        
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; text-align: right; margin-bottom: 15px; box-sizing: border-box; }
-        .btn-action { width: 100%; padding: 13px; background: var(--p); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
-        
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; }
-        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #f8f9fa; color: var(--p); font-size: 13px; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--main-bg);
+            margin: 0;
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
 
-        .btn-settings { background: var(--a); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        /* القائمة الجانبية الفخمة 😊 */
+        .sidebar {
+            width: 280px;
+            background: var(--primary);
+            color: white;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-brand {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 50px;
+            text-align: center;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .nav-item {
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .nav-item:hover { background: rgba(255,255,255,0.1); }
+        .nav-item.active { background: var(--accent); }
+
+        /* المحتوى الرئيسي 😊 */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 30px;
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        input, select {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 14px;
+            border-radius: 12px;
+            outline: none;
+            transition: 0.3s;
+            text-align: right;
+        }
+
+        input:focus { border-color: var(--accent); background: #fff; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* الجدول العصري 😊 */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        th { padding: 20px; color: #64748b; font-weight: 600; text-align: center; font-size: 13px; }
+        td { padding: 20px; background: white; text-align: center; }
+        td:first-child { border-radius: 0 15px 15px 0; }
+        td:last-child { border-radius: 15px 0 0 15px; }
+
+        .status { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+        .status-on { background: #dcfce7; color: #166534; }
+        .status-off { background: #fee2e2; color: #991b1b; }
+
+        .action-icon {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 0 5px;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar-overlay" id="overlay" onclick="closeSettings()"></div>
-
-<div class="settings-sidebar" id="sidebar">
-    <span class="close-sidebar" onclick="closeSettings()">إغلاق ✕</span>
-    <h3 style="color:var(--p); margin-top:40px;">لوحة التعديلات</h3>
-    <hr>
-    <div id="edit-form">
-        <label style="font-size:12px; color:var(--p)">اسم الشركة المحددة</label>
-        <input type="text" id="edit-name" readonly style="background:#f0f0f0">
-        <input type="hidden" id="edit-user">
-        
-        <label>تعديل الاشتراك</label>
-        <input type="number" id="edit-fee" placeholder="القيمة الجديدة">
-        
-        <button class="btn-action" style="background:#2e7d32" onclick="applyStatus('active')">تفعيل الحساب</button>
-        <button class="btn-action" style="background:#f57c00" onclick="applyStatus('paused')">إيقاف مؤقت</button>
-        <button class="btn-action" style="background:var(--danger)" onclick="confirmDelete()">حذف المنشأة نهائياً</button>
+<div class="sidebar">
+    <div class="sidebar-brand">N1 GLOBAL</div>
+    <div class="nav-item active">🏠 اللوحة الرئيسية</div>
+    <div class="nav-item">📊 التقارير المالية</div>
+    <div class="nav-item">⚙️ الإعدادات العامة</div>
+    <div style="margin-top: auto;">
+        <div class="nav-item" onclick="logout()" style="color: #fda4af;">🚪 تسجيل الخروج</div>
     </div>
 </div>
 
-<header class="header">
-    <div style="font-size:20px; font-weight:800;">N1 MASTER SYSTEM</div>
-    <div>
-        <button class="btn-settings" style="background:transparent; border:1px solid white; margin-left:10px" onclick="toggleLang()">English</button>
-        <button class="btn-settings" style="background:var(--danger)" onclick="logout()">خروج</button>
+<div class="main-content">
+    <div class="top-bar">
+        <h2 style="margin:0; font-weight:800;">إدارة الشركاء والمنشآت 😊</h2>
+        <button class="btn-primary" onclick="toggleLang()">English Version</button>
     </div>
-</header>
 
-<div class="container">
     <div class="card">
-        <h3>تسجيل منشأة جديدة 😊</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
-            <input type="text" id="new-u" placeholder="اسم المستخدم">
-            <input type="password" id="new-p" placeholder="كلمة المرور">
-            <input type="text" id="new-n" style="grid-column: span 2" placeholder="اسم الشركة الرسمي">
-            <input type="number" id="new-f" placeholder="قيمة الاشتراك">
-            <select id="new-d">
-                <option value="30">30 يوم</option>
-                <option value="90">90 يوم</option>
+        <h3 style="margin-top:0">تفعيل حساب جديد 😊</h3>
+        <div class="grid-form">
+            <input type="text" id="nu" placeholder="اسم المستخدم">
+            <input type="password" id="np" placeholder="كلمة المرور">
+            <input type="text" id="nn" placeholder="اسم الشركة">
+            <input type="number" id="nf" placeholder="قيمة الاشتراك">
+            <select id="nd">
+                <option value="30">باقة 30 يوم</option>
+                <option value="90">باقة 90 يوم</option>
                 <option value="365">سنة كاملة</option>
             </select>
+            <button class="btn-primary" onclick="save()">اعتماد الحساب 😊</button>
         </div>
-        <button class="btn-action" onclick="saveNew()">حفظ ومزامنة سحابية 😊</button>
     </div>
 
-    <div class="card">
-        <h3>إدارة الشركاء النشطين</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>الشركة</th>
-                    <th>الانتهاء</th>
-                    <th>الحالة</th>
-                    <th>الإعدادات</th>
-                </tr>
-            </thead>
-            <tbody id="p-list"></tbody>
-        </table>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>الشركة</th>
+                <th>تاريخ الانتهاء</th>
+                <th>الحالة</th>
+                <th>التحكم</th>
+            </tr>
+        </thead>
+        <tbody id="list">
+            </tbody>
+    </table>
 </div>
 
 <script>
     const API = "https://sheetdb.io/api/v1/qzfkwfzcpbrsm";
+    window.onload = load;
 
-    window.onload = loadData;
-
-    async function loadData() {
-        const res = await fetch(API);
-        const data = await res.json();
-        const body = document.getElementById('p-list');
-        body.innerHTML = '';
-        data.forEach(c => {
+    async function load() {
+        const r = await fetch(API);
+        const d = await r.json();
+        const b = document.getElementById('list');
+        b.innerHTML = '';
+        d.forEach(c => {
             if(c.user) {
-                const isPaused = c.status === 'paused';
-                body.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold">${c.name}</td>
-                        <td>${new Date(c.expiry).toLocaleDateString('ar-EG')}</td>
-                        <td><span class="status-pill" style="background:${isPaused ? '#fff3e0' : '#e8f5e9'}; color:${isPaused ? '#f57c00' : '#2e7d32'}">
-                            ${isPaused ? 'موقف' : 'نشط'}</span></td>
-                        <td><button class="btn-settings" onclick="openSettings('${c.user}', '${c.name}', '${c.subscription_fee || c.fee}')">⚙ الإعدادات</button></td>
-                    </tr>`;
+                const active = c.status !== 'paused';
+                b.innerHTML += `
+                <tr>
+                    <td style="font-weight:700">${c.name}</td>
+                    <td style="color:#64748b">${new Date(c.expiry).toLocaleDateString('ar-EG')}</td>
+                    <td><span class="status ${active ? 'status-on' : 'status-off'}">${active ? 'نشط' : 'موقف'}</span></td>
+                    <td>
+                        <button class="action-icon" style="background:#e2e8f0; color:#475569" onclick="upd('${c.user}','active')">تفعيل</button>
+                        <button class="action-icon" style="background:#fff7ed; color:#c2410c" onclick="upd('${c.user}','paused')">إيقاف</button>
+                        <button class="action-icon" style="background:#fee2e2; color:#b91c1c" onclick="del('${c.user}')">حذف</button>
+                    </td>
+                </tr>`;
             }
         });
     }
 
-    function openSettings(user, name, fee) {
-        document.getElementById('edit-user').value = user;
-        document.getElementById('edit-name').value = name;
-        document.getElementById('edit-fee').value = fee;
-        document.getElementById('sidebar').classList.add('active');
-        document.getElementById('overlay').style.display = 'block';
+    async function save() {
+        const data = { id: Date.now(), name: document.getElementById('nn').value, user: document.getElementById('nu').value, pass: document.getElementById('np').value, expiry: new Date(Date.now() + document.getElementById('nd').value*86400000).toISOString(), status: 'active', fee: document.getElementById('nf').value, role: 'client' };
+        await fetch(API, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data: [data]}) });
+        alert("تمت الإضافة بنجاح 😊"); load();
     }
 
-    function closeSettings() {
-        document.getElementById('sidebar').classList.remove('active');
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    async function applyStatus(s) {
-        const u = document.getElementById('edit-user').value;
-        await fetch(`${API}/user/${u}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data:{status:s, fee: document.getElementById('edit-fee').value}}) });
-        alert("تم تحديث البيانات 😊"); closeSettings(); loadData();
-    }
-
-    async function confirmDelete() {
-        if(confirm("هل أنتِ متأكدة من حذف هذه المنشأة نهائياً؟")) {
-            const u = document.getElementById('edit-user').value;
-            await fetch(`${API}/user/${u}`, { method: 'DELETE' });
-            alert("تم الحذف بنجاح 😊"); closeSettings(); loadData();
-        }
-    }
-
-    async function saveNew() {
-        const d = { id: Date.now(), name: document.getElementById('new-n').value, user: document.getElementById('new-u').value, pass: document.getElementById('new-p').value, expiry: new Date(Date.now() + document.getElementById('new-d').value*86400000).toISOString(), status: 'active', fee: document.getElementById('new-f').value, role: 'client' };
-        await fetch(API, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data: [d]}) });
-        alert("تمت الإضافة 😊"); loadData();
-    }
-
+    async function upd(u, s) { await fetch(`${API}/user/${u}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data: {status: s}}) }); load(); }
+    async function del(u) { if(confirm("حذف نهائي؟")) { await fetch(`${API}/user/${u}`, { method: 'DELETE' }); load(); } }
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
-    function toggleLang() { /* منطق اللغات 😊 */ }
+    function toggleLang() { /* الترجمة السلسة 😊 */ }
 </script>
 </body>
 </html>
