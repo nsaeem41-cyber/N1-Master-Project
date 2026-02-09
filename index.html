@@ -1,36 +1,128 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 Global - Fast Dev Access</title>
+    <title>N1 Global - بوابة الوصول الآمن</title>
     <style>
-        :root { --p: #2c3e50; --a: #3498db; --b: #ecf0f1; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--b); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .box { background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 380px; text-align: center; }
-        h2 { color: var(--p); border-bottom: 2px solid var(--a); padding-bottom: 10px; margin-bottom: 30px; }
-        input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--a); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        
+        /* Language Switcher */
+        .lang-switch { position: absolute; top: 20px; left: 20px; }
+        .lang-btn { background: #fff; border: 1px solid var(--primary); padding: 5px 15px; cursor: pointer; border-radius: 20px; font-weight: bold; }
+
+        .container { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        h1 { color: var(--primary); margin-bottom: 10px; font-size: 28px; }
+        p { color: #7f8c8d; margin-bottom: 30px; }
+
+        .gate-selector { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .gate-btn { flex: 1; padding: 12px; border: none; background: #eee; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+        .gate-btn.active { background: var(--primary); color: #fff; }
+
+        .login-form { display: none; text-align: right; }
+        .login-form.active { display: block; }
+
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--primary); }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; text-align: right; }
+        
+        .submit-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-btn:hover { background: #2980b9; }
+        
+        #error-msg { color: #e74c3c; margin-top: 15px; display: none; font-weight: bold; }
     </style>
 </head>
 <body>
-<div class="box">
-    <h2>N1 MASTER ACCESS</h2>
-    <input type="text" id="u" placeholder="Admin Username">
-    <input type="password" id="p" placeholder="Admin Password">
-    <button onclick="fastLogin()">Instant Entry 😊</button>
+
+<div class="lang-switch">
+    <button class="lang-btn" onclick="toggleLanguage()">English</button>
 </div>
+
+<div class="container">
+    <h1 id="main-title">نظام N1 اللوجستي 😊</h1>
+    <p id="sub-title">يرجى اختيار بوابة الدخول المناسبة</p>
+
+    <div class="gate-selector">
+        <button id="admin-gate-btn" class="gate-btn active" onclick="switchGate('admin')">بوابة الإدارة</button>
+        <button id="client-gate-btn" class="gate-btn" onclick="switchGate('client')">بوابة الشركات</button>
+    </div>
+
+    <div id="admin-form" class="login-form active">
+        <div class="field">
+            <label id="lbl-admin-user">اسم مدير النظام</label>
+            <input type="text" id="admin-u" placeholder="Username">
+        </div>
+        <div class="field">
+            <label id="lbl-admin-pass">كلمة المرور</label>
+            <input type="password" id="admin-p" placeholder="Password">
+        </div>
+        <button class="submit-btn" onclick="handleLogin('admin')">دخول الإدارة الآمن 😊</button>
+    </div>
+
+    <div id="client-form" class="login-form">
+        <div class="field">
+            <label id="lbl-client-user">اسم المستخدم للشركة</label>
+            <input type="text" id="client-u" placeholder="Company ID">
+        </div>
+        <div class="field">
+            <label id="lbl-client-pass">كلمة المرور</label>
+            <input type="password" id="client-p" placeholder="Password">
+        </div>
+        <button class="submit-btn" onclick="handleLogin('client')">دخول بوابة الشركاء 😊</button>
+    </div>
+
+    <div id="error-msg">خطأ: يرجى التأكد من البيانات والمحاولة مرة أخرى</div>
+</div>
+
 <script>
-    function fastLogin() {
-        const user = document.getElementById('u').value;
-        const pass = document.getElementById('p').value;
-        // تجاوز الفحص من الإكسل للتجربة السريعة 😊
-        if(user === 'admin' && pass === 'n12026') {
-            sessionStorage.setItem('loggedInUser', JSON.stringify({username: 'admin', role: 'admin', company_name: 'N1 Master Control'}));
+    let currentGate = 'admin';
+    let currentLang = 'ar';
+
+    function switchGate(gate) {
+        currentGate = gate;
+        document.querySelectorAll('.gate-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+        
+        document.getElementById(`${gate}-gate-btn`).classList.add('active');
+        document.getElementById(`${gate}-form`).classList.add('active');
+        document.getElementById('error-msg').style.display = 'none';
+    }
+
+    function handleLogin(gate) {
+        const u = document.getElementById(`${gate}-u`).value;
+        const p = document.getElementById(`${gate}-p`).value;
+
+        // ميزة التجاوز السريع للتطوير 😊
+        if(u === 'admin' && p === 'n12026') {
+            sessionStorage.setItem('loggedInUser', JSON.stringify({username: u, role: 'admin', company_name: 'N1 Control'}));
             window.location.href = 'admin.html';
         } else {
-            alert("Dev Mode: Use 'admin' and 'n12026' to enter.");
+            document.getElementById('error-msg').style.display = 'block';
         }
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'ar' ? 'en' : 'ar';
+        const isAr = currentLang === 'ar';
+        
+        document.documentElement.lang = isAr ? 'ar' : 'en';
+        document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+        
+        // تحديث النصوص
+        document.getElementById('main-title').innerText = isAr ? 'نظام N1 اللوجستي 😊' : 'N1 Logistic System 😊';
+        document.getElementById('sub-title').innerText = isAr ? 'يرجى اختيار بوابة الدخول المناسبة' : 'Please select the appropriate login gateway';
+        document.getElementById('admin-gate-btn').innerText = isAr ? 'بوابة الإدارة' : 'Admin Gateway';
+        document.getElementById('client-gate-btn').innerText = isAr ? 'بوابة الشركات' : 'Client Gateway';
+        document.querySelector('.lang-btn').innerText = isAr ? 'English' : 'العربية';
+        
+        // تحديث حقول الإدارة
+        document.getElementById('lbl-admin-user').innerText = isAr ? 'اسم مدير النظام' : 'Admin Username';
+        document.getElementById('lbl-admin-pass').innerText = isAr ? 'كلمة المرور' : 'Password';
+        
+        // تحديث حقول الشركة
+        document.getElementById('lbl-client-user').innerText = isAr ? 'اسم المستخدم للشركة' : 'Company Username';
+        document.getElementById('lbl-client-pass').innerText = isAr ? 'كلمة المرور' : 'Password';
     }
 </script>
 </body>
