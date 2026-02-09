@@ -2,51 +2,22 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 Admin - Central Control</title>
+    <title>N1 Admin - Testing Mode</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
-        .wrapper { max-width: 700px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .nav { background: #2c3e50; color: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
-        .logout { background: #c0392b; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
-        .main { padding: 30px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        .save-btn { width: 100%; background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .nav { background: #2c3e50; color: #fff; padding: 15px; display: flex; justify-content: space-between; border-radius: 8px; }
+        .card { background: #fff; padding: 30px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        button.logout { background: #e74c3c; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; }
     </style>
 </head>
 <body>
-<div class="wrapper">
-    <div class="nav">
-        <span>N1 ADMINISTRATION</span>
-        <button class="logout" onclick="logout()">Logout</button>
-    </div>
-    <div class="main">
-        <h3>Account Management</h3>
-        <form id="reg-form">
-            <div class="form-group"><label>Username</label><input type="text" id="u" required></div>
-            <div class="form-group"><label>Password</label><input type="password" id="p" required></div>
-            <div class="form-group"><label>Company Name</label><input type="text" id="c" required></div>
-            <div class="form-group"><label>Fee (JOD)</label><input type="number" id="f" required></div>
-            <button type="submit" class="save-btn" id="s-btn">Sync Official Account</button>
-        </form>
-    </div>
+<div class="nav">
+    <span>N1 ADMIN PANEL (DEV MODE)</span>
+    <button class="logout" onclick="location.href='index.html'">Logout</button>
 </div>
-<script>
-    window.onload = () => { if(!sessionStorage.getItem('loggedInUser')) window.location.href='index.html'; };
-    function logout() { sessionStorage.clear(); window.location.href='index.html'; }
-    document.getElementById('reg-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('s-btn');
-        btn.disabled = true; btn.innerText = "Syncing...";
-        const payload = { data: [{ username: document.getElementById('u').value, password: document.getElementById('p').value, role: 'client', company_name: document.getElementById('c').value, subscription_fee: document.getElementById('f').value }] };
-        try {
-            await fetch("https://sheetdb.io/api/v1/zuo2qyjeryhxm", { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-            alert("Account Synced Successfully."); document.getElementById('reg-form').reset();
-        } catch (err) { alert("Sync Failed."); }
-        btn.disabled = false; btn.innerText = "Sync Official Account";
-    });
-</script>
+<div class="card">
+    <h3>System Status: Ready 😊</h3>
+    <p>You can now test layouts and navigation without Excel delays.</p>
+</div>
 </body>
 </html>
