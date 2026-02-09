@@ -3,62 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 Global - Client Operations Portal</title>
+    <title>N1 Admin - Central Control</title>
     <style>
-        :root {
-            --client-primary: #34495e;
-            --accent-blue: #3498db;
-            --logout-red: #e74c3c;
-        }
-        body { font-family: 'Arial', sans-serif; background-color: #ecf0f1; margin: 0; padding: 20px; }
-        .portal-header { background: #fff; padding: 20px 40px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 3px 10px rgba(0,0,0,0.05); }
-        .company-info h2 { margin: 0; color: var(--client-primary); font-size: 22px; }
-        .company-info span { color: var(--accent-blue); font-size: 14px; font-weight: bold; }
-        .logout-action button { background: var(--logout-red); color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .logout-action button:hover { background: #c0392b; }
-        .workspace { margin-top: 40px; background: #fff; padding: 50px; border-radius: 10px; text-align: center; border: 1px dashed #bdc3c7; }
-        .workspace p { color: #7f8c8d; font-size: 18px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .wrapper { max-width: 700px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .nav { background: #2c3e50; color: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
+        .logout { background: #c0392b; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .main { padding: 30px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .save-btn { width: 100%; background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 4px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div class="portal-header">
-    <div class="company-info">
-        <h2 id="display-company-name">N1 - Authorized Client</h2>
-        <span id="display-user-status">Status: Operational - 2026</span>
+<div class="wrapper">
+    <div class="nav">
+        <span>N1 ADMINISTRATION</span>
+        <button class="logout" onclick="logout()">Logout</button>
     </div>
-    <div class="logout-action">
-        <button onclick="executeLogout()">Secure Logout</button>
+    <div class="main">
+        <h3>Account Management</h3>
+        <form id="reg-form">
+            <div class="form-group"><label>Username</label><input type="text" id="u" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="p" required></div>
+            <div class="form-group"><label>Company Name</label><input type="text" id="c" required></div>
+            <div class="form-group"><label>Fee (JOD)</label><input type="number" id="f" required></div>
+            <button type="submit" class="save-btn" id="s-btn">Sync Official Account</button>
+        </form>
     </div>
 </div>
-
-<div class="workspace">
-    <div id="dynamic-content">
-        <p>Awaiting synchronized operational data...</p>
-        <p style="font-size: 14px;">[ N1 Logistic System Connection Active ]</p>
-    </div>
-</div>
-
 <script>
-    // Security and Access Control
-    window.addEventListener('DOMContentLoaded', () => {
-        const activeUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
-        
-        if (!activeUser || activeUser.role !== 'client') {
-            window.location.href = 'index.html';
-        } else {
-            // Personalizing the view based on logged-in company
-            document.getElementById('display-company-name').innerText = activeUser.company_name;
-            document.title = `${activeUser.company_name} - N1 Portal`;
-        }
+    window.onload = () => { if(!sessionStorage.getItem('loggedInUser')) window.location.href='index.html'; };
+    function logout() { sessionStorage.clear(); window.location.href='index.html'; }
+    document.getElementById('reg-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('s-btn');
+        btn.disabled = true; btn.innerText = "Syncing...";
+        const payload = { data: [{ username: document.getElementById('u').value, password: document.getElementById('p').value, role: 'client', company_name: document.getElementById('c').value, subscription_fee: document.getElementById('f').value }] };
+        try {
+            await fetch("https://sheetdb.io/api/v1/zuo2qyjeryhxm", { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            alert("Account Synced Successfully."); document.getElementById('reg-form').reset();
+        } catch (err) { alert("Sync Failed."); }
+        btn.disabled = false; btn.innerText = "Sync Official Account";
     });
-
-    // Official Logout Procedure
-    function executeLogout() {
-        sessionStorage.clear();
-        window.location.href = 'index.html';
-    }
 </script>
-
 </body>
 </html>
