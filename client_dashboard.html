@@ -2,30 +2,20 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 - Client Portal</title>
+    <title>N1 Client Portal</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background: #ecf0f1; margin: 0; padding: 20px; }
-        .header { background: #fff; padding: 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .logout-btn { background: #e74c3c; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        .main-box { margin-top: 30px; background: #fff; padding: 40px; border-radius: 10px; text-align: center; }
+        body { font-family: sans-serif; background: #ecf0f1; padding: 20px; }
+        .header { background: #fff; padding: 20px; display: flex; justify-content: space-between; border-radius: 10px; }
+        button { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 <div class="header">
-    <h2 id="c-name">N1 Client Portal</h2>
-    <button class="logout-btn" onclick="exit()">Logout</button>
+    <h2>Client Dashboard</h2>
+    <button onclick="location.href='index.html'">Logout</button>
 </div>
-<div class="main-box">
-    <p>Operational data status: Synchronizing...</p>
+<div style="text-align:center; margin-top:50px;">
+    <p>Awaiting Client Connection Code...</p>
 </div>
-<script>
-    window.onload = () => {
-        const u = JSON.parse(sessionStorage.getItem('loggedInUser'));
-        if(!u || u.role !== 'client') window.location.href='index.html';
-        else document.getElementById('c-name').innerText = u.company_name;
-    };
-    function exit() { sessionStorage.clear(); window.location.href='index.html'; }
-</script>
 </body>
 </html>
