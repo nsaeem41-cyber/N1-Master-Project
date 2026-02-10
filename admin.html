@@ -3,224 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 Global | VIP Control Center</title>
+    <title>N1 GLOBAL | الإدارة</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap');
-        
+        /* --- تصميم N1 الفاخر (الأزرق والذهبي) --- */
         :root {
+            --primary: #1a237e;
             --gold: #d4af37;
-            --dark-bg: #0a0c10;
-            --card-bg: #161b22;
-            --text-gold: #f0e68c;
-            --danger: #ff4d4d;
+            --bg: #f4f6f8;
+            --danger: #d32f2f;
+            --success: #2e7d32;
         }
 
         body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--dark-bg);
-            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
             margin: 0;
+            padding: 20px;
+        }
+
+        /* --- الهيدر (رأس الصفحة) --- */
+        .header {
             display: flex;
-            min-height: 100vh;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-bottom: 4px solid var(--gold);
         }
 
-        /* Sidebar الملكي */
-        .sidebar {
-            width: 260px;
-            background: var(--card-bg);
-            border-left: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--gold);
-            text-align: center;
-            margin-bottom: 50px;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-        }
-
-        .nav-link {
-            padding: 15px;
-            margin: 10px 0;
+        .brand { font-size: 24px; font-weight: bold; color: var(--primary); }
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 20px;
             border-radius: 8px;
             cursor: pointer;
-            transition: 0.3s;
-            font-weight: 700;
-            color: #8b949e;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--gold);
-        }
-
-        /* Content Area */
-        .content { flex: 1; padding: 50px; overflow-y: auto; }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 15px;
-            border-bottom: 3px solid var(--gold);
-            text-align: center;
-        }
-
-        .stat-card h4 { margin: 0; color: var(--gold); font-size: 14px; text-transform: uppercase; }
-        .stat-card p { font-size: 24px; font-weight: 900; margin: 10px 0 0; }
-
-        /* Form Styling */
-        .action-card {
-            background: var(--card-bg);
-            padding: 35px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-        }
-
-        .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-
-        input, select {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            padding: 14px;
-            border-radius: 10px;
-            color: white;
-            outline: none;
-            transition: 0.3s;
-            text-align: right;
-        }
-
-        input:focus { border-color: var(--gold); }
-
-        .btn-gold {
-            background: var(--gold);
-            color: #000;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-gold:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
-
-        /* Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th { text-align: right; color: #8b949e; padding: 15px; border-bottom: 2px solid #30363d; }
-        td { padding: 20px; border-bottom: 1px solid #30363d; }
-
-        .status-pill {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
             font-weight: bold;
         }
-        .active-pill { background: rgba(46, 174, 96, 0.2); color: #2ecc71; }
-        .pause-pill { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
 
+        /* --- بطاقة الإضافة (Add New) --- */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .card h2 { margin-top: 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-add {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        .btn-add:hover { background: #1b5e20; }
+
+        /* --- جدول الشركات (The Dashboard) --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        th { background: var(--primary); color: white; padding: 15px; text-align: center; }
+        td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
+        
+        /* أزرار التحكم الصغيرة */
         .action-btn {
-            background: none; border: 1px solid #30363d; color: white;
-            padding: 6px 12px; border-radius: 6px; cursor: pointer; margin: 0 3px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            margin: 0 2px;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="logo">N1 GLOBAL</div>
-    <div class="nav-link active">اللوحة الرئيسية</div>
-    <div class="nav-link">إدارة الشركاء</div>
-    <div class="nav-link">الاشتراكات</div>
-    <div class="nav-link" onclick="logout()" style="margin-top: auto; color: var(--danger);">تسجيل الخروج</div>
-</div>
-
-<div class="content">
-    <div class="stat-grid">
-        <div class="stat-card"><h4>إجمالي الشركاء</h4><p id="total-comps">0</p></div>
-        <div class="stat-card"><h4>الدخل الإجمالي</h4><p id="total-revenue">0 JOD</p></div>
+    <div class="header">
+        <div class="brand">N1 GLOBAL | الإدارة 👑</div>
+        <button class="logout-btn" onclick="logout()">خروج 🚪</button>
     </div>
 
-    <div class="action-card">
-        <h3 style="margin-top:0; color: var(--gold);">تفعيل ترخيص جديد 😊</h3>
-        <div class="input-row">
-            <input type="text" id="un" placeholder="اسم المستخدم">
-            <input type="password" id="pw" placeholder="كلمة المرور">
-            <input type="text" id="cn" placeholder="اسم الشركة">
-            <input type="number" id="fee" placeholder="الرسوم">
-            <select id="pl">
-                <option value="30">باقة 30 يوم</option>
-                <option value="90">باقة 90 يوم</option>
-                <option value="365">باقة سنة</option>
+    <div class="card">
+        <h2>➕ إضافة شركة جديدة</h2>
+        <div class="form-grid">
+            <input type="text" id="n_user" placeholder="اسم المستخدم (User)">
+            <input type="password" id="n_pass" placeholder="كلمة المرور (Pass)">
+            <input type="text" id="n_name" placeholder="اسم الشركة (Full Name)">
+            <input type="number" id="n_fee" placeholder="الرسوم (JOD)">
+            <select id="n_days">
+                <option value="30">باقة شهرية (30 يوم)</option>
+                <option value="90">باقة ربع سنوية (90 يوم)</option>
+                <option value="365">باقة سنوية (365 يوم)</option>
             </select>
-            <button class="btn-gold" onclick="add()">حفظ وتفعيل 😊</button>
         </div>
+        <button class="btn-add" onclick="addCompany()">حفظ وتفعيل الشركة 🚀</button>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>المنشأة</th>
-                <th>تاريخ الانتهاء</th>
-                <th>الحالة</th>
-                <th>التحكم</th>
-            </tr>
-        </thead>
-        <tbody id="p-list"></tbody>
-    </table>
-</div>
+    <div class="card">
+        <h2>📊 الشركات المسجلة</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>الشركة</th>
+                    <th>تاريخ الانتهاء</th>
+                    <th>الحالة</th>
+                    <th>التحكم</th>
+                </tr>
+            </thead>
+            <tbody id="company-list">
+                <tr><td colspan="4">جاري التحميل... ⏳</td></tr>
+            </tbody>
+        </table>
+    </div>
 
-<script>
-    const API = "https://sheetdb.io/api/v1/qzfkwfzcpbrsm";
-    window.onload = loadData;
+    <script>
+        const API = "https://sheetdb.io/api/v1/qzfkwfzcpbrsm";
 
-    async function loadData() {
-        const r = await fetch(API);
-        const data = await r.json();
-        const list = document.getElementById('p-list');
-        list.innerHTML = '';
-        let revenue = 0;
-        
-        data.forEach(c => {
-            if(c.user) {
-                revenue += parseInt(c.fee || 0);
-                const isActive = c.status !== 'paused';
-                list.innerHTML += `
-                    <tr>
-                        <td><b>${c.name}</b><br><small style="color:#8b949e">${c.user}</small></td>
-                        <td>${new Date(c.expiry).toLocaleDateString('ar-EG')}</td>
-                        <td><span class="status-pill ${isActive ? 'active-pill' : 'pause-pill'}">${isActive ? 'نشط' : 'موقف'}</span></td>
-                        <td>
-                            <button class="action-btn" onclick="update('${c.user}','active')">تفعيل</button>
-                            <button class="action-btn" onclick="update('${c.user}','paused')">إيقاف</button>
-                            <button class="action-btn" style="border-color:var(--danger); color:var(--danger)" onclick="remove('${c.user}')">حذف</button>
-                        </td>
-                    </tr>`;
+        // 1. أول ما تفتح الصفحة، جيب البيانات
+        window.onload = loadData;
+
+        // دالة جلب البيانات وعرضها
+        async function loadData() {
+            try {
+                const res = await fetch(API);
+                const data = await res.json();
+                const tbody = document.getElementById('company-list');
+                tbody.innerHTML = ''; // تنظيف الجدول
+
+                data.forEach(item => {
+                    // عرض الشركات فقط (مش الأدمن)
+                    if(item.role === 'client' || item.role === 'company') {
+                        const isActive = item.status !== 'paused';
+                        const statusColor = isActive ? '#e8f5e9' : '#ffebee';
+                        const statusText = isActive ? '#2e7d32' : '#c62828';
+                        
+                        tbody.innerHTML += `
+                        <tr>
+                            <td><b>${item.name}</b><br><small style="color:#888">${item.user}</small></td>
+                            <td>${new Date(item.expiry).toLocaleDateString('ar-EG')}</td>
+                            <td>
+                                <span class="status-badge" style="background:${statusColor}; color:${statusText}">
+                                    ${isActive ? 'نشط ✅' : 'موقف ⛔'}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn" style="background:#2e7d32" onclick="updateStatus('${item.user}', 'active')">تفعيل</button>
+                                <button class="action-btn" style="background:#fbc02d; color:black" onclick="updateStatus('${item.user}', 'paused')">إيقاف</button>
+                                <button class="action-btn" style="background:#c62828" onclick="deleteCompany('${item.user}')">حذف</button>
+                            </td>
+                        </tr>`;
+                    }
+                });
+            } catch (e) {
+                alert("في مشكلة بالاتصال! 😢");
             }
-        });
-        document.getElementById('total-comps').innerText = data.length;
-        document.getElementById('total-revenue').innerText = revenue + " JOD";
-    }
+        }
 
-    async function add() {
-        const data = { id: Date.now(), name: document.getElementById('cn').value, user: document.getElementById('un').value, pass: document.getElementById('pw').value, expiry: new Date(Date.now() + document.getElementById('pl').value*86400000).toISOString(), status: 'active', fee: document.getElementById('fee').value, role: 'client' };
-        await fetch(API, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data: [data]}) });
-        alert("تم التفعيل بنجاح 😊"); loadData();
-    }
+        // دالة إضافة شركة جديدة
+        async function addCompany() {
+            const u = document.getElementById('n_user').value;
+            const p = document.getElementById('n_pass').value;
+            const n = document.getElementById('n_name').value;
+            const f = document.getElementById('n_fee').value;
+            const d = document.getElementById('n_days').value;
 
-    async function update(u, s) { await fetch(`${API}/user/${u}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({data: {status: s}}) }); loadData(); }
-    async function remove(u) { if(confirm("حذف نهائي؟")) { await fetch(`${API}/user/${u}`, { method: 'DELETE' }); loadData(); } }
-    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
-</script>
+            if(!u || !p || !n) { alert("عبي البيانات يا حبة السكر! 😊"); return; }
+
+            // حساب تاريخ الانتهاء
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + parseInt(d));
+
+            const newCompany = {
+                id: Date.now(),
+                user: u,
+                pass: p,
+                name: n,
+                fee: f,
+                expiry: expiryDate.toISOString(),
+                status: 'active',
+                role: 'client'
+            };
+
+            await fetch(API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: [newCompany] })
+            });
+
+            alert("تمت الإضافة بنجاح يا مديرة! 🎉");
+            loadData(); // تحديث الجدول
+            // تفريغ الخانات
+            document.getElementById('n_user').value = '';
+            document.getElementById('n_pass').value = '';
+            document.getElementById('n_name').value = '';
+        }
+
+        // دالة تحديث الحالة (تفعيل / إيقاف)
+        async function updateStatus(user, status) {
+            await fetch(`${API}/user/${user}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: { status: status } })
+            });
+            loadData();
+        }
+
+        // دالة الحذف
+        async function deleteCompany(user) {
+            if(confirm("متأكدة بدك تحذفي هالشركة نهائياً؟ 🤔")) {
+                await fetch(`${API}/user/${user}`, { method: 'DELETE' });
+                loadData();
+            }
+        }
+
+        // دالة الخروج
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+    </script>
 </body>
 </html>
