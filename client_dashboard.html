@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1 GLOBAL | Client Portal</title>
+    <title>N One | Client Dashboard</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f4f6f8;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -22,18 +22,24 @@
             max-width: 500px;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             text-align: center;
             border-top: 6px solid #1a237e;
         }
 
-        h1 { color: #1a237e; margin: 0 0 10px 0; }
-        h3 { color: #555; font-weight: normal; margin-bottom: 30px; }
+        /* --- اللوجو --- */
+        .brand { margin-bottom: 30px; }
+        .n-letter { color: #1a237e; font-size: 50px; font-weight: 800; }
+        .one-word { color: #d4af37; font-size: 50px; font-weight: 800; }
 
+        h2 { color: #555; font-size: 20px; margin-top: 0; font-weight: normal; }
+        h1 { color: #1a237e; margin: 10px 0 30px 0; }
+
+        /* --- صندوق الحالة --- */
         .status-box {
             padding: 20px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-weight: bold;
             font-size: 18px;
         }
@@ -44,39 +50,48 @@
             border: 1px solid #c8e6c9;
         }
 
-        .inactive {
+        .paused {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffe0b2;
+        }
+
+        .expired {
             background-color: #ffebee;
             color: #c62828;
             border: 1px solid #ffcdd2;
         }
 
+        /* --- تفاصيل الاشتراك --- */
         .info-row {
             display: flex;
             justify-content: space-between;
             margin: 15px 0;
             border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
+            font-size: 15px;
         }
 
-        .label { color: #888; }
+        .label { color: #777; }
         .value { font-weight: bold; color: #333; }
 
+        /* --- زر الخروج --- */
         button {
             background-color: #d32f2f;
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 12px 35px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             font-size: 14px;
-            margin-top: 20px;
+            margin-top: 30px;
             transition: 0.3s;
         }
 
         button:hover { background-color: #b71c1c; }
 
-        #loading { display: block; color: #666; }
+        #loading { color: #666; font-size: 16px; }
         #content { display: none; }
 
     </style>
@@ -84,18 +99,24 @@
 <body>
 
     <div class="dashboard-card">
-        <div id="loading">جاري تحميل البيانات...</div>
+        
+        <div class="brand">
+            <span class="n-letter">N</span>
+            <span class="one-word">One</span>
+        </div>
+
+        <div id="loading">جاري تحميل بيانات الاشتراك...</div>
 
         <div id="content">
-            <h1 id="comp-name">N1 Global</h1>
-            <h3>لوحة الشركاء</h3>
+            <h2 id="welcome-text">أهلاً بك</h2>
+            <h1 id="comp-name">Company Name</h1>
 
             <div id="status-indicator" class="status-box">
-                جاري الفحص...
+                ...
             </div>
 
             <div class="info-row">
-                <span class="label">تاريخ التفعيل:</span>
+                <span class="label">تاريخ البدء:</span>
                 <span class="value" id="start-date">-</span>
             </div>
 
@@ -121,7 +142,7 @@
         };
 
         async function checkAccess() {
-            // 1. Check if user is logged in locally
+            // التحقق من تسجيل الدخول محلياً
             const localUser = JSON.parse(localStorage.getItem('currentUser'));
 
             if (!localUser) {
@@ -130,22 +151,26 @@
             }
 
             try {
-                // 2. Fetch fresh data from server to verify status
+                // جلب بيانات محدثة من السيرفر للتأكد من الحالة
                 const response = await fetch(API);
                 const data = await response.json();
                 
-                // Find the specific user
+                // البحث عن المستخدم الحالي
                 const serverUser = data.find(u => u.user === localUser.user);
 
                 if (serverUser) {
+                    // تحديث البيانات المحلية
+                    localStorage.setItem('currentUser', JSON.stringify(serverUser));
                     renderDashboard(serverUser);
                 } else {
-                    alert("خطأ: الحساب غير موجود.");
+                    alert("عذراً، لم يعد هذا الحساب موجوداً.");
                     logout();
                 }
 
             } catch (error) {
-                alert("تعذر الاتصال بالخادم. يرجى التحقق من الإنترنت.");
+                alert("خطأ في الاتصال بالسيرفر. يرجى التحقق من الإنترنت.");
+                // في حال انقطاع النت، نعرض آخر بيانات محفوظة
+                renderDashboard(localUser);
             }
         }
 
@@ -155,6 +180,7 @@
 
             document.getElementById('comp-name').innerText = user.name;
             
+            // حساب الأيام المتبقية
             const expiryDate = new Date(user.expiry);
             const today = new Date();
             const timeDiff = expiryDate - today;
@@ -163,24 +189,25 @@
             const statusDiv = document.getElementById('status-indicator');
             const daysSpan = document.getElementById('days-left');
 
-            // Logic: Check if Paused OR Expired
+            // منطق تحديد الحالة والألوان
             if (user.status === 'paused') {
-                statusDiv.className = 'status-box inactive';
-                statusDiv.innerText = 'الخدمة متوقفة مؤقتاً';
-                daysSpan.innerText = 'محجوب';
-                daysSpan.style.color = 'red';
+                statusDiv.className = 'status-box paused';
+                statusDiv.innerText = 'الاشتراك موقوف مؤقتاً';
+                daysSpan.innerText = 'معلق';
+                daysSpan.style.color = '#ef6c00';
             } else if (daysLeft <= 0) {
-                statusDiv.className = 'status-box inactive';
-                statusDiv.innerText = 'الاشتراك منتهي';
+                statusDiv.className = 'status-box expired';
+                statusDiv.innerText = 'انتهت صلاحية الاشتراك';
                 daysSpan.innerText = '0 يوم';
-                daysSpan.style.color = 'red';
+                daysSpan.style.color = '#c62828';
             } else {
                 statusDiv.className = 'status-box active';
-                statusDiv.innerText = 'الاشتراك ساري المفعول';
+                statusDiv.innerText = 'الاشتراك ساري وفعال';
                 daysSpan.innerText = daysLeft + ' يوم';
-                daysSpan.style.color = 'green';
+                daysSpan.style.color = '#2e7d32';
             }
 
+            // عرض التواريخ بشكل مرتب
             document.getElementById('end-date').innerText = expiryDate.toLocaleDateString('ar-EG');
             document.getElementById('start-date').innerText = new Date(user.id).toLocaleDateString('ar-EG');
         }
