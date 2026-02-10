@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | Client Dashboard</title>
+    <title>N One | لوحة الشركاء</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -27,13 +27,13 @@
             border-top: 6px solid #1a237e;
         }
 
-        /* --- اللوجو --- */
+        /* --- تصميم اللوجو الفخم --- */
         .brand { margin-bottom: 30px; }
         .n-letter { color: #1a237e; font-size: 50px; font-weight: 800; }
         .one-word { color: #d4af37; font-size: 50px; font-weight: 800; }
 
         h2 { color: #555; font-size: 20px; margin-top: 0; font-weight: normal; }
-        h1 { color: #1a237e; margin: 10px 0 30px 0; }
+        h1 { color: #1a237e; margin: 10px 0 30px 0; font-size: 24px; }
 
         /* --- صندوق الحالة --- */
         .status-box {
@@ -44,23 +44,9 @@
             font-size: 18px;
         }
 
-        .active {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-
-        .paused {
-            background-color: #fff3e0;
-            color: #ef6c00;
-            border: 1px solid #ffe0b2;
-        }
-
-        .expired {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
-        }
+        .active { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .paused { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+        .expired { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 
         /* --- تفاصيل الاشتراك --- */
         .info-row {
@@ -75,7 +61,6 @@
         .label { color: #777; }
         .value { font-weight: bold; color: #333; }
 
-        /* --- زر الخروج --- */
         button {
             background-color: #d32f2f;
             color: white;
@@ -93,7 +78,6 @@
 
         #loading { color: #666; font-size: 16px; }
         #content { display: none; }
-
     </style>
 </head>
 <body>
@@ -111,9 +95,7 @@
             <h2 id="welcome-text">أهلاً بك</h2>
             <h1 id="comp-name">Company Name</h1>
 
-            <div id="status-indicator" class="status-box">
-                ...
-            </div>
+            <div id="status-indicator" class="status-box">...</div>
 
             <div class="info-row">
                 <span class="label">تاريخ البدء:</span>
@@ -142,7 +124,6 @@
         };
 
         async function checkAccess() {
-            // التحقق من تسجيل الدخول محلياً
             const localUser = JSON.parse(localStorage.getItem('currentUser'));
 
             if (!localUser) {
@@ -151,25 +132,19 @@
             }
 
             try {
-                // جلب بيانات محدثة من السيرفر للتأكد من الحالة
                 const response = await fetch(API);
                 const data = await response.json();
-                
-                // البحث عن المستخدم الحالي
                 const serverUser = data.find(u => u.user === localUser.user);
 
                 if (serverUser) {
-                    // تحديث البيانات المحلية
                     localStorage.setItem('currentUser', JSON.stringify(serverUser));
                     renderDashboard(serverUser);
                 } else {
-                    alert("عذراً، لم يعد هذا الحساب موجوداً.");
+                    alert("عذراً، الحساب غير موجود.");
                     logout();
                 }
-
             } catch (error) {
-                alert("خطأ في الاتصال بالسيرفر. يرجى التحقق من الإنترنت.");
-                // في حال انقطاع النت، نعرض آخر بيانات محفوظة
+                // في حال انقطاع النت
                 renderDashboard(localUser);
             }
         }
@@ -180,7 +155,6 @@
 
             document.getElementById('comp-name').innerText = user.name;
             
-            // حساب الأيام المتبقية
             const expiryDate = new Date(user.expiry);
             const today = new Date();
             const timeDiff = expiryDate - today;
@@ -189,7 +163,6 @@
             const statusDiv = document.getElementById('status-indicator');
             const daysSpan = document.getElementById('days-left');
 
-            // منطق تحديد الحالة والألوان
             if (user.status === 'paused') {
                 statusDiv.className = 'status-box paused';
                 statusDiv.innerText = 'الاشتراك موقوف مؤقتاً';
@@ -207,7 +180,6 @@
                 daysSpan.style.color = '#2e7d32';
             }
 
-            // عرض التواريخ بشكل مرتب
             document.getElementById('end-date').innerText = expiryDate.toLocaleDateString('ar-EG');
             document.getElementById('start-date').innerText = new Date(user.id).toLocaleDateString('ar-EG');
         }
