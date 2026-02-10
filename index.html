@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N One | بوابة الشركاء</title>
     <style>
-        /* إعدادات الصفحة الأساسية */
         body {
             margin: 0;
             padding: 0;
@@ -18,7 +17,6 @@
             overflow: hidden;
         }
 
-        /* صندوق تسجيل الدخول */
         .login-card {
             background-color: #ffffff;
             width: 90%;
@@ -31,7 +29,6 @@
             position: relative;
         }
 
-        /* تصميم الشعار */
         .brand-title {
             margin: 0 0 10px 0;
             font-size: 36px;
@@ -48,7 +45,6 @@
             font-weight: 500;
         }
 
-        /* حقول الإدخال */
         .input-group {
             margin-bottom: 20px;
             text-align: right;
@@ -72,7 +68,7 @@
             transition: all 0.3s ease;
             background-color: #f9f9f9;
             outline: none;
-            text-align: left; /* لكتابة الإنجليزي بشكل صحيح */
+            text-align: left; 
         }
 
         input:focus {
@@ -81,7 +77,6 @@
             box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
         }
 
-        /* زر الدخول */
         button {
             width: 100%;
             padding: 14px;
@@ -102,17 +97,6 @@
             box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* رسائل التنبيه */
         .alert-box {
             padding: 12px;
             border-radius: 8px;
@@ -128,7 +112,6 @@
             border: 1px solid #ffcdd2;
         }
 
-        /* تذييل الصفحة */
         .footer {
             margin-top: 30px;
             font-size: 11px;
@@ -168,8 +151,15 @@
     </div>
 
     <script>
-        // رابط الاتصال بقاعدة البيانات
         const API_URL = "https://sheetdb.io/api/v1/zuo2qyjeryhxm";
+
+        // فحص تلقائي عند فتح الصفحة: هل أنت عميل مسجل؟
+        window.onload = function() {
+            const savedUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (savedUser && savedUser.role === 'client') {
+                window.location.href = 'client.html';
+            }
+        };
 
         async function handleLogin() {
             const userField = document.getElementById('username');
@@ -180,16 +170,13 @@
             const u = userField.value.trim();
             const p = passField.value.trim();
 
-            // إخفاء الرسائل السابقة
             msg.style.display = "none";
 
-            // التحقق من تعبئة الحقول
             if (!u || !p) {
                 showMessage("يرجى إدخال اسم المستخدم وكلمة المرور للمتابعة.");
                 return;
             }
 
-            // تفعيل حالة التحميل
             btn.innerHTML = "جاري التحقق...";
             btn.disabled = true;
             userField.disabled = true;
@@ -198,43 +185,35 @@
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
-
-                // البحث عن المستخدم المطابق
                 const user = data.find(item => item.user === u && item.pass === p);
 
                 if (user) {
-                    // 1. حماية: منع المدير من الدخول من هنا
                     if (user.role === 'admin') {
-                        showMessage("عذراً، هذا الحساب إداري. يرجى استخدام بوابة الإدارة المختصة (manager.html).");
+                        showMessage("عذراً، هذا الحساب إداري. يرجى استخدام بوابة الإدارة (manager.html).");
                         resetState();
                         return;
                     }
 
-                    // 2. حماية: التحقق من حالة الحساب (نشط أم موقوف)
                     if (user.status !== 'active') {
                         showMessage("عذراً، هذا الحساب موقوف مؤقتاً. يرجى مراجعة إدارة N One.");
                         resetState();
                         return;
                     }
 
-                    // 3. نجاح: حفظ البيانات والتوجيه
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     window.location.href = 'client.html';
 
                 } else {
-                    // فشل: بيانات خاطئة
                     showMessage("بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى.");
                     resetState();
                 }
 
             } catch (error) {
-                // خطأ في الاتصال
                 console.error(error);
                 showMessage("حدث خطأ في الاتصال بالخادم. يرجى التحقق من الإنترنت.");
                 resetState();
             }
 
-            // دوال مساعدة داخلية
             function showMessage(text) {
                 msg.innerText = text;
                 msg.style.display = "block";
