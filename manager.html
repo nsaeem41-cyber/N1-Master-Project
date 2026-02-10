@@ -3,180 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | الدخول الإداري</title>
+    <title>N One | الإدارة العامة</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #263238; 
+            background-color: #1a237e; /* خلفية كحلية ملكية */
             margin: 0;
-            padding: 0;
-            height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f4f6f8;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-height: 90vh;
+        }
+
+        /* الهيدر */
+        .header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .admin-card {
-            background-color: #ffffff;
-            width: 90%;
-            max-width: 360px;
-            padding: 45px 30px;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            text-align: center;
-            border-top: 5px solid #d4af37;
+        .brand { font-size: 24px; font-weight: 900; color: #1a237e; }
+        .gold { color: #d4af37; }
+
+        .btn-logout {
+            background: #c62828; color: white; border: none;
+            padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;
         }
 
-        .brand { margin-bottom: 10px; }
-        .n-char { color: #1a237e; font-size: 40px; font-weight: 800; }
-        .one-word { color: #d4af37; font-size: 40px; font-weight: 800; }
-
-        .title {
-            color: #546e7a;
-            font-size: 14px;
-            margin-bottom: 35px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+        /* قسم الإضافة */
+        .add-box {
+            background: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px;
         }
-
-        .input-wrapper { margin-bottom: 15px; }
+        .add-title { margin-top: 0; color: #1a237e; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         
-        input {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #cfd8dc;
-            border-radius: 6px;
-            box-sizing: border-box;
+        .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .form-row input {
+            flex: 1; padding: 10px; border: 1px solid #ccc;
+            border-radius: 5px; text-align: right; min-width: 120px;
+        }
+        
+        .btn-add {
+            background: #2e7d32; color: white; border: none;
+            padding: 10px 20px; border-radius: 5px; cursor: pointer;
+            font-weight: bold; margin-top: 10px; width: 100%;
+        }
+
+        /* قائمة العملاء */
+        .client-card {
+            background: white; border-radius: 10px; padding: 15px;
+            margin-bottom: 15px; border-right: 5px solid #ccc;
+            display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        
+        .client-card.active { border-right-color: #2e7d32; } /* أخضر للنشط */
+        .client-card.stopped { border-right-color: #c62828; background: #ffebee; } /* أحمر للموقوف */
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: bold; font-size: 16px;
+        }
+
+        .card-info { font-size: 13px; color: #666; display: flex; gap: 15px; }
+
+        /* أزرار التحكم */
+        .actions {
+            display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap;
+        }
+
+        .btn-action {
+            flex: 1; padding: 8px; border: none; border-radius: 5px;
+            cursor: pointer; font-size: 12px; font-weight: bold; color: white;
             text-align: center;
-            font-size: 16px;
-            transition: 0.3s;
-            outline: none;
-            background-color: #fcfcfc;
         }
 
-        input:focus {
-            border-color: #d4af37;
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
+        .btn-stop { background: #c62828; } /* أحمر للإيقاف */
+        .btn-activate { background: #2e7d32; } /* أخضر للتفعيل */
+        .btn-renew { background: #1976d2; } /* أزرق للتجديد */
+        .btn-del { background: #555; } /* رمادي للحذف */
+        .btn-edit { background: #f9a825; color: #000; } /* أصفر للتعديل */
 
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: #d4af37;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-        }
+        /* شاشة التحميل */
+        #loading { text-align: center; padding: 20px; font-weight: bold; color: #1a237e; }
 
-        button:hover {
-            background-color: #c49000;
-            transform: translateY(-2px);
-        }
-
-        .error-msg {
-            color: #d32f2f;
-            background-color: #ffebee;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 13px;
-            margin-top: 20px;
-            display: none;
-            border: 1px solid #ffcdd2;
-        }
-
-        .footer {
-            margin-top: 25px;
-            font-size: 11px;
-            color: #b0bec5;
-        }
     </style>
 </head>
 <body>
 
-    <div class="admin-card">
-        <div class="brand">
-            <span class="n-char">N</span>
-            <span class="one-word">One</span>
-        </div>
-        <div class="title">SECURE ADMIN ACCESS</div>
-
-        <div class="input-wrapper">
-            <input type="text" id="adminUser" placeholder="Admin ID" autocomplete="off">
-        </div>
+    <div class="container">
         
-        <div class="input-wrapper">
-            <input type="password" id="adminPass" placeholder="Secure Password" autocomplete="off">
+        <div class="header">
+            <div class="brand">N <span class="gold">One</span> Admin</div>
+            <button class="btn-logout" onclick="logout()">خروج 🔒</button>
         </div>
 
-        <button onclick="adminLogin()" id="btnAction">دخول آمن 🔒</button>
-        <div id="errorBox" class="error-msg"></div>
+        <div class="add-box">
+            <h3 class="add-title">إضافة مشترك جديد</h3>
+            <div class="form-row">
+                <input type="text" id="new_name" placeholder="اسم الشركة/العميل">
+                <input type="text" id="new_user" placeholder="User ID (اسم الدخول)">
+                <input type="text" id="new_pass" placeholder="Password (كلمة المرور)">
+            </div>
+            <button class="btn-add" onclick="addClient()">+ تسجيل عميل جديد</button>
+        </div>
 
-        <div class="footer">Authorized Personnel Only</div>
+        <h3 style="color:#1a237e;">قائمة المشتركين</h3>
+        <div id="loading">جاري جلب البيانات...</div>
+        <div id="clients-list"></div>
+
     </div>
 
     <script>
         const API_URL = "https://sheetdb.io/api/v1/zuo2qyjeryhxm";
 
-        // فحص تلقائي للمدير: هل أنت مسجل دخول؟
+        // التأكد من أن المستخدم هو المدير
         window.onload = function() {
-            const savedUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (savedUser && savedUser.role === 'admin') {
-                window.location.href = 'admin.html';
+            const admin = JSON.parse(localStorage.getItem('currentUser'));
+            if (!admin || admin.role !== 'admin') {
+                window.location.href = 'manager.html'; // يرجع يسجل دخول لو مش مدير
+            } else {
+                loadClients();
             }
         };
 
-        async function adminLogin() {
-            const u = document.getElementById('adminUser').value.trim();
-            const p = document.getElementById('adminPass').value.trim();
-            const btn = document.getElementById('btnAction');
-            const err = document.getElementById('errorBox');
+        // دالة جلب العملاء
+        async function loadClients() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                
+                // تصفية: فقط العملاء (role = client)
+                const clients = data.filter(u => u.role === 'client');
+                
+                renderClients(clients);
+                document.getElementById('loading').style.display = 'none';
+            } catch (e) {
+                alert("خطأ في الاتصال");
+            }
+        }
 
-            err.style.display = 'none';
+        // دالة رسم الجدول (الكروت)
+        function renderClients(clients) {
+            const container = document.getElementById('clients-list');
+            container.innerHTML = '';
 
-            if (!u || !p) {
-                showError("يرجى إدخال بيانات الدخول");
+            if (clients.length === 0) {
+                container.innerHTML = '<p style="text-align:center">لا يوجد مشتركين حالياً.</p>';
                 return;
             }
 
-            btn.innerText = "جاري التحقق...";
+            // ترتيب: الأحدث أولاً (اختياري)
+            clients.reverse().forEach(client => {
+                const isActive = client.status === 'active';
+                const statusClass = isActive ? 'active' : 'stopped';
+                const statusText = isActive ? 'نشط ✅' : 'موقوف 🛑';
+
+                // تصميم الكرت
+                const card = document.createElement('div');
+                card.className = `client-card ${statusClass}`;
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span>${client.name}</span>
+                        <span style="font-size:12px; background:white; padding:3px 8px; border-radius:10px; border:1px solid #ddd;">${statusText}</span>
+                    </div>
+                    <div class="card-info">
+                        <span>👤 User: ${client.user}</span>
+                        <span>🔑 Pass: ${client.pass}</span>
+                    </div>
+                    <div class="card-info">
+                        <span>📅 ينتهي: ${client.expiry || 'غير محدد'}</span>
+                    </div>
+                    
+                    <div class="actions">
+                        ${isActive 
+                            ? `<button class="btn-action btn-stop" onclick="updateStatus('${client.user}', 'stopped')">إيقاف 🛑</button>` 
+                            : `<button class="btn-action btn-activate" onclick="updateStatus('${client.user}', 'active')">تفعيل ✅</button>`
+                        }
+                        <button class="btn-action btn-renew" onclick="renewClient('${client.user}')">تجديد شهر ♻️</button>
+                        <button class="btn-action btn-edit" onclick="editClient('${client.user}', '${client.pass}')">تعديل ✏️</button>
+                        <button class="btn-action btn-del" onclick="deleteClient('${client.id}')">حذف ❌</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- وظائف التحكم ---
+
+        // 1. إضافة عميل
+        async function addClient() {
+            const name = document.getElementById('new_name').value;
+            const user = document.getElementById('new_user').value;
+            const pass = document.getElementById('new_pass').value;
+
+            if (!name || !user || !pass) { alert("يرجى تعبئة كل الحقول"); return; }
+
+            // تحديد تاريخ انتهاء بعد 30 يوم
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 30);
+            const expiryStr = expiryDate.toISOString().split('T')[0];
+
+            const newClient = {
+                id: "CL_" + Date.now(),
+                user: user,
+                pass: pass,
+                name: name,
+                role: "client",
+                status: "active",
+                expiry: expiryStr,
+                type: "user" // تمييز إنه مستخدم
+            };
+
+            const btn = document.querySelector('.btn-add');
+            btn.innerHTML = "جاري الحفظ...";
             btn.disabled = true;
 
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: [newClient] })
+            });
 
-                const adminUser = data.find(user => user.user === u && user.pass === p && user.role === 'admin');
+            alert("تم إضافة العميل بنجاح! 🎉");
+            location.reload(); // تحديث الصفحة
+        }
 
-                if (adminUser) {
-                    localStorage.setItem('currentUser', JSON.stringify(adminUser));
-                    window.location.href = 'admin.html';
-                } else {
-                    showError("بيانات خاطئة أو ليس لديك صلاحية المدير");
-                    resetBtn();
-                }
+        // 2. تغيير الحالة (إيقاف / تفعيل)
+        async function updateStatus(username, newStatus) {
+            if (!confirm(newStatus === 'stopped' ? "هل أنت متأكد من إيقاف هذا العميل؟ سيتم طرده فوراً!" : "هل تريد تفعيل العميل؟")) return;
 
-            } catch (error) {
-                showError("خطأ في الاتصال بالسيرفر");
-                resetBtn();
-            }
+            // البحث وتحديث الـ status
+            // SheetDB يدعم التحديث عبر user/username
+            await fetch(`${API_URL}/user/${username}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: { status: newStatus } })
+            });
 
-            function showError(msg) {
-                err.innerText = msg;
-                err.style.display = 'block';
-            }
+            alert("تم تحديث الحالة بنجاح!");
+            loadClients();
+        }
 
-            function resetBtn() {
-                btn.innerText = "دخول آمن 🔒";
-                btn.disabled = false;
+        // 3. تجديد الاشتراك
+        async function renewClient(username) {
+            if (!confirm("تجديد الاشتراك لمدة 30 يوم؟")) return;
+
+            const newDate = new Date();
+            newDate.setDate(newDate.getDate() + 30);
+            const expiryStr = newDate.toISOString().split('T')[0];
+
+            await fetch(`${API_URL}/user/${username}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: { expiry: expiryStr, status: 'active' } })
+            });
+
+            alert("تم تجديد الاشتراك!");
+            loadClients();
+        }
+
+        // 4. حذف عميل
+        async function deleteClient(id) {
+            if (!confirm("⚠️ تحذير: هل أنت متأكد من حذف العميل نهائياً؟")) return;
+
+            await fetch(`${API_URL}/id/${id}`, { method: 'DELETE' });
+            
+            alert("تم الحذف.");
+            loadClients();
+        }
+
+        // 5. تعديل (باسورد)
+        async function editClient(username, oldPass) {
+            const newPass = prompt("أدخل كلمة المرور الجديدة:", oldPass);
+            if (newPass && newPass !== oldPass) {
+                await fetch(`${API_URL}/user/${username}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: { pass: newPass } })
+                });
+                alert("تم تغيير كلمة المرور.");
+                loadClients();
             }
         }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'manager.html'; // يرجع لشاشة الدخول
+        }
     </script>
+
 </body>
 </html>
