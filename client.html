@@ -5,79 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N One | لوحة الشركاء</title>
     <style>
+        /* إعدادات الصفحة */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
+            background-color: #f4f7f6;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
 
+        /* الكرت الرئيسي */
         .dashboard-card {
-            background: white;
+            background-color: #ffffff;
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
             text-align: center;
-            border-top: 6px solid #1a237e;
+            border-top: 6px solid #1a237e; /* الخط الكحلي */
+            position: relative;
         }
 
-        /* --- تصميم اللوجو الفخم --- */
+        /* اللوجو */
         .brand { margin-bottom: 30px; }
-        .n-letter { color: #1a237e; font-size: 50px; font-weight: 800; }
-        .one-word { color: #d4af37; font-size: 50px; font-weight: 800; }
+        .n-char { color: #1a237e; font-size: 48px; font-weight: 800; }
+        .one-word { color: #d4af37; font-size: 48px; font-weight: 800; }
 
-        h2 { color: #555; font-size: 20px; margin-top: 0; font-weight: normal; }
-        h1 { color: #1a237e; margin: 10px 0 30px 0; font-size: 24px; }
+        /* نصوص الترحيب */
+        h2 { margin: 0; font-size: 16px; color: #777; font-weight: normal; }
+        h1 { margin: 10px 0 25px 0; font-size: 26px; color: #333; font-weight: bold; }
 
-        /* --- صندوق الحالة --- */
+        /* مؤشر الحالة الكبير */
         .status-box {
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+
+        .status-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+        .status-text { font-size: 20px; font-weight: bold; }
+        .status-sub { font-size: 13px; margin-top: 5px; opacity: 0.8; }
+
+        /* ألوان الحالات */
+        .active-state { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+        .paused-state { background: #fff3e0; color: #ef6c00; border-color: #ffe0b2; }
+        .expired-state { background: #ffebee; color: #c62828; border-color: #ffcdd2; }
+
+        /* تفاصيل الاشتراك */
+        .details-grid {
+            display: grid;
+            gap: 15px;
+            text-align: right;
+            background: #fafafa;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 25px;
-            font-weight: bold;
-            font-size: 18px;
         }
 
-        .active { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .paused { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
-        .expired { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+        .row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .row:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        .label { color: #666; font-size: 14px; }
+        .value { color: #333; font-weight: bold; font-size: 15px; }
 
-        /* --- تفاصيل الاشتراك --- */
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 12px;
-            font-size: 15px;
-        }
-
-        .label { color: #777; }
-        .value { font-weight: bold; color: #333; }
-
+        /* زر الخروج */
         button {
-            background-color: #d32f2f;
+            width: 100%;
+            padding: 15px;
+            background-color: #d32f2f; /* أحمر للخروج */
             color: white;
             border: none;
-            padding: 12px 35px;
             border-radius: 8px;
-            cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
-            font-size: 14px;
-            margin-top: 30px;
+            cursor: pointer;
             transition: 0.3s;
         }
 
         button:hover { background-color: #b71c1c; }
 
-        #loading { color: #666; font-size: 16px; }
+        /* شاشة التحميل */
+        #loader { display: block; color: #666; font-size: 18px; }
         #content { display: none; }
+
     </style>
 </head>
 <body>
@@ -85,31 +102,34 @@
     <div class="dashboard-card">
         
         <div class="brand">
-            <span class="n-letter">N</span>
+            <span class="n-char">N</span>
             <span class="one-word">One</span>
         </div>
 
-        <div id="loading">جاري تحميل بيانات الاشتراك...</div>
+        <div id="loader">جاري تحميل بيانات الاشتراك...</div>
 
         <div id="content">
-            <h2 id="welcome-text">أهلاً بك</h2>
-            <h1 id="comp-name">Company Name</h1>
+            <h2 id="welcomeMsg">أهلاً بك،</h2>
+            <h1 id="companyName">اسم الشركة</h1>
 
-            <div id="status-indicator" class="status-box">...</div>
-
-            <div class="info-row">
-                <span class="label">تاريخ البدء:</span>
-                <span class="value" id="start-date">-</span>
+            <div id="statusBox" class="status-box">
+                <span class="status-text">...</span>
+                <div class="status-sub" id="daysCounter">...</div>
             </div>
 
-            <div class="info-row">
-                <span class="label">تاريخ الانتهاء:</span>
-                <span class="value" id="end-date">-</span>
-            </div>
-
-            <div class="info-row">
-                <span class="label">الأيام المتبقية:</span>
-                <span class="value" id="days-left">-</span>
+            <div class="details-grid">
+                <div class="row">
+                    <span class="label">تاريخ البدء</span>
+                    <span class="value" id="startDate">-</span>
+                </div>
+                <div class="row">
+                    <span class="label">تاريخ الانتهاء</span>
+                    <span class="value" id="endDate">-</span>
+                </div>
+                <div class="row">
+                    <span class="label">حالة الحساب</span>
+                    <span class="value" id="accountStatus">-</span>
+                </div>
             </div>
 
             <button onclick="logout()">تسجيل الخروج</button>
@@ -117,71 +137,90 @@
     </div>
 
     <script>
-        const API = "https://sheetdb.io/api/v1/qzfkwfzcpbrsm";
+        const API_URL = "https://sheetdb.io/api/v1/zuo2qyjeryhxm";
 
         window.onload = function() {
-            checkAccess();
+            loadClientData();
         };
 
-        async function checkAccess() {
-            const localUser = JSON.parse(localStorage.getItem('currentUser'));
+        async function loadClientData() {
+            // 1. جلب البيانات المخزنة محلياً
+            const localData = JSON.parse(localStorage.getItem('currentUser'));
 
-            if (!localUser) {
-                window.location.href = 'index.html';
+            if (!localData) {
+                window.location.href = 'index.html'; // غير مسجل دخول
                 return;
             }
 
             try {
-                const response = await fetch(API);
+                // 2. تحديث البيانات من السيرفر (لضمان الدقة)
+                const response = await fetch(API_URL);
                 const data = await response.json();
-                const serverUser = data.find(u => u.user === localUser.user);
+                
+                // البحث عن المستخدم في قاعدة البيانات
+                const freshData = data.find(user => user.user === localData.user);
 
-                if (serverUser) {
-                    localStorage.setItem('currentUser', JSON.stringify(serverUser));
-                    renderDashboard(serverUser);
-                } else {
-                    alert("عذراً، الحساب غير موجود.");
+                if (!freshData) {
+                    // إذا تم حذف المستخدم من قبل الإدارة
+                    alert("عذراً، لم يعد هذا الحساب موجوداً.");
                     logout();
+                    return;
                 }
+
+                // تحديث البيانات وعرضها
+                renderDashboard(freshData);
+
             } catch (error) {
-                // في حال انقطاع النت
-                renderDashboard(localUser);
+                // في حال انقطاع النت، نعرض البيانات المحلية القديمة
+                console.log("Offline mode");
+                renderDashboard(localData);
             }
         }
 
         function renderDashboard(user) {
-            document.getElementById('loading').style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
             document.getElementById('content').style.display = 'block';
 
-            document.getElementById('comp-name').innerText = user.name;
-            
+            document.getElementById('companyName').innerText = user.name;
+            document.getElementById('startDate').innerText = new Date(user.id).toLocaleDateString('ar-EG');
+            document.getElementById('endDate').innerText = new Date(user.expiry).toLocaleDateString('ar-EG');
+
+            // حساب الأيام المتبقية
             const expiryDate = new Date(user.expiry);
             const today = new Date();
-            const timeDiff = expiryDate - today;
-            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            const diffTime = expiryDate - today;
+            const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            const statusDiv = document.getElementById('status-indicator');
-            const daysSpan = document.getElementById('days-left');
+            const statusBox = document.getElementById('statusBox');
+            const statusText = document.querySelector('.status-text');
+            const daysCounter = document.getElementById('daysCounter');
+            const accStatus = document.getElementById('accountStatus');
 
+            // منطق الألوان والحالة
             if (user.status === 'paused') {
-                statusDiv.className = 'status-box paused';
-                statusDiv.innerText = 'الاشتراك موقوف مؤقتاً';
-                daysSpan.innerText = 'معلق';
-                daysSpan.style.color = '#ef6c00';
-            } else if (daysLeft <= 0) {
-                statusDiv.className = 'status-box expired';
-                statusDiv.innerText = 'انتهت صلاحية الاشتراك';
-                daysSpan.innerText = '0 يوم';
-                daysSpan.style.color = '#c62828';
-            } else {
-                statusDiv.className = 'status-box active';
-                statusDiv.innerText = 'الاشتراك ساري وفعال';
-                daysSpan.innerText = daysLeft + ' يوم';
-                daysSpan.style.color = '#2e7d32';
+                // حالة التجميد
+                statusBox.className = 'status-box paused-state';
+                statusText.innerText = "الاشتراك موقوف مؤقتاً";
+                daysCounter.innerText = "يرجى مراجعة الإدارة";
+                accStatus.innerText = "مُعلق";
+                accStatus.style.color = "#ef6c00";
+            } 
+            else if (daysLeft <= 0) {
+                // حالة الانتهاء
+                statusBox.className = 'status-box expired-state';
+                statusText.innerText = "انتهت صلاحية الاشتراك";
+                daysCounter.innerText = "0 أيام متبقية";
+                accStatus.innerText = "منتهي";
+                accStatus.style.color = "#c62828";
+            } 
+            else {
+                // حالة النشاط
+                statusBox.className = 'status-box active-state';
+                statusText.innerText = "الاشتراك ساري وفعال";
+                daysCounter.innerText = `متبقي ${daysLeft} يوم`;
+                accStatus.innerText = "نشط";
+                accStatus.style.color = "#2e7d32";
             }
-
-            document.getElementById('end-date').innerText = expiryDate.toLocaleDateString('ar-EG');
-            document.getElementById('start-date').innerText = new Date(user.id).toLocaleDateString('ar-EG');
         }
 
         function logout() {
