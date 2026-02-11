@@ -57,6 +57,13 @@
         }
         input:focus, select:focus { border-color: #d4af37; background: white; }
 
+        /* ميزة الموقع الجغرافي نفاثة 😊🚀 */
+        .location-row { display: flex; gap: 8px; }
+        .btn-location {
+            background: #2e7d32; color: white; border: none; border-radius: 10px;
+            padding: 0 15px; font-size: 18px; cursor: pointer; display: flex; align-items: center;
+        }
+
         /* إضافة كابتن سريع */
         .cap-row { display: flex; gap: 10px; }
         .btn-plus {
@@ -90,7 +97,7 @@
         .modal-content {
             background: white; width: 100%; max-width: 400px; border-radius: 20px;
             padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto;
-            position: relative; /* عشان زر الإغلاق */
+            position: relative; 
         }
         .close-modal {
             position: absolute; top: 15px; left: 15px; font-size: 24px;
@@ -117,7 +124,7 @@
 
     <div id="loader">
         <h2 style="color:#1a237e;">N <span style="color:#d4af37">One</span></h2>
-        <p>جاري تحميل النظام...</p>
+        <p>جاري تحميل النظام الرسمي... 😊🚀</p>
     </div>
 
     <div class="header">
@@ -154,22 +161,13 @@
                 <label>رقم هاتف الكابتن</label>
                 <input type="tel" id="manual_cap_phone" placeholder="962XXXXXXXXX">
             </div>
-            
-            <div class="input-group" style="display:none;">
-                <label>اختيار الكابتن (سجل سابق)</label>
-                <div class="cap-row">
-                    <select id="captain_select" onchange="fillCaptainName()">
-                        <option value="">-- اختر الكابتن --</option>
-                    </select>
-                    <button class="btn-plus" onclick="openModal('captains-modal')">+</button>
-                </div>
-            </div>
-            
-            <input type="hidden" id="cap_name_hidden">
 
             <div class="input-group">
                 <label>موقع الاستلام (المطعم/المتجر)</label>
-                <input type="text" id="pickup_loc" placeholder="اسم المكان">
+                <div class="location-row">
+                    <input type="text" id="pickup_loc" placeholder="اسم المكان أو الرابط">
+                    <button class="btn-location" onclick="getMyGPS()" title="جلب الموقع الحالي">📍</button>
+                </div>
             </div>
 
             <div class="input-group">
@@ -201,9 +199,9 @@
                 <input type="text" id="new_cap_name" placeholder="اسم الكابتن">
             </div>
             <div class="input-group">
-                <input type="tel" id="new_cap_phone" placeholder="رقم الهاتف (962...)">
+                <input type="tel" id="new_cap_phone" placeholder="رقم الهاتف">
             </div>
-            <button class="btn-send" onclick="addCaptain()" style="background:#2e7d32;">إضافة كابتن ✅</button>
+            <button class="btn-send" onclick="addCaptain()" style="background:#2e7d32;">إضافة ✅</button>
             <hr>
             <div id="captains-list"></div>
         </div>
@@ -221,235 +219,108 @@
         <div class="modal-content" style="text-align:center;">
             <button class="close-modal" onclick="closeAllModals()">✖</button>
             <h3>⚙️ الإعدادات</h3>
-            
-            <div class="input-group" style="text-align:right;">
-                <label>تغيير كلمة المرور</label>
-                <input type="password" id="new_pass_input" placeholder="كلمة السر الجديدة">
-            </div>
-            <button class="btn-send" onclick="changeMyPass()" style="margin-bottom:20px;">حفظ التغيير</button>
-            
-            <hr>
             <button class="btn-send" style="background:#c62828;" onclick="logout()">تسجيل الخروج 🔒</button>
-            <p style="color:#999; font-size:12px; margin-top:15px;">N One System v2.0 Pro</p>
         </div>
     </div>
 
     <script>
-        // 💎 الرابط الملكي 💎
         const API_URL = "https://script.google.com/macros/s/AKfycby8Lvhri3wDGXFwXY2EPKy_sf6vrIEAyPVGreob8gDe_mx9EbpqWsqqR511LXdqjjU1/exec";
-
-
+        
         let currentUser = null;
-        let myData = []; // داتا هذا العميل فقط
-        let captains = [];
         let orders = [];
+        let finalMapLink = ""; // لتخزين رابط الخريطة الدقيق 😊🛰️
 
         window.onload = async function() {
             currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) { window.location.href = 'index.html'; return; }
-
             document.getElementById('partner-name').innerText = currentUser.name;
-            
             await refreshData();
             document.getElementById('loader').style.display = 'none';
-
-            // تشغيل الحماية (Watchdog)
-            setInterval(checkMyStatus, 15000); // كل 15 ثانية
         };
 
-        // 1. جلب البيانات (كباتن وطلبات هذا العميل فقط)
+        // ميزة جلب الموقع الجغرافي 100% نفاثة 😊🚀
+        function getMyGPS() {
+            if (navigator.geolocation) {
+                document.getElementById('pickup_loc').value = "جاري جلب الموقع... ⏳";
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    finalMapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                    document.getElementById('pickup_loc').value = "✅ تم تحديد الموقع بدقة";
+                }, function() {
+                    alert("يا بطة فعلي الـ GPS في متصفحك عشان أجيب الموقع 😊");
+                });
+            } else {
+                alert("المتصفح لا يدعم جلب الموقع 😊");
+            }
+        }
+
         async function refreshData() {
             try {
-                // نطلب البيانات مع فلتر client_user عشان السيرفر ما يبعت كل شي
                 const res = await fetch(API_URL + "?action=read");
                 const all = await res.json();
-                
-                // فلترة البيانات الخاصة بي فقط
-                myData = all.filter(item => item.client_user === currentUser.user);
-                
-                // فصل الكباتن والطلبات
-                captains = myData.filter(i => i.type === 'captain');
-                orders = myData.filter(i => i.type === 'order');
-
+                orders = all.filter(item => (item.cl || item.client_user) === currentUser.user && item.type === 'order');
                 updateUI();
             } catch (e) { console.error(e); }
         }
 
-        // 2. تحديث الواجهة
         function updateUI() {
-            // القوائم المنسدلة
-            const select = document.getElementById('captain_select');
-            select.innerHTML = '<option value="">-- اختر الكابتن --</option>';
-            captains.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.phone;
-                opt.innerText = c.name;
-                opt.dataset.name = c.name;
-                select.appendChild(opt);
-            });
-
-            // قائمة إدارة الكباتن
-            const capList = document.getElementById('captains-list');
-            capList.innerHTML = captains.map(c => `
-                <div class="list-item">
-                    <span>${c.name} <small>(${c.phone})</small></span>
-                    <button class="btn-small bg-red" onclick="deleteItem('${c.id}')">حذف</button>
-                </div>
-            `).join('');
-
-            // إحصائيات اليوم
             const today = new Date().toISOString().split('T')[0];
             const todayOrders = orders.filter(o => o.date && o.date.startsWith(today));
-            
             document.getElementById('today-orders').innerText = todayOrders.length;
             let total = 0;
             todayOrders.forEach(o => total += (Number(o.fee)||0) + (Number(o.val)||0));
             document.getElementById('today-total').innerText = total.toFixed(2);
         }
 
-        function fillCaptainName() {
-            const sel = document.getElementById('captain_select');
-            const name = sel.options[sel.selectedIndex].dataset.name;
-            document.getElementById('cap_name_hidden').value = name || "";
-        }
-
-        // 3. إضافة كابتن
-        async function addCaptain() {
-            const name = document.getElementById('new_cap_name').value;
-            const phone = document.getElementById('new_cap_phone').value;
-            
-            if(!name || !phone) return alert("يرجى تعبئة الاسم والرقم");
-
-            const newCap = {
-                id: "CAP_" + Date.now(),
-                type: "captain", // مهم جداً
-                name: name,
-                phone: phone,
-                client_user: currentUser.user, // ربط الكابتن بالعميل
-                status: "active"
-            };
-
-            await sendData(newCap);
-            alert("تم إضافة الكابتن بنجاح ✅");
-            document.getElementById('new_cap_name').value = '';
-            document.getElementById('new_cap_phone').value = '';
-            refreshData();
-        }
-
-        // 4. إرسال طلب (تم تحديث الوظيفة لتأخذ البيانات من الإدخال اليدوي 😊🚀)
         async function sendOrder() {
-            const phone = document.getElementById('manual_cap_phone').value;
             const capName = document.getElementById('manual_cap_name').value;
-            const loc = document.getElementById('pickup_loc').value;
+            const phone = document.getElementById('manual_cap_phone').value;
+            let loc = document.getElementById('pickup_loc').value;
             const fee = document.getElementById('delivery_fee').value;
             const val = document.getElementById('shipment_val').value;
 
-            if(!phone || !loc || !capName) return alert("يا حبة السكر اكتبي اسم الكابتن ورقمه والموقع 😊");
+            if(!phone || !loc || !capName) return alert("يا حبة السكر عبي كل البيانات 😊");
+
+            // إذا كان المستخدم جلب الموقع عبر GPS نستخدم الرابط المخزن 😊🚀
+            const locationText = finalMapLink ? finalMapLink : loc;
 
             const newOrder = {
                 id: "ORD_" + Date.now(),
                 type: "order",
-                client_user: currentUser.user,
+                cl: currentUser.user,
                 cap_name: capName,
                 cap_phone: phone,
-                pickup: loc,
+                pickup: locationText, // حفظ الرابط في الإكسل نفاثة
                 fee: fee,
                 val: val,
                 date: new Date().toISOString(),
                 status: "new"
             };
 
-            // الحفظ في الخلفية
-            sendData(newOrder); 
+            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'add', data: newOrder }) });
 
-            // فتح واتساب
             let p = phone.replace(/\D/g, '');
-            if (!p.startsWith('962')) p = '962' + p.replace(/^0+/, ''); // تنسيق الأردن
+            if (!p.startsWith('962')) p = '962' + p.replace(/^0+/, '');
             
-            const msg = `*طلب جديد من ${currentUser.name}* 📦%0a👤 الكابتن: ${capName}%0a📍 الموقع: ${loc}%0a💵 التوصيل: ${fee}%0a💰 التحصيل: ${val}%0a🚀 يرجى الاستلام فوراً`;
+            const msg = `*طلب جديد من ${currentUser.name}* 📦%0a👤 الكابتن: ${capName}%0a📍 الموقع: ${locationText}%0a💵 التوصيل: ${fee}%0a💰 التحصيل: ${val}%0a🚀 يرجى الاستجابة فوراً وبكل رقي 😊✨`;
             
             window.open(`https://wa.me/${p}?text=${msg}`, '_blank');
             
-            // تحديث الشاشة
-            setTimeout(refreshData, 2000);
-            alert("تم إرسال الطلب وحفظه نفاثة 🚀");
+            alert("تم إرسال الموقع وحفظ الطلب نفاثة 😊🚀");
+            finalMapLink = ""; // تصفير الرابط للطلب الجاي
+            refreshData();
         }
 
-        // 5. سجل الطلبات
         function openRecords() {
             openModal('records-modal');
             const list = document.getElementById('orders-list');
-            const sorted = orders.sort((a,b) => b.id.localeCompare(a.id)); // الأحدث أولاً
-            
-            if(sorted.length === 0) { list.innerHTML = "<p>لا يوجد طلبات سابقة</p>"; return; }
-
-            list.innerHTML = sorted.map(o => `
-                <div class="list-item" style="display:block;">
-                    <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                        <span>${o.cap_name}</span>
-                        <span>${o.date.split('T')[0]}</span>
-                    </div>
-                    <div style="font-size:12px; color:#666; margin-top:5px;">
-                        توصيل: ${o.fee} | تحصيل: ${o.val}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 6. تغيير كلمة المرور
-        async function changeMyPass() {
-            const newPass = document.getElementById('new_pass_input').value;
-            if(!newPass) return alert("أدخل كلمة المرور الجديدة");
-
-            await fetch(API_URL + "?action=update&user=" + currentUser.user, {
-                method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ action:'update', user:currentUser.user, data:{pass:newPass} })
-            });
-
-            alert("تم التغيير! سيتم تسجيل الخروج.");
-            logout();
-        }
-
-        // 7. الحماية (Watchdog)
-        async function checkMyStatus() {
-            try {
-                const res = await fetch(API_URL + "?action=read");
-                const all = await res.json();
-                const me = all.find(u => u.user === currentUser.user);
-                
-                if (!me || me.status !== 'active') {
-                    alert("⛔ تنبيه: تم إيقاف حسابك من قبل الإدارة.");
-                    logout();
-                }
-            } catch(e) {}
-        }
-
-        // أدوات مساعدة
-        async function sendData(dataObj) {
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ action: 'add', data: dataObj })
-            });
-        }
-
-        async function deleteItem(id) {
-            if(!confirm("حذف؟")) return;
-            // الحذف عن طريق ID
-            await fetch(API_URL + "?action=delete&id=" + id, { method: 'POST', mode: 'no-cors' });
-            // الانتظار قليلاً لأن no-cors لا يعيد رد
-            setTimeout(() => {
-                alert("تم الحذف");
-                refreshData();
-                closeAllModals();
-            }, 1000);
+            list.innerHTML = orders.reverse().map(o => `<div class="list-item"><b>${o.cap_name}</b> | ${o.pickup.substring(0,20)}...</div>`).join('');
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         function logout() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
-        function openReports() { alert("ميزة التقارير التفصيلية قادمة قريباً في التحديث القادم! 📊"); }
-
     </script>
 </body>
 </html>
