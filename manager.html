@@ -3,309 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | الإدارة العامة</title>
+    <title>N One | بوابة الدخول الموحدة</title>
     <style>
         body {
+            margin: 0; padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a237e; /* خلفية كحلية ملكية */
-            margin: 0;
-            padding: 20px;
-            color: #333;
+            background: linear-gradient(135deg, #1a237e 0%, #000051 100%);
+            height: 100vh; display: flex; justify-content: center; align-items: center;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #f4f6f8;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            min-height: 90vh;
+        .login-card {
+            background-color: #ffffff; width: 90%; max-width: 380px;
+            padding: 40px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            text-align: center; border-top: 5px solid #d4af37;
         }
-
-        /* الهيدر */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #d4af37;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+        .brand-title { margin: 0 0 10px 0; font-size: 36px; font-weight: 800; letter-spacing: 1px; }
+        .text-navy { color: #1a237e; } .text-gold { color: #d4af37; }
+        .input-group { margin-bottom: 20px; text-align: right; }
+        label { display: block; margin-bottom: 8px; color: #333; font-size: 12px; font-weight: bold; }
+        input {
+            width: 100%; padding: 12px 15px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 15px; box-sizing: border-box; outline: none; text-align: left; 
         }
-
-        .brand { font-size: 24px; font-weight: 900; color: #1a237e; }
-        .gold { color: #d4af37; }
-
-        .btn-logout {
-            background: #c62828; color: white; border: none;
-            padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;
+        button {
+            width: 100%; padding: 14px; background-color: #1a237e; color: white;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
+            cursor: pointer; margin-top: 10px;
         }
-
-        /* قسم الإضافة */
-        .add-box {
-            background: white; padding: 20px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px;
-        }
-        .add-title { margin-top: 0; color: #1a237e; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        
-        .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .form-row input {
-            flex: 1; padding: 10px; border: 1px solid #ccc;
-            border-radius: 5px; text-align: right; min-width: 120px;
-        }
-        
-        .btn-add {
-            background: #2e7d32; color: white; border: none;
-            padding: 10px 20px; border-radius: 5px; cursor: pointer;
-            font-weight: bold; margin-top: 10px; width: 100%;
-        }
-
-        /* قائمة العملاء */
-        .client-card {
-            background: white; border-radius: 10px; padding: 15px;
-            margin-bottom: 15px; border-right: 5px solid #ccc;
-            display: flex; flex-direction: column; gap: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: 0.3s;
-        }
-        
-        .client-card.active { border-right-color: #2e7d32; } /* أخضر للنشط */
-        .client-card.stopped { border-right-color: #c62828; background: #ffebee; } /* أحمر للموقوف */
-
-        .card-header {
-            display: flex; justify-content: space-between; align-items: center;
-            font-weight: bold; font-size: 16px;
-        }
-
-        .card-info { font-size: 13px; color: #666; display: flex; gap: 15px; }
-
-        /* أزرار التحكم */
-        .actions {
-            display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap;
-        }
-
-        .btn-action {
-            flex: 1; padding: 8px; border: none; border-radius: 5px;
-            cursor: pointer; font-size: 12px; font-weight: bold; color: white;
-            text-align: center;
-        }
-
-        .btn-stop { background: #c62828; } /* أحمر للإيقاف */
-        .btn-activate { background: #2e7d32; } /* أخضر للتفعيل */
-        .btn-renew { background: #1976d2; } /* أزرق للتجديد */
-        .btn-del { background: #555; } /* رمادي للحذف */
-        .btn-edit { background: #f9a825; color: #000; } /* أصفر للتعديل */
-
-        /* شاشة التحميل */
-        #loading { text-align: center; padding: 20px; font-weight: bold; color: #1a237e; }
-
+        .alert-box { padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 20px; display: none; }
+        .alert-error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <div class="header">
-            <div class="brand">N <span class="gold">One</span> Admin</div>
-            <button class="btn-logout" onclick="logout()">خروج 🔒</button>
+    <div class="login-card">
+        <h1 class="brand-title"><span class="text-navy">N</span> <span class="text-gold">One</span></h1>
+        <p style="color:#666; font-size:13px; margin-bottom:30px;">بوابة الدخول الموحدة</p>
+
+        <div class="input-group">
+            <label>اسم المستخدم (User ID)</label>
+            <input type="text" id="username" placeholder="Enter username">
         </div>
 
-        <div class="add-box">
-            <h3 class="add-title">إضافة مشترك جديد</h3>
-            <div class="form-row">
-                <input type="text" id="new_name" placeholder="اسم الشركة/العميل">
-                <input type="text" id="new_user" placeholder="User ID (اسم الدخول)">
-                <input type="text" id="new_pass" placeholder="Password (كلمة المرور)">
-            </div>
-            <button class="btn-add" onclick="addClient()">+ تسجيل عميل جديد</button>
+        <div class="input-group">
+            <label>كلمة المرور (Password)</label>
+            <input type="password" id="password" placeholder="Enter password">
         </div>
 
-        <h3 style="color:#1a237e;">قائمة المشتركين</h3>
-        <div id="loading">جاري جلب البيانات من السيرفر الملكي... ⏳</div>
-        <div id="clients-list"></div>
-
+        <button onclick="handleLogin()" id="loginBtn">تسجيل الدخول 🚀</button>
+        <div id="msgBox" class="alert-box alert-error"></div>
     </div>
 
     <script>
-        // تم التحديث للرابط الجديد (Google Apps Script)
+        // الرابط الملكي
         const API_URL = "https://script.google.com/macros/s/AKfycbz1dRYK_ga6arLxYQQovYlLvdoC5R7fupAP02L5Fe4qV9TWKmLlfvG2zyyDMzu91UGv/exec";
 
-        // التأكد من أن المستخدم هو المدير
         window.onload = function() {
-            const admin = JSON.parse(localStorage.getItem('currentUser'));
-            if (!admin || admin.role !== 'admin') {
-                window.location.href = 'index.html'; // تعديل بسيط للتوجيه للصفحة الرئيسية
-            } else {
-                loadClients();
-            }
+            // التعديل: مسح الذاكرة القديمة لضمان عدم حدوث تداخل
+            // localStorage.removeItem('currentUser'); 
+            // ^ تم إيقاف الحذف التلقائي عشان إذا بدك "تذكرني"، 
+            // بس رح نعتمد الدخول اليدوي الآن لحل المشكلة.
         };
 
-        // دالة جلب العملاء
-        async function loadClients() {
+        async function handleLogin() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const btn = document.getElementById('loginBtn');
+            const msg = document.getElementById('msgBox');
+
+            if (!u || !p) { msg.innerText = "يرجى تعبئة البيانات"; msg.style.display = "block"; return; }
+
+            btn.innerHTML = "جاري التحقق... ⏳"; btn.disabled = true;
+
             try {
-                // إضافة ?action=read للرابط الجديد
-                const res = await fetch(API_URL + "?action=read");
-                const data = await res.json();
+                // قراءة البيانات من السيرفر
+                const response = await fetch(API_URL + "?action=read");
+                const data = await response.json();
                 
-                // تصفية: فقط العملاء (role = client)
-                const clients = data.filter(u => u.role === 'client');
-                
-                renderClients(clients);
-                document.getElementById('loading').style.display = 'none';
-            } catch (e) {
-                document.getElementById('loading').innerText = "خطأ في الاتصال بالسيرفر 😊";
+                // البحث عن المستخدم
+                const user = data.find(item => item.user == u && item.pass == p);
+
+                if (user) {
+                    if (user.status !== 'active') {
+                        msg.innerText = "هذا الحساب موقوف 🛑"; msg.style.display = "block"; btn.disabled = false; return;
+                    }
+
+                    // حفظ المستخدم الجديد وتوجيهه
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+
+                    if (user.role === 'admin') {
+                        window.location.href = 'admin.html'; // المدير يروح للإدارة
+                    } else {
+                        window.location.href = 'client.html'; // العميل يروح للعميل
+                    }
+                } else {
+                    msg.innerText = "بيانات خاطئة ❌"; msg.style.display = "block";
+                    btn.innerHTML = "تسجيل الدخول 🚀"; btn.disabled = false;
+                }
+            } catch (error) {
+                msg.innerText = "خطأ في الاتصال بالسيرفر"; msg.style.display = "block";
+                btn.innerHTML = "تسجيل الدخول 🚀"; btn.disabled = false;
             }
-        }
-
-        // دالة رسم الجدول (الكروت)
-        function renderClients(clients) {
-            const container = document.getElementById('clients-list');
-            container.innerHTML = '';
-
-            if (clients.length === 0) {
-                container.innerHTML = '<p style="text-align:center">لا يوجد مشتركين حالياً 😊</p>';
-                return;
-            }
-
-            // ترتيب: الأحدث أولاً
-            clients.reverse().forEach(client => {
-                const isActive = client.status === 'active';
-                const statusClass = isActive ? 'active' : 'stopped';
-                const statusText = isActive ? 'نشط ✅' : 'موقوف 🛑';
-
-                // تصميم الكرت
-                const card = document.createElement('div');
-                card.className = `client-card ${statusClass}`;
-                
-                card.innerHTML = `
-                    <div class="card-header">
-                        <span>${client.name}</span>
-                        <span style="font-size:12px; background:white; padding:3px 8px; border-radius:10px; border:1px solid #ddd;">${statusText}</span>
-                    </div>
-                    <div class="card-info">
-                        <span>👤 User: ${client.user}</span>
-                        <span>🔑 Pass: ${client.pass}</span>
-                    </div>
-                    <div class="card-info">
-                        <span>📅 ينتهي: ${client.expiry || 'غير محدد'}</span>
-                    </div>
-                    
-                    <div class="actions">
-                        ${isActive 
-                            ? `<button class="btn-action btn-stop" onclick="updateStatus('${client.user}', 'stopped')">إيقاف 🛑</button>` 
-                            : `<button class="btn-action btn-activate" onclick="updateStatus('${client.user}', 'active')">تفعيل ✅</button>`
-                        }
-                        <button class="btn-action btn-renew" onclick="renewClient('${client.user}')">تجديد شهر ♻️</button>
-                        <button class="btn-action btn-edit" onclick="editClient('${client.user}', '${client.pass}')">تعديل ✏️</button>
-                        <button class="btn-action btn-del" onclick="deleteClient('${client.user}')">حذف ❌</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // --- وظائف التحكم ---
-
-        // 1. إضافة عميل
-        async function addClient() {
-            const name = document.getElementById('new_name').value;
-            const user = document.getElementById('new_user').value;
-            const pass = document.getElementById('new_pass').value;
-
-            if (!name || !user || !pass) { alert("يرجى تعبئة كل الحقول 😊"); return; }
-
-            // تحديد تاريخ انتهاء بعد 30 يوم
-            const expiryDate = new Date();
-            expiryDate.setDate(expiryDate.getDate() + 30);
-            const expiryStr = expiryDate.toISOString().split('T')[0];
-
-            const newClient = {
-                id: "CL_" + Date.now(),
-                user: user,
-                pass: pass,
-                name: name,
-                role: "client",
-                status: "active",
-                expiry: expiryStr,
-                type: "user" // تمييز إنه مستخدم
-            };
-
-            const btn = document.querySelector('.btn-add');
-            btn.innerHTML = "جاري الحفظ الملكي... ⏳";
-            btn.disabled = true;
-
-            // استخدام method: POST مع action=add
-            await fetch(API_URL + "?action=add", {
-                method: 'POST',
-                body: JSON.stringify({ data: [newClient] })
-            });
-
-            alert("تم إضافة العميل بنجاح! 🎉");
-            location.reload(); // تحديث الصفحة
-        }
-
-        // 2. تغيير الحالة (إيقاف / تفعيل)
-        async function updateStatus(username, newStatus) {
-            if (!confirm(newStatus === 'stopped' ? "هل أنت متأكد من إيقاف هذا العميل؟ سيتم طرده فوراً!" : "هل تريد تفعيل العميل؟")) return;
-
-            // استخدام action=update
-            await fetch(API_URL + "?action=update&user=" + username, {
-                method: 'POST',
-                body: JSON.stringify({ data: { status: newStatus } })
-            });
-
-            alert("تم تحديث الحالة بنجاح! 😊");
-            loadClients();
-        }
-
-        // 3. تجديد الاشتراك
-        async function renewClient(username) {
-            if (!confirm("تجديد الاشتراك لمدة 30 يوم؟")) return;
-
-            const newDate = new Date();
-            newDate.setDate(newDate.getDate() + 30);
-            const expiryStr = newDate.toISOString().split('T')[0];
-
-            // استخدام action=update
-            await fetch(API_URL + "?action=update&user=" + username, {
-                method: 'POST',
-                body: JSON.stringify({ data: { expiry: expiryStr, status: 'active' } })
-            });
-
-            alert("تم تجديد الاشتراك! ♻️");
-            loadClients();
-        }
-
-        // 4. حذف عميل
-        async function deleteClient(username) {
-            if (!confirm("⚠️ تحذير: هل أنت متأكد من حذف العميل نهائياً؟")) return;
-
-            // استخدام action=delete
-            await fetch(API_URL + "?action=delete&user=" + username, { method: 'POST' });
-            
-            alert("تم الحذف بنجاح ❌");
-            loadClients();
-        }
-
-        // 5. تعديل (باسورد)
-        async function editClient(username, oldPass) {
-            const newPass = prompt("أدخل كلمة المرور الجديدة:", oldPass);
-            if (newPass && newPass !== oldPass) {
-                // استخدام action=update
-                await fetch(API_URL + "?action=update&user=" + username, {
-                    method: 'POST',
-                    body: JSON.stringify({ data: { pass: newPass } })
-                });
-                alert("تم تغيير كلمة المرور 🔐");
-                loadClients();
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
         }
     </script>
-
 </body>
 </html>
