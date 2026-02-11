@@ -3,56 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | إعداد النظام</title>
+    <title>N One | System Setup</title>
     <style>
-        /* إعدادات الصفحة */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a237e; /* خلفية كحلية ملكية */
-            color: white;
+            background: linear-gradient(135deg, #000000 0%, #1a237e 100%); /* خلفية ملكية */
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
             margin: 0;
-            text-align: center;
+            color: #333;
         }
 
-        /* الكرت الوسطي */
         .setup-card {
-            background: white;
-            color: #333;
-            padding: 40px;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.95);
             width: 90%;
             max-width: 450px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border-top: 8px solid #d4af37; /* لمسة ذهبية */
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            text-align: center;
+            border-top: 6px solid #d4af37;
         }
 
-        h1 { margin: 0; font-size: 28px; color: #1a237e; }
-        p { color: #666; font-size: 14px; margin-bottom: 30px; line-height: 1.6; }
+        h1 { margin: 0; color: #1a237e; font-size: 28px; font-weight: 800; }
+        p { color: #666; margin-top: 10px; font-size: 14px; }
 
-        /* الأزرار */
-        button {
-            background-color: #2e7d32; /* أخضر للتشغيل */
+        .btn-install {
+            background: #2e7d32;
             color: white;
             border: none;
             padding: 15px 30px;
             font-size: 18px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
+            margin-top: 30px;
             transition: 0.3s;
             box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
         }
 
-        button:hover { background-color: #1b5e20; transform: translateY(-2px); }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .btn-install:hover { background: #1b5e20; transform: translateY(-2px); }
+        .btn-install:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* منطقة الرسائل */
-        #status-area {
+        #status {
             margin-top: 20px;
             padding: 15px;
             border-radius: 8px;
@@ -60,96 +56,84 @@
             font-weight: bold;
             font-size: 14px;
         }
+        .success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 
-        .success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-
-        /* رابط الانتقال */
-        .go-link {
-            display: block;
-            margin-top: 20px;
-            color: #1a237e;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .go-link:hover { text-decoration: underline; }
-
+        .footer { margin-top: 30px; font-size: 11px; color: #aaa; }
     </style>
 </head>
 <body>
 
     <div class="setup-card">
-        <h1>تهيئة نظام N One</h1>
-        <p>سيقوم هذا المعالج بإنشاء حساب "المدير العام" وتجهيز قاعدة البيانات للعمل فوراً.</p>
+        <h1>N One <span style="color:#d4af37">System</span></h1>
+        <p>تهيئة السيرفر الملكي وإنشاء حساب المدير العام</p>
 
-        <button onclick="installSystem()" id="installBtn">بدء التثبيت الملكي 🚀</button>
+        <button id="btn" class="btn-install" onclick="installSystem()">بدء التثبيت الآن 🚀</button>
 
-        <div id="status-area"></div>
+        <div id="status"></div>
         
-        <a href="manager.html" id="nextStep" class="go-link" style="display: none;">
-            انتقل إلى بوابة الدخول (Manager) &larr;
-        </a>
+        <div class="footer">N One Global Systems V2.0 Pro</div>
     </div>
 
     <script>
-        // الرابط الملكي الجديد (Google Apps Script) 😊💎
-        const API_URL = "https://script.google.com/macros/s/AKfycbz1dRYK_ga6arLxYQQovYlLvdoC5R7fupAP02L5Fe4qV9TWKmLlfvG2zyyDMzu91UGv/exec";
+        // الرابط الملكي (تم التحديث)
+        const API_URL = "https://script.google.com/macros/s/AKfycbzRBp53Q3VnGPAeahcuKB_rQAwGHQkiw4fCtgTEtblTXSqoTxAMTmZv4rU1BJvQcJjh/exec";
 
         async function installSystem() {
-            const btn = document.getElementById('installBtn');
-            const statusBox = document.getElementById('status-area');
-            const nextLink = document.getElementById('nextStep');
+            const btn = document.getElementById('btn');
+            const statusDiv = document.getElementById('status');
 
-            // 1. تغيير حالة الزر
-            btn.innerHTML = "جاري الاتصال بالسيرفر الملكي... ⏳";
+            // 1. قفل الزر وتغيير النص
+            btn.innerHTML = "جاري الاتصال بالسيرفر... ⏳";
             btn.disabled = true;
-            statusBox.style.display = 'none';
-            nextLink.style.display = 'none';
+            statusDiv.style.display = 'none';
 
             // 2. تجهيز بيانات المدير (التاج الملكي)
             const adminUser = {
-                "id": "1",
-                "user": "N1_CEO_JO",
-                "pass": "N1@Power$2026",
-                "name": "N One CEO",
-                "role": "admin",
-                "status": "active",
-                "expiry": "2030-01-01",
-                "type": "admin" // إضافة النوع ليتوافق مع الأعمدة
+                id: "ADMIN_001",
+                user: "N1_CEO_JO",
+                pass: "N1@Power$2026",
+                name: "مدير النظام (نسيم)",
+                role: "admin",      // صلاحية: مدير
+                type: "admin",      // نوع: أدمن
+                status: "active",   // حالة: نشط
+                expiry: "2099-12-31" // صلاحية مفتوحة
             };
 
             try {
-                // 3. إرسال البيانات (POST) مع action=add
-                const response = await fetch(API_URL + "?action=add", {
+                // 3. إرسال الطلب للسيرفر (Action: Add)
+                await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ data: [adminUser] })
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'add',
+                        data: adminUser
+                    })
                 });
 
-                // 4. التحقق من النتيجة
-                if (response.ok) {
-                    showStatus("success", "✅ تم تثبيت النظام وإنشاء حساب المدير بنجاح!");
-                    btn.innerHTML = "تم التثبيت بنجاح 🎉";
-                    nextLink.style.display = 'block'; // إظهار رابط الدخول
-                } else {
-                    showStatus("error", "❌ حدث خطأ بسيط، حاول مرة أخرى.");
-                    btn.disabled = false;
-                    btn.innerHTML = "حاول مرة أخرى 🔄";
-                }
+                // 4. رسالة النجاح
+                showStatus("success", "✅ تم تثبيت النظام بنجاح! حساب المدير جاهز.");
+                btn.innerHTML = "تم التثبيت ✔️";
+
+                // توجيه تلقائي لصفحة الدخول بعد ثانيتين
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
 
             } catch (error) {
                 console.error(error);
-                showStatus("error", "❌ خطأ في الاتصال! تأكد من الإنترنت 😊");
-                btn.disabled = false;
+                showStatus("error", "❌ حدث خطأ في الاتصال. تأكد من الإنترنت.");
                 btn.innerHTML = "حاول مرة أخرى 🔄";
+                btn.disabled = false;
             }
         }
 
         function showStatus(type, msg) {
-            const box = document.getElementById('status-area');
-            box.className = type; // يحدد لون الصندوق (أخضر أو أحمر)
-            box.innerText = msg;
-            box.style.display = 'block';
+            const el = document.getElementById('status');
+            el.className = type;
+            el.innerText = msg;
+            el.style.display = 'block';
         }
     </script>
 
