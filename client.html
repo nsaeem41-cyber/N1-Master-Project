@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | نظام الشركاء</title>
+    <title>N One | نظام الشركاء الرسمي</title>
     <style>
-        /* ================= تصميمك الأصلي Pro Mobile-First 😊💎 ================= */
+        /* ================= تصميم رسمي Pro Mobile-First 😊💎 ================= */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5; margin: 0; padding: 0;
             user-select: none; padding-bottom: 80px;
         }
 
+        /* الهيدر الرسمي */
         .header {
             background: white; padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
@@ -23,6 +24,7 @@
 
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
 
+        /* ملخص الإحصائيات */
         .summary-box { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-box {
             flex: 1; background: white; padding: 15px; border-radius: 12px;
@@ -32,30 +34,24 @@
         .stat-num { font-size: 24px; font-weight: bold; color: #1a237e; display: block; }
         .stat-lbl { font-size: 12px; color: #777; }
 
+        /* كرت الطلب الرسمي */
         .order-card {
             background: white; padding: 25px; border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
         .card-title {
             font-size: 18px; font-weight: bold; color: #1a237e;
-            border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;
+            border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;
         }
 
         .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 5px; }
+        label { display: block; font-size: 12px; font-weight: bold; color: #1a237e; margin-bottom: 5px; }
         
-        input, select {
+        input {
             width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px;
-            font-size: 14px; background: #fafafa; outline: none; box-sizing: border-box;
+            font-size: 14px; background: #fafafa; outline: none; box-sizing: border-box; transition: 0.3s;
         }
         input:focus { border-color: #d4af37; background: white; }
-
-        /* ميزة الخرائط الفخمة 😊🚀 */
-        .location-row { display: flex; gap: 8px; }
-        .btn-location {
-            background: #2e7d32; color: white; border: none; border-radius: 10px;
-            padding: 0 15px; font-size: 18px; cursor: pointer; display: flex; align-items: center;
-        }
 
         .btn-send {
             width: 100%; padding: 15px; background: #1a237e; color: white;
@@ -64,6 +60,7 @@
         }
         .btn-send:active { transform: scale(0.98); }
 
+        /* البار السفلي المتكتك */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: white;
             display: flex; justify-content: space-around; padding: 12px 0;
@@ -73,6 +70,7 @@
         .nav-item span { display: block; font-size: 20px; margin-bottom: 3px; }
         .nav-item.active { color: #1a237e; font-weight: bold; }
 
+        /* المودالز */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 2000; padding: 20px; box-sizing: border-box;
@@ -104,7 +102,7 @@
 
     <div class="container">
         <div style="margin-bottom: 20px;">
-            <span style="color:#777; font-size:14px;">أهلاً بك،</span>
+            <span style="color:#777; font-size:14px;">مرحباً بك،</span>
             <div style="font-size:20px; font-weight:bold; color:#333;" id="partner-name">...</div>
         </div>
 
@@ -114,48 +112,40 @@
                 <span class="stat-lbl">طلبات اليوم</span>
             </div>
             <div class="stat-box">
-                <span class="stat-num" id="today-total">0</span>
-                <span class="stat-lbl">القيمة (د.أ)</span>
+                <span class="stat-num" id="today-total">0.00</span>
+                <span class="stat-lbl">المجموع (د.أ)</span>
             </div>
         </div>
 
         <div class="order-card">
-            <div class="card-title">إنشاء طلب جديد 📦</div>
+            <div class="card-title">إنشاء طلب توصيل جديد 📦</div>
 
             <div class="input-group">
-                <label>اسم الكابتن ورقم هاتفه</label>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="manual_cap_name" placeholder="اسم الكابتن" style="flex:1;">
-                    <input type="tel" id="manual_cap_phone" placeholder="962..." style="flex:1;">
+                <label>معلومات الكابتن</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="cap_name" placeholder="اسم الكابتن" style="flex:1;">
+                    <input type="tel" id="cap_phone" placeholder="962..." style="flex:1;">
                 </div>
             </div>
 
             <div class="input-group">
-                <label>📍 الموقع (Google Maps)</label>
-                <div class="location-row">
-                    <input type="text" id="map_link" placeholder="رابط الموقع سيظهر هنا">
-                    <button class="btn-location" onclick="getMyGPS()">📍 جلب</button>
-                </div>
+                <label>🏪 المتجر / المطعم وموقعه</label>
+                <input type="text" id="store_info" placeholder="مثال: ماكدونالدز خلدا">
             </div>
 
             <div class="input-group">
-                <label>🏪 المتجر/المطعم</label>
-                <input type="text" id="pickup_loc" placeholder="خلدا، صويلح...">
+                <label>👤 رقم هاتف الزبون</label>
+                <input type="tel" id="cust_phone" placeholder="رقم هاتف الزبون">
             </div>
 
             <div class="input-group">
-                <label>👤 رقم الزبون</label>
-                <input type="tel" id="customer_phone" placeholder="رقم هاتف الزبون">
+                <label>🏠 عنوان الزبون بالتفصيل</label>
+                <input type="text" id="cust_address" placeholder="المنطقة، الشارع، البناء">
             </div>
 
             <div class="input-group">
-                <label>🏠 عنوان الزبون</label>
-                <input type="text" id="customer_address" placeholder="عنوان الزبون بالتفصيل">
-            </div>
-
-            <div class="input-group">
-                <label>💰 التفاصيل المالية (المجموع)</label>
-                <input type="number" id="total_amount" placeholder="0.00">
+                <label>💰 التفاصيل المالية (المجموع الكلي)</label>
+                <input type="number" id="total_val" placeholder="0.00">
             </div>
 
             <button class="btn-send" onclick="sendOrder()">إرسال الطلب نفاثة 🚀</button>
@@ -170,8 +160,8 @@
     </div>
 
     <div id="records-modal" class="modal"><div class="modal-content"><button onclick="closeAllModals()">✖</button><h3>السجل</h3><div id="orders-list"></div></div></div>
-    <div id="captains-modal" class="modal"><div class="modal-content"><button onclick="closeAllModals()">✖</button><h3>الكباتن</h3><div id="captains-list"></div></div></div>
-    <div id="settings-modal" class="modal"><div class="modal-content" style="text-align:center;"><button onclick="closeAllModals()">✖</button><h3>⚙️ الإعدادات</h3><button class="btn-send" style="background:#c62828;" onclick="logout()">خروج 🔒</button></div></div>
+    <div id="captains-modal" class="modal"><div class="modal-content"><button onclick="closeAllModals()">✖</button><h3>إدارة الفريق</h3><div id="captains-list"></div></div></div>
+    <div id="settings-modal" class="modal"><div class="modal-content" style="text-align:center;"><button onclick="closeAllModals()">✖</button><h3>⚙️ الإعدادات</h3><button class="btn-send" style="background:#c62828;" onclick="logout()">خروج آمن 🔒</button></div></div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycby8Lvhri3wDGXFwXY2EPKy_sf6vrIEAyPVGreob8gDe_mx9EbpqWsqqR511LXdqjjU1/exec";
@@ -186,21 +176,6 @@
             document.getElementById('loader').style.display = 'none';
         };
 
-        // ميزة جلب الموقع الحقيقي 100% 😊🛰️
-        function getMyGPS() {
-            if (navigator.geolocation) {
-                document.getElementById('map_link').value = "جاري التحديد... ⏳";
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const link = `https://www.google.com/maps?q=${lat},${lng}`;
-                    document.getElementById('map_link').value = link;
-                }, function() {
-                    alert("يا بطة فعلي الـ GPS 😊");
-                });
-            } else { alert("المتصفح لا يدعم GPS 😊"); }
-        }
-
         async function refreshData() {
             try {
                 const res = await fetch(API_URL + "?action=read");
@@ -214,23 +189,24 @@
             const today = new Date().toISOString().split('T')[0];
             const todayOrders = orders.filter(o => o.date && o.date.startsWith(today));
             document.getElementById('today-orders').innerText = todayOrders.length;
-            let total = 0;
-            todayOrders.forEach(o => total += Number(o.val || 0));
-            document.getElementById('today-total').innerText = total.toFixed(2);
+            let sum = 0;
+            todayOrders.forEach(o => sum += Number(o.val || 0));
+            document.getElementById('today-total').innerText = sum.toFixed(2);
         }
 
         async function sendOrder() {
-            const capName = document.getElementById('manual_cap_name').value;
-            const capPhone = document.getElementById('manual_cap_phone').value;
-            const mapLink = document.getElementById('map_link').value;
-            const store = document.getElementById('pickup_loc').value;
-            const custPhone = document.getElementById('customer_phone').value;
-            const custAddress = document.getElementById('customer_address').value;
-            const total = document.getElementById('total_amount').value;
+            const capName = document.getElementById('cap_name').value;
+            const capPhone = document.getElementById('cap_phone').value;
+            const store = document.getElementById('store_info').value;
+            const cPhone = document.getElementById('cust_phone').value;
+            const cAddr = document.getElementById('cust_address').value;
+            const total = document.getElementById('total_val').value;
 
-            if(!capPhone || !store || !total) return alert("يا حبة السكر عبي الخانات الأساسية 😊");
+            if(!capPhone || !store || !total) return alert("يا حبة السكر عبي كل البيانات الأساسية 😊");
 
-            // الحفظ في الإكسل
+            // ميزة البحث التلقائي نفاثة 😊🛰️
+            const autoMapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store)}`;
+
             const newOrder = {
                 id: "ORD_" + Date.now(),
                 type: "order",
@@ -242,13 +218,14 @@
                 date: new Date().toISOString(),
                 status: "new"
             };
+
             await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'add', data: newOrder }) });
 
-            // التنسيق الملكي للرسالة 😊💎
             let p = capPhone.replace(/\D/g, '');
             if (!p.startsWith('962')) p = '962' + p.replace(/^0+/, '');
             
-            const msg = `*طلب توصيل جديد - N One* 📦%0a%0a📍 *الموقع (Google Maps):*%0a${mapLink}%0a%0a🏪 *المتجر/المطعم:* ${store}%0a👤 *رقم الزبون:* ${custPhone}%0a🏠 *عنوان الزبون:* ${custAddress}%0a💰 *التفاصيل المالية:* ${total}%0a%0a---%0aيرجى تأكيد الاستلام 🚀`;
+            // تنسيق الرسالة الملكي كما طلبتِ بالظبط 😊💎
+            const msg = `*طلب توصيل جديد - N One* 📦%0a%0a📍 *الموقع (Google Maps):*%0a${autoMapLink}%0a%0a🏪 *المتجر/المطعم:* ${store}%0a👤 *رقم الزبون:* ${cPhone}%0a🏠 *عنوان الزبون:* ${cAddr}%0a💰 *التفاصيل المالية:* ${total}%0a%0a---%0aيرجى تأكيد الاستلام 🚀`;
             
             window.open(`https://wa.me/${p}?text=${msg}`, '_blank');
             alert("تم إرسال الطلب وحفظه نفاثة 😊🚀");
