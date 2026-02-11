@@ -3,107 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | بوابة الدخول الموحدة</title>
+    <title>N One | غرفة العمليات</title>
     <style>
         body {
-            margin: 0; padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a237e 0%, #000051 100%);
-            height: 100vh; display: flex; justify-content: center; align-items: center;
+            background-color: #121212; /* خلفية داكنة للعمليات */
+            color: #e0e0e0;
+            margin: 0; padding: 20px;
         }
-        .login-card {
-            background-color: #ffffff; width: 90%; max-width: 380px;
-            padding: 40px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            text-align: center; border-top: 5px solid #d4af37;
+
+        /* الهيدر */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #d4af37; padding-bottom: 20px; margin-bottom: 30px;
         }
-        .brand-title { margin: 0 0 10px 0; font-size: 36px; font-weight: 800; letter-spacing: 1px; }
-        .text-navy { color: #1a237e; } .text-gold { color: #d4af37; }
-        .input-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; margin-bottom: 8px; color: #333; font-size: 12px; font-weight: bold; }
-        input {
-            width: 100%; padding: 12px 15px; border: 1px solid #ddd;
-            border-radius: 8px; font-size: 15px; box-sizing: border-box; outline: none; text-align: left; 
+        .brand { font-size: 28px; font-weight: 900; color: white; letter-spacing: 1px; }
+        .gold { color: #d4af37; }
+        
+        .btn-back {
+            background: #333; color: white; border: 1px solid #555;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; text-decoration: none;
         }
-        button {
-            width: 100%; padding: 14px; background-color: #1a237e; color: white;
-            border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
-            cursor: pointer; margin-top: 10px;
+        .btn-back:hover { background: #444; }
+
+        /* البطاقات العلوية */
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; margin-bottom: 30px;
         }
-        .alert-box { padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 20px; display: none; }
-        .alert-error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+        .dash-card {
+            background: #1e1e1e; padding: 25px; border-radius: 15px;
+            text-align: center; border-top: 4px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .dash-num { font-size: 32px; font-weight: bold; color: white; margin: 10px 0; }
+        .dash-lbl { font-size: 13px; color: #aaa; }
+        .c-gold { border-color: #d4af37; color: #d4af37; }
+        .c-blue { border-color: #1a237e; color: #5c6bc0; }
+        .c-green { border-color: #2e7d32; color: #66bb6a; }
+
+        /* جدول العمليات الحية */
+        .live-feed {
+            background: #1e1e1e; padding: 25px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .feed-title {
+            font-size: 18px; font-weight: bold; margin-bottom: 20px;
+            color: #d4af37; display: flex; justify-content: space-between;
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        thead { background: #2c2c2c; color: #ddd; }
+        th, td { padding: 15px; text-align: right; border-bottom: 1px solid #333; }
+        tr:hover { background: #252525; }
+
+        .tag { padding: 4px 10px; border-radius: 15px; font-size: 11px; background: #333; color: #ccc; }
+        
+        #loader { text-align: center; padding: 50px; color: #777; }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <h1 class="brand-title"><span class="text-navy">N</span> <span class="text-gold">One</span></h1>
-        <p style="color:#666; font-size:13px; margin-bottom:30px;">بوابة الدخول الموحدة</p>
+    <div class="header">
+        <div class="brand">N <span class="gold">One</span> Ops Room</div>
+        <a href="admin.html" class="btn-back">⬅️ العودة للإدارة</a>
+    </div>
 
-        <div class="input-group">
-            <label>اسم المستخدم (User ID)</label>
-            <input type="text" id="username" placeholder="Enter username">
+    <div class="dashboard-grid">
+        <div class="dash-card c-gold">
+            <div class="dash-lbl">إجمالي الطلبات (النظام)</div>
+            <div class="dash-num" id="total-orders">0</div>
         </div>
-
-        <div class="input-group">
-            <label>كلمة المرور (Password)</label>
-            <input type="password" id="password" placeholder="Enter password">
+        <div class="dash-card c-blue">
+            <div class="dash-lbl">الكباتن المسجلين</div>
+            <div class="dash-num" id="total-captains">0</div>
         </div>
+        <div class="dash-card c-green">
+            <div class="dash-lbl">حجم التداول المالي</div>
+            <div class="dash-num" id="total-money">0</div>
+        </div>
+    </div>
 
-        <button onclick="handleLogin()" id="loginBtn">تسجيل الدخول 🚀</button>
-        <div id="msgBox" class="alert-box alert-error"></div>
+    <div class="live-feed">
+        <div class="feed-title">
+            <span>📡 مراقبة العمليات الحية (Live Feed)</span>
+            <button onclick="loadData()" style="background:none; border:none; color:#d4af37; cursor:pointer;">🔄 تحديث</button>
+        </div>
+        
+        <div id="loader">جاري الاتصال بالأقمار الصناعية... 🛰️</div>
+        
+        <table id="feed-table" style="display:none;">
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>الشركة (المصدر)</th>
+                    <th>الكابتن</th>
+                    <th>الموقع</th>
+                    <th>القيمة</th>
+                </tr>
+            </thead>
+            <tbody id="feed-body"></tbody>
+        </table>
     </div>
 
     <script>
-        // الرابط الملكي
-        const API_URL = "https://script.google.com/macros/s/AKfycbz1dRYK_ga6arLxYQQovYlLvdoC5R7fupAP02L5Fe4qV9TWKmLlfvG2zyyDMzu91UGv/exec";
+        // 💎 الرابط الملكي 💎
+        const API_URL = "https://script.google.com/macros/s/AKfycbzRBp53Q3VnGPAeahcuKB_rQAwGHQkiw4fCtgTEtblTXSqoTxAMTmZv4rU1BJvQcJjh/exec";
 
         window.onload = function() {
-            // التعديل: مسح الذاكرة القديمة لضمان عدم حدوث تداخل
-            // localStorage.removeItem('currentUser'); 
-            // ^ تم إيقاف الحذف التلقائي عشان إذا بدك "تذكرني"، 
-            // بس رح نعتمد الدخول اليدوي الآن لحل المشكلة.
+            // التحقق من أن المستخدم هو المدير
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+            loadData();
         };
 
-        async function handleLogin() {
-            const u = document.getElementById('username').value.trim();
-            const p = document.getElementById('password').value.trim();
-            const btn = document.getElementById('loginBtn');
-            const msg = document.getElementById('msgBox');
-
-            if (!u || !p) { msg.innerText = "يرجى تعبئة البيانات"; msg.style.display = "block"; return; }
-
-            btn.innerHTML = "جاري التحقق... ⏳"; btn.disabled = true;
+        async function loadData() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('feed-table').style.display = 'none';
 
             try {
-                // قراءة البيانات من السيرفر
-                const response = await fetch(API_URL + "?action=read");
-                const data = await response.json();
+                const res = await fetch(API_URL + "?action=read");
+                const data = await res.json();
                 
-                // البحث عن المستخدم
-                const user = data.find(item => item.user == u && item.pass == p);
-
-                if (user) {
-                    if (user.status !== 'active') {
-                        msg.innerText = "هذا الحساب موقوف 🛑"; msg.style.display = "block"; btn.disabled = false; return;
-                    }
-
-                    // حفظ المستخدم الجديد وتوجيهه
-                    localStorage.setItem('currentUser', JSON.stringify(user));
-
-                    if (user.role === 'admin') {
-                        window.location.href = 'admin.html'; // المدير يروح للإدارة
-                    } else {
-                        window.location.href = 'client.html'; // العميل يروح للعميل
-                    }
-                } else {
-                    msg.innerText = "بيانات خاطئة ❌"; msg.style.display = "block";
-                    btn.innerHTML = "تسجيل الدخول 🚀"; btn.disabled = false;
-                }
-            } catch (error) {
-                msg.innerText = "خطأ في الاتصال بالسيرفر"; msg.style.display = "block";
-                btn.innerHTML = "تسجيل الدخول 🚀"; btn.disabled = false;
+                processData(data);
+            } catch (e) {
+                console.error(e);
             }
         }
+
+        function processData(data) {
+            // 1. فلترة الطلبات والكباتن
+            const orders = data.filter(i => i.type === 'order').reverse(); // الأحدث أولاً
+            const captains = data.filter(i => i.type === 'captain');
+
+            // 2. تحديث العدادات
+            document.getElementById('total-orders').innerText = orders.length;
+            document.getElementById('total-captains').innerText = captains.length;
+            
+            let money = 0;
+            orders.forEach(o => money += (Number(o.val) || 0) + (Number(o.fee) || 0));
+            document.getElementById('total-money').innerText = money.toLocaleString() + " د.أ";
+
+            // 3. تعبئة الجدول
+            const tbody = document.getElementById('feed-body');
+            tbody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">لا يوجد عمليات حتى الآن</td></tr>';
+            } else {
+                orders.forEach(ord => {
+                    // البحث عن اسم الشركة صاحبة الطلب
+                    const company = data.find(u => u.user === ord.client_user);
+                    const compName = company ? company.name : ord.client_user;
+
+                    const row = `
+                        <tr>
+                            <td><span class="tag">${ord.date.split('T')[0]}</span></td>
+                            <td style="font-weight:bold; color:#d4af37;">${compName}</td>
+                            <td>${ord.cap_name}</td>
+                            <td>${ord.pickup}</td>
+                            <td>${(Number(ord.val) + Number(ord.fee)).toFixed(2)}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('feed-table').style.display = 'table';
+        }
     </script>
+
 </body>
 </html>
