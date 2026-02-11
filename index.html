@@ -140,7 +140,7 @@
             <input type="password" id="password" placeholder="Enter password" autocomplete="off">
         </div>
 
-        <button onclick="handleLogin()" id="loginBtn">تسجيل الدخول</button>
+        <button onclick="handleLogin()" id="loginBtn">تسجيل الدخول 🚀</button>
 
         <div id="msgBox" class="alert-box alert-error"></div>
 
@@ -151,7 +151,8 @@
     </div>
 
     <script>
-        const API_URL = "https://sheetdb.io/api/v1/zuo2qyjeryhxm";
+        // الرابط الملكي الجديد (Google Apps Script) 😊💎
+        const API_URL = "https://script.google.com/macros/s/AKfycbz1dRYK_ga6arLxYQQovYlLvdoC5R7fupAP02L5Fe4qV9TWKmLlfvG2zyyDMzu91UGv/exec";
 
         // فحص تلقائي عند فتح الصفحة: هل أنت عميل مسجل؟
         window.onload = function() {
@@ -173,29 +174,32 @@
             msg.style.display = "none";
 
             if (!u || !p) {
-                showMessage("يرجى إدخال اسم المستخدم وكلمة المرور للمتابعة.");
+                showMessage("يرجى إدخال اسم المستخدم وكلمة المرور للمتابعة 😊");
                 return;
             }
 
-            btn.innerHTML = "جاري التحقق...";
+            btn.innerHTML = "جاري التحقق من السيرفر... ⏳";
             btn.disabled = true;
             userField.disabled = true;
             passField.disabled = true;
 
             try {
-                const response = await fetch(API_URL);
+                // استخدام action=read مع الرابط الجديد
+                const response = await fetch(API_URL + "?action=read");
                 const data = await response.json();
-                const user = data.find(item => item.user === u && item.pass === p);
+                
+                // البحث عن المستخدم
+                const user = data.find(item => item.user == u && item.pass == p);
 
                 if (user) {
                     if (user.role === 'admin') {
-                        showMessage("عذراً، هذا الحساب إداري. يرجى استخدام بوابة الإدارة (manager.html).");
+                        showMessage("عذراً، هذا الحساب إداري 🛑\nيرجى استخدام بوابة الإدارة (manager.html).");
                         resetState();
                         return;
                     }
 
                     if (user.status !== 'active') {
-                        showMessage("عذراً، هذا الحساب موقوف مؤقتاً. يرجى مراجعة إدارة N One.");
+                        showMessage("عذراً، هذا الحساب موقوف مؤقتاً 🛑\nيرجى مراجعة إدارة N One.");
                         resetState();
                         return;
                     }
@@ -204,13 +208,13 @@
                     window.location.href = 'client.html';
 
                 } else {
-                    showMessage("بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى.");
+                    showMessage("بيانات الدخول غير صحيحة ❌\nيرجى المحاولة مرة أخرى.");
                     resetState();
                 }
 
             } catch (error) {
                 console.error(error);
-                showMessage("حدث خطأ في الاتصال بالخادم. يرجى التحقق من الإنترنت.");
+                showMessage("حدث خطأ في الاتصال بالخادم 📶\nيرجى التحقق من الإنترنت.");
                 resetState();
             }
 
@@ -220,7 +224,7 @@
             }
 
             function resetState() {
-                btn.innerHTML = "تسجيل الدخول";
+                btn.innerHTML = "تسجيل الدخول 🚀";
                 btn.disabled = false;
                 userField.disabled = false;
                 passField.disabled = false;
