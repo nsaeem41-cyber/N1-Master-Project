@@ -3,51 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | نظام الشركاء الملكي</title>
+    <title>N One | نظام الشركاء الرسمي</title>
     <style>
-        /* ================= تصميم Pro Mobile-First فخم جداً 😊💎 ================= */
+        /* ================= تصميم رسمي فخم 😊💎 ================= */
         :root {
             --primary: #1a237e;
             --gold: #d4af37;
-            --bg: #f0f2f5;
+            --bg: #f4f6f9;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg); margin: 0; padding: 0;
-            user-select: none;
-            overflow-x: hidden;
+            user-select: none; padding-bottom: 80px;
         }
 
-        /* الهيدر الثابت */
+        /* الهيدر الرسمي */
         .header {
             background: white; padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000;
         }
         .brand { font-size: 22px; font-weight: 900; color: var(--primary); }
-        .gold-text { color: var(--gold); }
-        .btn-settings { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .gold-label { color: var(--gold); }
 
-        /* الشاشات الكاملة 😊🛰️ */
+        /* الشاشات الكاملة (التنسيق الرسمي) 😊🛰️ */
         .page {
-            display: none; 
-            padding: 20px; 
-            min-height: calc(100vh - 140px);
+            display: none; padding: 20px; min-height: calc(100vh - 140px);
             animation: fadeIn 0.3s ease-in-out;
-            box-sizing: border-box;
         }
         .page.active { display: block; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* الكروت والتصميم */
         .card {
-            background: white; padding: 25px; border-radius: 20px;
+            background: white; padding: 25px; border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px;
         }
         .card-title {
@@ -55,155 +45,98 @@
             border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px;
         }
 
-        /* ملخص الإحصائيات */
-        .summary-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        /* الإحصائيات المربعة */
+        .stat-grid { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-box {
-            flex: 1; background: white; padding: 15px; border-radius: 15px;
+            flex: 1; background: white; padding: 15px; border-radius: 12px;
             text-align: center; border-bottom: 4px solid var(--primary);
         }
         .stat-num { font-size: 24px; font-weight: bold; color: var(--primary); display: block; }
         .stat-lbl { font-size: 12px; color: #777; }
 
-        /* المدخلات */
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        /* المدخلات والأزرار */
         input, select {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px;
-            font-size: 15px; background: #fafafa; outline: none; box-sizing: border-box;
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px;
+            font-size: 14px; margin-top: 5px; box-sizing: border-box; outline: none;
         }
-        input:focus { border-color: var(--gold); background: white; }
-
         .btn-main {
             width: 100%; padding: 15px; background: var(--primary); color: white;
             border: none; border-radius: 12px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: 0.3s; margin-top: 10px;
+            cursor: pointer; margin-top: 15px;
         }
-        .btn-main:active { transform: scale(0.96); }
 
-        /* القائمة السفلية النفاثة */
+        /* القائمة السفلية */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: white;
             display: flex; justify-content: space-around; padding: 12px 0;
-            border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 1000;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000;
         }
-        .nav-item { text-align: center; color: #aaa; font-size: 11px; flex: 1; cursor: pointer; }
-        .nav-item span { display: block; font-size: 22px; margin-bottom: 3px; }
+        .nav-item { text-align: center; color: #999; font-size: 11px; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item span { display: block; font-size: 22px; margin-bottom: 2px; }
 
-        /* قوائم الكباتن والطلبات */
+        /* القوائم */
         .list-item {
-            background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px;
+            background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px;
             display: flex; justify-content: space-between; align-items: center;
-            border-right: 5px solid var(--gold); box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        .info b { display: block; color: var(--primary); }
-        .info small { color: #777; }
-        .btn-del { background: #ffeded; color: #d32f2f; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
-
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 3000; display: flex; justify-content: center; align-items: center; flex-direction: column;
+            border-right: 4px solid var(--gold);
         }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <h2 style="color:var(--primary)">N <span class="gold-text">One</span></h2>
-        <p>جاري تحضير عالمك الخاص... 😊🚀</p>
-    </div>
-
     <div class="header">
-        <div class="brand">N <span class="gold-text">One</span></div>
-        <button class="btn-settings" onclick="showPage('settings-page')">⚙️</button>
+        <div class="brand">N <span class="gold-label">One</span></div>
+        <div id="user-info" style="font-size: 12px; color: #555;">...</div>
     </div>
 
     <section id="home-page" class="page active">
         <div style="margin-bottom: 20px;">
-            <span style="color:#777; font-size:14px;">أهلاً بك يا حبة السكر،</span>
-            <div style="font-size:20px; font-weight:bold; color:#333;" id="partner-name">...</div>
+            <span style="color:#777; font-size:14px;">مرحباً بك،</span>
+            <div style="font-size:20px; font-weight:bold; color:#333;" id="partner-display">...</div>
         </div>
 
-        <div class="summary-box">
-            <div class="stat-box">
-                <span class="stat-num" id="today-orders">0</span>
-                <span class="stat-lbl">طلبات اليوم</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-num" id="today-total">0</span>
-                <span class="stat-lbl">القيمة (د.أ)</span>
-            </div>
+        <div class="stat-grid">
+            <div class="stat-box"><span class="stat-num" id="today-count">0</span><span class="stat-lbl">الطلبات</span></div>
+            <div class="stat-box"><span class="stat-num" id="today-sum">0.00</span><span class="stat-lbl">الإجمالي</span></div>
         </div>
 
         <div class="card">
-            <div class="card-title">طلب جديد نفاثة 📦</div>
-            <div class="input-group">
-                <label>اختيار الكابتن</label>
-                <select id="captain_select">
-                    <option value="">-- اختر من فريقك --</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>موقع الاستلام</label>
-                <input type="text" id="pickup_loc" placeholder="مثلاً: مطعم هيرو">
-            </div>
-            <div class="input-group">
-                <label>أجرة التوصيل</label>
-                <input type="number" id="fee" placeholder="0.00">
-            </div>
-            <div class="input-group">
-                <label>قيمة التحصيل</label>
-                <input type="number" id="val" placeholder="0.00">
-            </div>
-            <button class="btn-main" onclick="sendOrder()">إرسال الطلب واتساب 🚀</button>
+            <div class="card-title">إنشاء طلب توصيل 📦</div>
+            <select id="captain_select">
+                <option value="">-- اختر الكابتن المسؤول --</option>
+            </select>
+            <input type="text" id="pickup_loc" placeholder="موقع الاستلام">
+            <input type="number" id="fee" placeholder="أجرة التوصيل">
+            <input type="number" id="val" placeholder="قيمة التحصيل">
+            <button class="btn-main" onclick="sendOrder()">تأكيد وإرسال الطلب 🚀</button>
         </div>
     </section>
 
     <section id="records-page" class="page">
-        <div class="card-title">سجل الطلبات الحالية 📋</div>
+        <div class="card-title">سجل العمليات 📋</div>
         <div id="orders-list"></div>
-    </section>
-
-    <section id="reports-page" class="page">
-        <div class="card-title">التقارير المالية 💰</div>
-        <div class="card" style="text-align: center; padding: 50px 20px;">
-            <p style="color:#666;">سيتم عرض الكشوفات والرسوم البيانية هنا قريباً لإمبراطوريتك 😊✨</p>
-        </div>
     </section>
 
     <section id="captains-page" class="page">
         <div class="card">
-            <div class="card-title">إضافة كابتن للفريق 👨‍✈️</div>
-            <div class="input-group">
-                <input type="text" id="new_cap_name" placeholder="اسم الكابتن">
-            </div>
-            <div class="input-group">
-                <input type="tel" id="new_cap_phone" placeholder="رقم الهاتف (962...)">
-            </div>
-            <button class="btn-main" onclick="addCaptain()" style="background:var(--gold)">حفظ الكابتن ✅</button>
+            <div class="card-title">إضافة كابتن جديد ➕</div>
+            <input type="text" id="new_cap_name" placeholder="الاسم الرباعي">
+            <input type="tel" id="new_cap_phone" placeholder="رقم الهاتف">
+            <button class="btn-main" style="background:var(--gold)" onclick="addCaptain()">حفظ الكابتن ✅</button>
         </div>
-        <div class="card-title">قائمة فريقك</div>
         <div id="captains-list"></div>
     </section>
 
-    <section id="settings-page" class="page">
-        <div class="card" style="text-align:center;">
-            <div class="card-title">⚙️ الإعدادات الشخصية</div>
-            <button class="btn-main" style="background:#c62828;" onclick="logout()">تسجيل الخروج 🔒</button>
-            <p style="color:#999; font-size:12px; margin-top:20px;">N One System v2.5 Premium 😊💎</p>
-        </div>
-    </section>
-
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home-page')"><span>🏠</span>الرئيسية</div>
-        <div class="nav-item" onclick="showPage('records-page')"><span>📝</span>السجل</div>
-        <div class="nav-item" onclick="showPage('reports-page')"><span>📊</span>المالية</div>
-        <div class="nav-item" onclick="showPage('captains-page')"><span>👨‍✈️</span>الكباتن</div>
+        <div class="nav-item active" onclick="showPage('home-page', this)"><span>🏠</span>الرئيسية</div>
+        <div class="nav-item" onclick="showPage('records-page', this)"><span>📝</span>السجل</div>
+        <div class="nav-item" onclick="showPage('captains-page', this)"><span>👨‍✈️</span>الكباتن</div>
+        <div class="nav-item" onclick="logout()"><span>🔒</span>خروج</div>
     </nav>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycby8Lvhri3wDGXFwXY2EPKy_sf6vrIEAyPVGreob8gDe_mx9EbpqWsqqR511LXdqjjU1/exec";
-
         let currentUser = null;
         let captains = [];
         let orders = [];
@@ -211,34 +144,17 @@
         window.onload = async function() {
             currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) { window.location.href = 'index.html'; return; }
-
-            document.getElementById('partner-name').innerText = currentUser.name;
+            document.getElementById('partner-display').innerText = currentUser.name;
             await refreshData();
-            document.getElementById('loader').style.display = 'none';
         }
 
-        // تبديل الشاشات (صفحات كاملة) 😊💎
-        function showPage(pageId) {
+        function showPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            document.querySelectorAll('.nav-item').forEach(n => {
-                n.classList.remove('active');
-                if(n.innerText.includes(document.getElementById(pageId).id)) n.classList.add('active');
-            });
-
-            // تحديث الأيقونات النشطة يدوياً للجمالية 😊
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                item.classList.remove('active');
-                if (pageId === 'home-page' && item.innerText.includes('الرئيسية')) item.classList.add('active');
-                if (pageId === 'records-page' && item.innerText.includes('السجل')) item.classList.add('active');
-                if (pageId === 'reports-page' && item.innerText.includes('المالية')) item.classList.add('active');
-                if (pageId === 'captains-page' && item.innerText.includes('الكباتن')) item.classList.add('active');
-            });
-
-            if(pageId === 'records-page') renderOrders();
-            if(pageId === 'captains-page') renderCaptains();
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+            if(id === 'records-page') renderOrders();
+            if(id === 'captains-page') renderCaptains();
         }
 
         async function refreshData() {
@@ -246,7 +162,7 @@
                 const res = await fetch(API_URL + "?action=read");
                 const all = await res.json();
                 
-                // التصفية الذكية بناءً على cl أو client_user 😊💎
+                // التعديل الرسمي: البحث عن يوزرك في عمود cl أو client_user 😊💎
                 const myData = all.filter(item => 
                     String(item.cl || item.client_user).trim() === String(currentUser.user).trim()
                 );
@@ -254,83 +170,61 @@
                 captains = myData.filter(i => i.type === 'captain');
                 orders = myData.filter(i => i.type === 'order');
 
-                updateUI();
+                updateHome();
             } catch (e) { console.error(e); }
         }
 
-        function updateUI() {
-            // تحديث قائمة الاختيار
-            const select = document.getElementById('captain_select');
-            select.innerHTML = '<option value="">-- اختر من فريقك --</option>';
+        function updateHome() {
+            const sel = document.getElementById('captain_select');
+            sel.innerHTML = '<option value="">-- اختر الكابتن المسؤول --</option>';
             captains.forEach(c => {
-                select.innerHTML += `<option value="${c.phone}" data-name="${c.name}">${c.name}</option>`;
+                sel.innerHTML += `<option value="${c.phone}" data-name="${c.name}">${c.name}</option>`;
             });
 
-            // تحديث إحصائيات الرئيسية
             const today = new Date().toISOString().split('T')[0];
             const todayOrders = orders.filter(o => o.date && o.date.startsWith(today));
-            document.getElementById('today-orders').innerText = todayOrders.length;
-            
+            document.getElementById('today-count').innerText = todayOrders.length;
             let total = 0;
             todayOrders.forEach(o => total += (Number(o.fee)||0) + (Number(o.val)||0));
-            document.getElementById('today-total').innerText = total.toFixed(2);
+            document.getElementById('today-sum').innerText = total.toFixed(2);
         }
 
         async function addCaptain() {
-            const name = document.getElementById('new_cap_name').value.trim();
-            const phone = document.getElementById('new_cap_phone').value.trim();
-            if(!name || !phone) { alert("أكملي البيانات يا حبة السكر 😊"); return; }
+            const name = document.getElementById('new_cap_name').value;
+            const phone = document.getElementById('new_cap_phone').value;
+            if(!name || !phone) return alert("يرجى إكمال البيانات 😊");
 
             const newCap = {
                 id: "CAP_" + Date.now(),
                 type: "captain",
                 name: name,
                 phone: phone,
-                cl: currentUser.user, // حفظ في عمود cl مطابق لليوزر نفاثة
+                cl: currentUser.user, // حفظ في عمود cl مطابق لليوزر
                 status: "active"
             };
 
-            await sendToServer('add', newCap);
-            alert("تم إضافة الكابتن بنجاح 😊✅");
-            document.getElementById('new_cap_name').value = '';
-            document.getElementById('new_cap_phone').value = '';
-            await refreshData();
-            renderCaptains();
+            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'add', data: newCap }) });
+            alert("تم تسجيل الكابتن رسمياً ✅");
+            refreshData();
         }
 
         function renderCaptains() {
             const list = document.getElementById('captains-list');
-            list.innerHTML = captains.length ? '' : '<p style="text-align:center; color:#999;">لا يوجد كباتن حالياً</p>';
-            captains.forEach(c => {
-                list.innerHTML += `
-                    <div class="list-item">
-                        <div class="info">
-                            <b>${c.name}</b>
-                            <small>📱 ${c.phone}</small>
-                        </div>
-                        <button class="btn-del" onclick="deleteItem('${c.id}')">حذف</button>
-                    </div>
-                `;
-            });
+            list.innerHTML = captains.map(c => `
+                <div class="list-item">
+                    <div><b>${c.name}</b><small>${c.phone}</small></div>
+                </div>
+            `).join('');
         }
 
         function renderOrders() {
             const list = document.getElementById('orders-list');
-            list.innerHTML = orders.length ? '' : '<p style="text-align:center; color:#999;">السجل فارغ حالياً</p>';
-            orders.slice().reverse().forEach(o => {
-                list.innerHTML += `
-                    <div class="list-item">
-                        <div class="info">
-                            <b>📦 ${o.pickup}</b>
-                            <small>👨‍✈️ ${o.cap_name || 'غير محدد'}</small>
-                        </div>
-                        <div style="text-align:left;">
-                            <b style="color:var(--gold)">${(Number(o.fee) + Number(o.val)).toFixed(2)} د.أ</b>
-                            <div style="font-size:10px; color:#aaa;">${o.date ? o.date.split('T')[0] : ''}</div>
-                        </div>
-                    </div>
-                `;
-            });
+            list.innerHTML = orders.slice().reverse().map(o => `
+                <div class="list-item">
+                    <div><b>📦 ${o.pickup}</b><small>👨‍✈️ ${o.cap_name || ''}</small></div>
+                    <div style="color:var(--gold); font-weight:bold;">${(Number(o.fee)+Number(o.val)).toFixed(2)}</div>
+                </div>
+            `).join('');
         }
 
         async function sendOrder() {
@@ -338,10 +232,10 @@
             const phone = sel.value;
             const capName = sel.options[sel.selectedIndex].dataset.name;
             const loc = document.getElementById('pickup_loc').value;
-            const fee = document.getElementById('fee').value;
-            const val = document.getElementById('val').value;
+            const f = document.getElementById('fee').value;
+            const v = document.getElementById('val').value;
 
-            if(!phone || !loc) { alert("يا بطة اختاري الكابتن والموقع 😊"); return; }
+            if(!phone || !loc) return alert("يرجى تحديد الكابتن والموقع 😊");
 
             const newOrder = {
                 id: "ORD_" + Date.now(),
@@ -350,36 +244,19 @@
                 cap_name: capName,
                 cap_phone: phone,
                 pickup: loc,
-                fee: fee,
-                val: val,
+                fee: f,
+                val: v,
                 date: new Date().toISOString(),
                 status: "new"
             };
 
-            await sendToServer('add', newOrder);
+            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'add', data: newOrder }) });
             
-            // فتح واتساب نفاثة 😊🚀
             let p = phone.replace(/\D/g, '');
             if (!p.startsWith('962')) p = '962' + p.replace(/^0+/, '');
-            const msg = `*طلب جديد من ${currentUser.name}* 📦%0a📍 الموقع: ${loc}%0a💵 التوصيل: ${fee}%0a💰 التحصيل: ${val}%0a🚀 يرجى الاستجابة فوراً`;
+            const msg = `*طلب توصيل رسمي* 📦%0a📍 الموقع: ${loc}%0a💵 التوصيل: ${f}%0a💰 التحصيل: ${v}`;
             window.open(`https://wa.me/${p}?text=${msg}`, '_blank');
-
-            alert("تم إرسال الطلب وحفظه نفاثة 😊🚀");
             refreshData();
-        }
-
-        async function sendToServer(action, data) {
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ action: action, data: data })
-            });
-            await new Promise(r => setTimeout(r, 1200));
-        }
-
-        async function deleteItem(id) {
-            if(!confirm("أكيد بدك تحذفي هالعنصر يا حبة السكر؟ 😊")) return;
-            await fetch(API_URL + "?action=delete&id=" + id, { method: 'POST', mode: 'no-cors' });
-            setTimeout(refreshData, 1200);
         }
 
         function logout() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
