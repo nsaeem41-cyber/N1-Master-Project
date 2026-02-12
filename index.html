@@ -59,6 +59,15 @@
         .error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
         
         .footer { margin-top: 30px; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 20px; }
+
+        /* إضافة تنسيق خيار المنشأة */
+        .shop-login-option {
+            background: #f0f2f5; padding: 12px; border-radius: 10px; border: 1px solid #ddd;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 15px;
+        }
+        .shop-login-option input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; padding: 0; }
+        .shop-login-option label { margin: 0; cursor: pointer; color: #1a237e; font-size: 13px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -77,6 +86,11 @@
         <div class="input-group">
             <label>كلمة المرور (Password)</label>
             <input type="password" id="password" placeholder="أدخل كلمة المرور">
+        </div>
+
+        <div class="shop-login-option">
+            <input type="checkbox" id="is_shop">
+            <label for="is_shop">تسجيل دخول كمنشأة تجارية (مطعم/محل)</label>
         </div>
 
         <button class="btn-login" onclick="loginNow()" id="loginBtn">تسجيل الدخول 🚀</button>
@@ -104,6 +118,7 @@
         async function loginNow() {
             const u = document.getElementById('username').value.trim();
             const p = document.getElementById('password').value.trim();
+            const isShop = document.getElementById('is_shop').checked; // سحب قيمة خيار المنشأة
             const btn = document.getElementById('loginBtn');
             const msgBox = document.getElementById('msg');
 
@@ -142,8 +157,10 @@
                     // 2. النجاح! حفظ الجلسة
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     
-                    // 3. التوجيه حسب الدور (Routing)
-                    if (user.role === 'admin') {
+                    // 3. التوجيه حسب الدور أو اختيار المنشأة (Routing)
+                    if (isShop) {
+                        window.location.href = 'shop.html'; // المنشأة تروح لصفحة المطاعم
+                    } else if (user.role === 'admin') {
                         window.location.href = 'admin.html'; // المدير يروح للإدارة
                     } else {
                         window.location.href = 'client.html'; // العميل يروح للعميل
