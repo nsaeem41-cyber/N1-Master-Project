@@ -1,1 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N One | بوابة المنشآت التجارية</title>
+    <style>
+        /* ================= تصميم واجهة المطاعم (Express Shop) ================= */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff; margin: 0; padding: 0;
+            user-select: none; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh;
+        }
 
+        /* 1. الترويسة الجديدة */
+        .shop-header {
+            width: 100%; background: #1a237e; color: white;
+            padding: 20px 0; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .shop-brand { font-size: 24px; font-weight: 900; letter-spacing: 1px; }
+        .gold { color: #d4af37; }
+        .sub-title { font-size: 14px; opacity: 0.8; margin-top: 5px; }
+
+        /* 2. كارت الإدخال */
+        .order-container {
+            width: 90%; max-width: 400px;
+            background: #f8f9fa; padding: 30px; border-radius: 20px;
+            border: 2px solid #e0e0e0; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        /* معلومات المنشأة (Auto-ID) */
+        .shop-badge {
+            background: #e3f2fd; color: #1565c0; padding: 10px;
+            border-radius: 10px; text-align: center; font-weight: bold;
+            margin-bottom: 25px; border: 1px dashed #1565c0;
+        }
+
+        /* الحقول */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-weight: bold; color: #333; margin-bottom: 8px; }
+        
+        .form-input {
+            width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px;
+            font-size: 16px; text-align: center; transition: 0.3s;
+            box-sizing: border-box; outline: none;
+        }
+        .form-input:focus { border-color: #d4af37; background: white; transform: scale(1.02); }
+
+        /* زر الإرسال */
+        .btn-submit {
+            width: 100%; padding: 18px; background: #1a237e; color: white;
+            border: none; border-radius: 12px; font-size: 18px; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(26, 35, 126, 0.2);
+        }
+        .btn-submit:active { transform: scale(0.95); }
+
+        /* حالة الطلب */
+        .status-msg {
+            margin-top: 20px; text-align: center; font-size: 14px; color: #2e7d32;
+            display: none; animation: popIn 0.5s ease;
+        }
+        @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* زر الخروج */
+        .logout-link {
+            margin-top: 30px; color: #999; text-decoration: underline; 
+            cursor: pointer; font-size: 12px;
+        }
+
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 5000; display: flex;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <h2 style="color:#1a237e;">N <span style="color:#d4af37">One</span></h2>
+        <p>جاري تعريف المنشأة... 🏢</p>
+    </div>
+
+    <div class="shop-header">
+        <div class="shop-brand">N <span class="gold">One</span> Business</div>
+        <div class="sub-title">بوابة المنشآت التجارية</div>
+    </div>
+
+    <div class="order-container">
+        
+        <div class="shop-badge">
+            🏢 <span id="shop-name-display">جاري التحميل...</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">💰 قيمة الطلب (التحصيل)</label>
+            <input type="number" id="order_value" class="form-input" placeholder="0.00 د.أ">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">📍 المنطقة / الوجهة</label>
+            <input type="text" id="order_dest" class="form-input" placeholder="مثال: الجبيهة، شارع البلدية">
+        </div>
+
+        <button class="btn-submit" onclick="sendShopOrder()">إرسال الطلب للمركز 📡</button>
+
+        <div id="success-msg" class="status-msg">
+            ✅ تم إرسال الطلب بنجاح!<br>سيظهر الآن في القائمة الرئيسية.
+        </div>
+    </div>
+
+    <div class="logout-link" onclick="logout()">تسجيل خروج من المنشأة</div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycby8Lvhri3wDGXFwXY2EPKy_sf6vrIEAyPVGreob8gDe_mx9EbpqWsqqR511LXdqjjU1/exec";
+        
+        let currentShop = null;
+
+        window.onload = function() {
+            // التحقق من تسجيل الدخول
+            currentShop = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentShop) {
+                // إذا لم يكن مسجلاً، نحوله لصفحة الدخول
+                window.location.replace('index.html');
+                return;
+            }
+
+            // عرض اسم المنشأة تلقائياً (Auto-ID)
+            document.getElementById('shop-name-display').innerText = currentShop.name;
+            document.getElementById('loader').style.display = 'none';
+        };
+
+        async function sendShopOrder() {
+            const val = document.getElementById('order_value').value;
+            const dest = document.getElementById('order_dest').value;
+
+            if (!val || !dest) {
+                alert("الرجاء تعبئة القيمة والوجهة فقط 😊");
+                return;
+            }
+
+            // تغيير نص الزر
+            const btn = document.querySelector('.btn-submit');
+            const originalText = btn.innerText;
+            btn.innerText = "جاري الإرسال... ⏳";
+            btn.disabled = true;
+
+            // تجهيز البيانات لربطها مع صفحة الشركات
+            // ملاحظة مهمة: نرسل اسم المنشأة في خانة الكابتن مؤقتاً وبشكل مميز
+            // عشان يظهر في "Live Feed" عند الأدمن
+            const newOrder = {
+                id: "SHOP_" + Date.now(),
+                type: "order",
+                client_user: currentShop.user, // معرف المنشأة
+                cl_name: currentShop.name,     // اسم المنشأة
+                
+                // هذا الحقل هو السر! رح يظهر في القائمة اليمنى عند الأدمن
+                cap_name: `🔴 طلب من: ${currentShop.name}`, 
+                cap_phone: "000",
+                
+                // ندمج الوجهة في حقل الموقع
+                pickup: `الوجهة: ${dest}`, 
+                
+                val: val,
+                fee: "0", // سيتم تحديده من قبل الشركة لاحقاً
+                company_share: "0",
+                
+                cust_name: "Shop Client",
+                cust_phone: "000",
+                
+                date: new Date().toISOString(),
+                status: "new" // الحالة "جديد" لتفعيل التنبيه
+            };
+
+            try {
+                // الإرسال للسيرفر
+                await fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'add', data: newOrder })
+                });
+
+                // الانتظار قليلاً للتأكد
+                await new Promise(r => setTimeout(r, 1000));
+
+                // إظهار نجاح
+                document.getElementById('success-msg').style.display = 'block';
+                
+                // تفريغ الحقول
+                document.getElementById('order_value').value = '';
+                document.getElementById('order_dest').value = '';
+
+                setTimeout(() => {
+                    document.getElementById('success-msg').style.display = 'none';
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (e) {
+                alert("حدث خطأ في الاتصال، حاول مرة أخرى");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.replace('index.html');
+        }
+    </script>
+</body>
+</html>
