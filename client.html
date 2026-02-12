@@ -6,7 +6,7 @@
     <title>N One | نظام الشركاء</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ================= تصميم Pro Mobile-First (نفس التنسيق الأصلي) ================= */
+        /* ================= تصميم Pro Mobile-First ================= */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5; margin: 0; padding: 0;
@@ -24,7 +24,6 @@
 
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
 
-        /* الكروت */
         .card {
             background: white; padding: 25px; border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px;
@@ -34,7 +33,6 @@
             border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;
         }
 
-        /* المدخلات */
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 5px; }
         
@@ -44,7 +42,6 @@
         }
         input:focus { border-color: #d4af37; background: white; }
 
-        /* الأزرار */
         .btn-send {
             width: 100%; padding: 15px; background: #1a237e; color: white;
             border: none; border-radius: 12px; font-size: 16px; font-weight: bold;
@@ -58,7 +55,6 @@
         }
         .location-row { display: flex; gap: 8px; }
 
-        /* زر القائمة المستقلة (Navigation Button) */
         .btn-nav-large {
             display: block; width: 100%; padding: 15px; margin-bottom: 15px;
             background: white; border: 2px solid #1a237e; color: #1a237e;
@@ -66,7 +62,6 @@
             text-align: center; text-decoration: none;
         }
 
-        /* القائمة السفلية */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: white;
             display: flex; justify-content: space-around; padding: 12px 0;
@@ -76,7 +71,6 @@
         .nav-item.active { color: #1a237e; font-weight: bold; }
         .nav-item span { display: block; font-size: 20px; margin-bottom: 3px; }
 
-        /* النوافذ (Modals) */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 2000; padding: 20px; box-sizing: border-box;
@@ -92,7 +86,6 @@
             color: #c62828; cursor: pointer; background: none; border: none;
         }
 
-        /* الجداول في السجل */
         .list-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 12px; border-bottom: 1px solid #eee;
@@ -112,6 +105,7 @@
     <div id="loader">
         <h2 style="color:#1a237e;">N <span style="color:#d4af37">One</span></h2>
         <p>جاري تحميل النظام... 😊🚀</p>
+        <button onclick="document.getElementById('loader').style.display='none'" style="margin-top:20px; background:none; border:none; color:#999; text-decoration:underline; cursor:pointer;">(اضغط هنا إذا تأخر التحميل)</button>
     </div>
 
     <div class="header">
@@ -120,7 +114,6 @@
     </div>
 
     <div class="container">
-        
         <button class="btn-nav-large" onclick="openRecords()">📂 قائمة الطلبات والسجل</button>
 
         <div class="card order-card">
@@ -226,16 +219,27 @@
         let orders = [];
 
         window.onload = async function() {
-            // أمن الجلسات
-            window.history.pushState(null, "", window.location.href);
-            window.onpopstate = function() { window.history.pushState(null, "", window.location.href); };
+            try {
+                window.history.pushState(null, "", window.location.href);
+                window.onpopstate = function() { window.history.pushState(null, "", window.location.href); };
 
-            currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser) { window.location.replace('index.html'); return; }
+                currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) { window.location.replace('index.html'); return; }
 
-            document.getElementById('partner-name').innerText = currentUser.name; // تثبيت اسم المنشأة
-            await refreshData();
-            document.getElementById('loader').style.display = 'none';
+                // تأمين العرض حتى لو الاسم مش موجود
+                if(document.getElementById('partner-name')) {
+                     document.getElementById('partner-name').innerText = currentUser.name || "العميل";
+                }
+
+                await refreshData();
+            } catch (err) {
+                console.error("Error during load:", err);
+                alert("حدث خطأ بسيط في التحميل، لكن النظام سيعمل.");
+            } finally {
+                // هذا السطر هو الأهم: إخفاء التحميل مهما حصل خطأ
+                document.getElementById('loader').style.display = 'none';
+            }
+            
             setInterval(checkMyStatus, 10000); 
         };
 
@@ -243,26 +247,33 @@
             try {
                 const res = await fetch(API_URL + "?action=read");
                 const all = await res.json();
-                myData = all.filter(item => (item.cl || item.client_user) === currentUser.user);
+                
+                // حماية من البيانات الفارغة
+                if (!Array.isArray(all)) return;
+
+                myData = all.filter(item => item && (item.cl || item.client_user) === currentUser.user);
                 captains = myData.filter(i => i.type === 'captain');
                 orders = myData.filter(i => i.type === 'order');
+                
                 updateUI();
-            } catch (e) { console.error(e); }
+                updateCharts();
+            } catch (e) { 
+                console.error("Data Load Error:", e);
+                // لا نوقف النظام، نسمح للمستخدم بالمحاولة
+            }
         }
 
         function updateUI() {
-            // تعبئة قائمة الكباتن بشكل صحيح
             const select = document.getElementById('captain_select');
             select.innerHTML = '<option value="">-- اختر من القائمة --</option>';
             captains.forEach(c => {
                 const opt = document.createElement('option');
-                opt.value = c.phone;
-                opt.innerText = c.name; 
-                opt.dataset.name = c.name; // تخزين الاسم
+                opt.value = c.phone || "";
+                opt.innerText = c.name || "بدون اسم"; 
+                opt.dataset.name = c.name || ""; 
                 select.appendChild(opt);
             });
 
-            // قائمة إدارة الكباتن
             const capList = document.getElementById('captains-list');
             capList.innerHTML = captains.map(c => `
                 <div class="list-item">
@@ -272,7 +283,6 @@
             `).join('');
         }
 
-        // دالة الجسر: نقل الاسم من القائمة للمتغير المخفي
         function fillCaptainData() {
             const sel = document.getElementById('captain_select');
             if(sel.selectedIndex > 0) {
@@ -284,15 +294,12 @@
         }
 
         async function sendOrder() {
-            // 1. ضمان وجود البيانات
             fillCaptainData(); 
-            const capName = document.getElementById('manual_cap_name').value; // الاسم الحقيقي
+            const capName = document.getElementById('manual_cap_name').value;
             const capPhone = document.getElementById('manual_cap_phone').value;
-            
             const custName = document.getElementById('cust_name').value;
             const custPhone = document.getElementById('cust_phone').value;
             let custLoc = document.getElementById('cust_location').value;
-            
             const val = document.getElementById('order_val').value;
             const fee = document.getElementById('delivery_fee').value;
 
@@ -302,31 +309,24 @@
                 custLoc = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(custLoc)}`;
             }
 
-            // 2. إرسال البيانات (إصلاح الخلل: إرسال cap_name صريح)
             const newOrder = {
                 id: "ORD_" + Date.now(),
                 type: "order",
-                client_user: currentUser.user, // اسم المستخدم
-                cl_name: currentUser.name,     // تثبيت اسم المنشأة
-                
-                cap_name: capName,   // ✅ هذا اللي كان ناقص في الإكسل
+                client_user: currentUser.user,
+                cl_name: currentUser.name,
+                cap_name: capName,
                 cap_phone: capPhone,
-                
-                pickup: custLoc,     // موقع العميل
-                fee: fee,            // التوصيل
-                val: val,            // قيمة الطلب
-                
-                // بيانات إضافية للتوثيق
+                pickup: custLoc,
+                fee: fee,
+                val: val,
                 cust_name: custName,
                 cust_phone: custPhone,
-                
                 date: new Date().toISOString(),
                 status: "new"
             };
 
             await sendData(newOrder);
 
-            // 3. واتساب (الرسالة المحدثة)
             let p = capPhone.replace(/\D/g, '');
             if (!p.startsWith('962')) p = '962' + p.replace(/^0+/, '');
             
@@ -338,16 +338,19 @@
             refreshData();
         }
 
-        // فتح السجل (زر مستقل)
         function openRecords() {
             openModal('records-modal');
             const list = document.getElementById('orders-list');
-            // عرض الاسم بشكل صحيح (cap_name)
-            list.innerHTML = orders.slice().reverse().map(o => `
+            // حماية من التواريخ الفارغة
+            list.innerHTML = orders.slice().reverse().map(o => {
+                let dateDisplay = "تاريخ غير معروف";
+                if(o.date) dateDisplay = o.date.split('T')[0];
+                
+                return `
                 <div class="list-item" style="display:block;">
                     <div style="display:flex; justify-content:space-between;">
                         <b>👮 ${o.cap_name || 'كابتن'}</b> 
-                        <span style="font-size:12px;">${o.date.split('T')[0]}</span>
+                        <span style="font-size:12px;">${dateDisplay}</span>
                     </div>
                     <div style="font-size:12px; margin:5px 0;">
                         العميل: ${o.cust_name || 'زبون'} (${o.val} د.أ)
@@ -355,11 +358,45 @@
                      <div style="text-align:left;">
                         <button class="btn-small bg-red" onclick="deleteItem('${o.id}')">حذف ❌</button>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
-        // باقي الدوال الأساسية
+        function updateCharts() {
+            try {
+                const ctx = document.getElementById('ordersChart').getContext('2d');
+                const days = [];
+                const values = [];
+                for(let i=6; i>=0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const dateStr = d.toISOString().split('T')[0];
+                    days.push(dateStr.slice(5));
+                    
+                    // حماية من التواريخ الخاطئة
+                    const dayTotal = orders.filter(o => o.date && o.date.startsWith(dateStr))
+                                           .reduce((sum, o) => sum + Number(o.val || 0), 0);
+                    values.push(dayTotal);
+                }
+                if(window.myChart) window.myChart.destroy();
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: days,
+                        datasets: [{
+                            label: 'قيمة الطلبات (د.أ)',
+                            data: values,
+                            borderColor: '#1a237e',
+                            backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                            borderWidth: 2,
+                            fill: true
+                        }]
+                    },
+                    options: { responsive: true }
+                });
+            } catch(e) { console.error("Chart Error", e); }
+        }
+
         async function addCaptain() {
             const name = document.getElementById('new_cap_name').value;
             const phone = document.getElementById('new_cap_phone').value;
@@ -405,12 +442,22 @@
             try {
                 const res = await fetch(API_URL + "?action=read");
                 const all = await res.json();
-                const me = all.find(u => u.user === currentUser.user);
-                if (!me || me.status !== 'active') { alert("حساب موقوف"); logout(); }
+                if(all && Array.isArray(all)) {
+                     const me = all.find(u => u.user === currentUser.user);
+                     if (!me || me.status !== 'active') { alert("حساب موقوف"); logout(); }
+                }
             } catch(e) {}
         }
 
-        async function changeMyPass() { /* نفس الكود السابق */ }
+        async function changeMyPass() {
+             const newPass = document.getElementById('new_pass_input').value;
+            if(!newPass) return alert("أدخل الرمز الجديد");
+            await fetch(API_URL + "?action=update&user=" + currentUser.user, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({ action:'update', user:currentUser.user, data:{pass:newPass} })
+            });
+            alert("تم التغيير."); logout();
+        }
 
         function logout() {
             localStorage.removeItem('currentUser');
@@ -418,7 +465,7 @@
             window.location.replace('index.html');
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; if(id==='reports-modal') updateCharts(); }
         function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     </script>
 </body>
