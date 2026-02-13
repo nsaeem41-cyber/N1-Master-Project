@@ -43,10 +43,19 @@
         }
         input:focus { border-color: #1a237e; background: #fff; box-shadow: 0 0 0 4px rgba(26, 35, 126, 0.1); }
 
+        /* الإضافة الجديدة لتصميم خيار المنشأة */
+        .shop-login-option {
+            background: rgba(26, 35, 126, 0.05); padding: 12px; border-radius: 10px; border: 1px solid #eee;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 20px;
+        }
+        .shop-login-option input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; padding: 0; }
+        .shop-login-option label { margin: 0; cursor: pointer; color: #1a237e; font-size: 13px; font-weight: bold; }
+
         .btn-login {
             width: 100%; padding: 15px; background: #1a237e; color: white;
             border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: 0.3s; margin-top: 20px;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
             box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
         }
         .btn-login:hover { background: #0d47a1; transform: translateY(-2px); }
@@ -67,7 +76,7 @@
         <div class="brand">
             <h1>N <span class="gold">One</span></h1>
         </div>
-        <p class="subtitle">بوابة الدخول الذكية | Smart Routing</p>
+        <p class="subtitle">بوابة الدخول الموحدة | Pro Login</p>
 
         <div class="input-group">
             <label>اسم المستخدم (User ID)</label>
@@ -79,29 +88,41 @@
             <input type="password" id="password" placeholder="أدخل كلمة المرور">
         </div>
 
+        <div class="shop-login-option">
+            <input type="checkbox" id="is_shop">
+            <label for="is_shop">تسجيل دخول كمنشأة تجارية (مطعم/محل)</label>
+        </div>
+
         <button class="btn-login" onclick="loginNow()" id="loginBtn">تسجيل الدخول 🚀</button>
 
         <div id="msg" class="msg-box error"></div>
 
         <div class="footer">
             &copy; 2026 N One Global Systems<br>
-            Secure Access v3.0
+            Secure Access v2.0
         </div>
     </div>
 
     <script>
+        // 💎 الرابط الملكي 💎
         const API_URL = "https://script.google.com/macros/s/AKfycby8Lvhri3wDGXFwXY2EPKy_sf6vrIEAyPVGreob8gDe_mx9EbpqWsqqR511LXdqjjU1/exec";
 
+
+        // ✅ الحل الجذري لمشكلة "التعليق":
+        // تنظيف الذاكرة فوراً عند فتح الصفحة
         window.onload = function() {
             localStorage.removeItem('currentUser');
+            console.log("Session Cleared - Ready for fresh login");
         };
 
         async function loginNow() {
             const u = document.getElementById('username').value.trim();
             const p = document.getElementById('password').value.trim();
+            const isShop = document.getElementById('is_shop').checked; // سحب خيار المنشأة
             const btn = document.getElementById('loginBtn');
             const msgBox = document.getElementById('msg');
 
+            // إخفاء الرسائل السابقة
             msgBox.style.display = 'none';
 
             if (!u || !p) {
@@ -109,43 +130,50 @@
                 return;
             }
 
-            btn.innerHTML = "جاري التحقق من الهوية... ⏳";
+            // تشغيل وضع التحميل
+            btn.innerHTML = "جاري التحقق من السيرفر... ⏳";
             btn.disabled = true;
 
             try {
+                // طلب القراءة من السيرفر
+                // نستخدم ?action=read للسرعة والموثوقية
                 const response = await fetch(API_URL + "?action=read");
                 const data = await response.json();
 
+                // البحث عن المستخدم (مطابقة اليوزر والباسورد)
                 const user = data.find(item => 
                     String(item.user).trim().toLowerCase() === String(u).trim().toLowerCase() && 
                     String(item.pass).trim() === String(p).trim()
                 );
 
                 if (user) {
+                    // 1. فحص الحالة (هل هو نشط؟)
                     if (user.status !== 'active') {
-                        showError("⛔ الحساب موقوف. راجع الإدارة.");
+                        showError("⛔ عذراً، هذا الحساب موقوف أو مجمد. راجع الإدارة.");
                         resetBtn();
                         return;
                     }
 
+                    // 2. النجاح! حفظ الجلسة
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     
-                    // التوجيه التلقائي بناءً على الدور (Role) المخزن في السيرفر
-                    if (user.role === 'merchant' || user.role === 'shop') {
-                        window.location.href = 'shop.html'; 
+                    // 3. التوجيه حسب الدور والفصل الجديد (Routing)
+                    if (isShop) {
+                        window.location.href = 'shop.html'; // المنشأة تروح لصفحة المطاعم
                     } else if (user.role === 'admin') {
-                        window.location.href = 'admin.html'; 
+                        window.location.href = 'admin.html'; // المدير يروح للإدارة
                     } else {
-                        window.location.href = 'client.html'; 
+                        window.location.href = 'client.html'; // العميل يروح للعميل
                     }
 
                 } else {
-                    showError("❌ بيانات الدخول غير صحيحة.");
+                    showError("❌ اسم المستخدم أو كلمة المرور غير صحيحة.");
                     resetBtn();
                 }
 
             } catch (err) {
-                showError("تعذر الاتصال بالسيرفر.");
+                console.error(err);
+                showError("تعذر الاتصال بقاعدة البيانات. تأكد من الإنترنت.");
                 resetBtn();
             }
         }
@@ -162,5 +190,6 @@
             btn.disabled = false;
         }
     </script>
+
 </body>
 </html>
