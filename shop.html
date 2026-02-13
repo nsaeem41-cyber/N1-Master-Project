@@ -100,7 +100,7 @@
 </head>
 <body>
 
-    <div id="loader"><h2 style="color:#1a237e;">N <span style="color:#d4af37">One</span></h2><p>جاري ضبط المنشأة... 🏢</p></div>
+    <div id="loader"><h2 style="color:#1a237e;">N <span style="color:#d4af37">One</span></h2><p>جاري ضبط المنشأة 🏢</p></div>
 
     <div class="shop-header">
         <div class="shop-brand">N <span class="gold">One</span> Business</div>
@@ -165,8 +165,8 @@
     <div id="loc-modal" class="modal">
         <div class="modal-content">
             <h3 style="color:#1a237e;">تحديد الهوية المكانية 📍</h3>
-            <p style="font-size:12px; color:#555;">سيتم إرفاق هذا الموقع تلقائياً مع كل طلب للكابتن.</p>
-            <input type="text" id="detailed_location" placeholder="مثال: شارع الجامعة، بجانب بنك..." style="margin-bottom:15px;">
+            <p style="font-size:12px; color:#555;">سيتم إرفاق هذا الموقع تلقائياً مع كل طلب للكابتن</p>
+            <input type="text" id="detailed_location" placeholder="مثال شارع الجامعة بجانب بنك" style="margin-bottom:15px;">
             <button class="btn-send" onclick="saveLocationIdentity()">حفظ وتثبيت</button>
             <button onclick="document.getElementById('loc-modal').style.display='none'" style="margin-top:10px; width:100%; padding:10px; border:none; background:#eee; border-radius:10px; cursor:pointer;">إلغاء</button>
         </div>
@@ -176,7 +176,7 @@
         const API_URL = "https://script.google.com/macros/s/AKfycby8Lvhri3wDGXFwXY2EPKy_sf6vrIEAyPVGreob8gDe_mx9EbpqWsqqR511LXdqjjU1/exec";
         let currentShop = null;
 
-        // إدارة البيانات المحلية للمطعم (الذكاء البرمجي)
+        // إدارة البيانات المحلية للمطعم للوجهات والموقع فقط
         let shopData = JSON.parse(localStorage.getItem('nOne_shop_data')) || {
             ordersCount: 0,
             emergencyUsed: 0,
@@ -184,7 +184,7 @@
             detailedLoc: ""
         };
 
-        window.onload = function() {
+        window.onload = async function() {
             currentShop = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentShop) { window.location.replace('index.html'); return; }
 
@@ -194,8 +194,8 @@
                 document.getElementById('shop-location-display').innerText = "📍 " + shopData.detailedLoc;
             }
 
-            // 2. تحديث الإنجازات والطوارئ
-            updateDashboard();
+            // 2. تحديث الإنجازات من السيرفر مباشرة
+            await refreshData();
             
             // 3. تعبئة الوجهات المتكررة
             populateHistory();
@@ -203,11 +203,28 @@
             document.getElementById('loader').style.display = 'none';
         };
 
+        async function refreshData() {
+            try {
+                const res = await fetch(API_URL + "?action=read");
+                const all = await res.json();
+                const myOrders = all.filter(item => item.client_user === currentShop.user && item.type === 'order');
+                
+                // تحديث الأرقام من السيرفر الفعلي
+                shopData.ordersCount = myOrders.length;
+                shopData.emergencyUsed = myOrders.filter(o => String(o.is_emergency) === "true" || o.status === 'emergency').length;
+                
+                updateDashboard();
+            } catch (e) {
+                console.error(e);
+                updateDashboard();
+            }
+        }
+
         // تحديث اللوحات (الإنجازات والطوارئ)
         function updateDashboard() {
             document.getElementById('achievements').innerHTML = `🏆 إنجازاتك: ${shopData.ordersCount} طلب | 🌟 تقييمك: ممتاز`;
             
-            // خوارزمية الطوارئ: 5 طلبات مجانية، وكل 25 طلب عادي بيوخذ كمان 5
+            // خوارزمية الطوارئ 5 طلبات مجانية وكل 25 طلب عادي بيوخذ كمان 5
             const totalEmergencyAllowed = 5 + Math.floor(shopData.ordersCount / 25) * 5;
             const remaining = totalEmergencyAllowed - shopData.emergencyUsed;
             
@@ -221,7 +238,7 @@
             } else {
                 btnEmg.style.background = "#c62828";
                 btnEmg.disabled = false;
-                quotaBadge.innerText = `الباقي: ${remaining}`;
+                quotaBadge.innerText = `الباقي ${remaining}`;
             }
         }
 
@@ -256,33 +273,26 @@
             const val = document.getElementById('quick_val').value;
             const dest = document.getElementById('quick_dest').value;
 
-            if (!val || !dest) return alert("الرجاء تعبئة القيمة والوجهة 😊");
+            if (!val || !dest) return alert("الرجاء تعبئة القيمة والوجهة ☺️");
+            if (parseFloat(val) < 0) return alert("ممنوع إدخال قيم سالبة يا حبة السكر ☺️");
             
             if (!shopData.detailedLoc) {
-                alert("يرجى تحديد هويتك المكانية (موقعك التفصيلي) أولاً لضمان وصول الكابتن بدقة.");
+                alert("يرجى تحديد هويتك المكانية موقعك التفصيلي أولا لضمان وصول الكابتن بدقة ☺️");
                 openLocationModal();
                 return;
             }
-
-            // تحديث الإحصائيات (تضاف قبل الإرسال لضمان السرعة)
-            shopData.ordersCount += 1;
-            if (isEmergency) shopData.emergencyUsed += 1;
-            
-            // حفظ الوجهة في التاريخ الذكي
-            if (!shopData.history.includes(dest)) shopData.history.unshift(dest);
-            localStorage.setItem('nOne_shop_data', JSON.stringify(shopData));
 
             // تجميد الأزرار
             const btnN = document.getElementById('btnNormal');
             const btnE = document.getElementById('btnEmergency');
             btnN.disabled = true; btnE.disabled = true;
-            btnN.innerText = "جاري الإرسال اللحظي... 📡";
+            btnN.innerText = "جاري الإرسال اللحظي 📡";
 
             // دمج الهوية المكانية مع اسم المنشأة لتظهر بغرفة العمليات
             const fullIdentity = `${currentShop.name} (${shopData.detailedLoc})`;
             
-            // رابط جوجل ماب ذكي للمنشأة
-            const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullIdentity)}`;
+            // رابط جوجل ماب ذكي للمنشأة مع تصحيح علامة الدولار
+            const mapLink = `https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(fullIdentity)}`;
 
             const newOrder = {
                 id: "SHOP_" + Date.now(),
@@ -305,31 +315,39 @@
                 cust_phone: "000",
                 
                 date: new Date().toISOString(),
-                status: isEmergency ? "emergency" : "new", // حالة الطوارئ
+                status: isEmergency ? "emergency" : "new", 
                 is_emergency: isEmergency
             };
 
             try {
+                // نرسل الطلب للسيرفر
                 await fetch(API_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ action: 'add', data: newOrder })
                 });
 
-                alert(isEmergency ? "🚨 تم إرسال نداء الطوارئ للمركز!" : "✅ تم توجيه الطلب بنجاح للمركز!");
+                alert(isEmergency ? "🚨 تم إرسال نداء الطوارئ للمركز" : "✅ تم توجيه الطلب بنجاح للمركز");
                 
                 // تفريغ وتحديث
                 document.getElementById('quick_val').value = '';
                 document.getElementById('quick_dest').value = '';
-                updateDashboard();
+                
+                // حفظ الوجهة في التاريخ الذكي
+                if (!shopData.history.includes(dest)) shopData.history.unshift(dest);
+                localStorage.setItem('nOne_shop_data', JSON.stringify(shopData));
+                
                 populateHistory();
+                
+                // تحديث الإنجازات والطوارئ من السيرفر مباشرة بعد الإرسال
+                await refreshData();
 
             } catch (e) {
-                alert("خطأ في الاتصال، لكن تم حفظ الإنجاز.");
+                alert("خطأ في الاتصال ☺️");
             } finally {
                 btnN.disabled = false; btnE.disabled = false;
                 btnN.innerText = "إرسال كطلب عادي 🚀";
-                updateDashboard(); // لتحديث حالة زر الطوارئ
+                updateDashboard(); 
             }
         }
 
@@ -341,7 +359,7 @@
                 else s.classList.remove('active');
             });
             setTimeout(() => {
-                alert("شكراً لتقييمك! تقييمك يساعدنا في تحسين الجودة 🌟");
+                alert("شكرا لتقييمك تقييمك يساعدنا في تحسين الجودة 🌟");
                 starElements.forEach(s => s.classList.remove('active'));
             }, 300);
         }
