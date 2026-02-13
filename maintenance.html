@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N One | صيانة النظام الذكية</title>
+    <style>
+        /* ================= تصميم لوحة الصيانة الاحترافية ================= */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0a0a; color: #e0e0e0;
+            margin: 0; padding: 0; overflow-x: hidden;
+            user-select: none;
+        }
+
+        .header {
+            background: #111; padding: 20px 30px; display: flex;
+            justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #d4af37; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .brand { font-size: 24px; font-weight: 900; color: white; letter-spacing: 1px; }
+        .gold { color: #d4af37; }
+
+        .btn-back {
+            background: #222; color: #ddd; border: 1px solid #444;
+            padding: 8px 20px; border-radius: 8px; cursor: pointer; text-decoration: none;
+            font-weight: bold; transition: 0.3s;
+        }
+        .btn-back:hover { background: #333; color: white; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+
+        /* مؤشر صحة السيرفر */
+        .health-dashboard {
+            background: #151515; padding: 30px; border-radius: 15px;
+            border: 1px solid #333; margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .health-title { font-size: 20px; font-weight: bold; color: #d4af37; margin-bottom: 20px; }
+        
+        .progress-wrapper { width: 100%; background: #222; border-radius: 10px; height: 25px; margin-bottom: 10px; overflow: hidden; border: 1px solid #444; }
+        .progress-bar { height: 100%; background: #2e7d32; width: 0%; transition: width 1s ease-in-out, background 0.5s; }
+        
+        .health-stats { display: flex; justify-content: space-between; font-size: 13px; color: #aaa; }
+
+        /* شبكة أزرار الصيانة */
+        .tools-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
+        }
+
+        .tool-card {
+            background: #151515; padding: 25px; border-radius: 15px;
+            border: 1px solid #222; text-align: center; transition: 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .tool-card:hover { border-color: #d4af37; transform: translateY(-5px); }
+        
+        .tool-icon { font-size: 40px; margin-bottom: 15px; }
+        .tool-title { font-size: 18px; font-weight: bold; color: white; margin-bottom: 10px; }
+        .tool-desc { font-size: 13px; color: #888; margin-bottom: 25px; line-height: 1.5; }
+
+        .btn-action {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            font-size: 15px; font-weight: bold; cursor: pointer; color: white;
+            transition: 0.3s;
+        }
+        .btn-backup { background: #1a237e; }
+        .btn-backup:hover { background: #283593; }
+        
+        .btn-archive { background: #e65100; }
+        .btn-archive:hover { background: #ef6c00; }
+        
+        .btn-clean { background: #2e7d32; }
+        .btn-clean:hover { background: #388e3c; }
+
+        #loader-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center;
+            flex-direction: column;
+        }
+        .loader-text { color: #d4af37; font-size: 20px; font-weight: bold; margin-top: 20px; }
+        
+        .status-msg { margin-top: 15px; font-size: 13px; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="loader-overlay">
+        <div style="font-size: 50px;">⚙️</div>
+        <div class="loader-text" id="loader-msg">جاري فحص السيرفر...</div>
+    </div>
+
+    <div class="header">
+        <div class="brand">N <span class="gold">One</span> Maintenance</div>
+        <a href="admin.html" class="btn-back">العودة للإدارة ⬅️</a>
+    </div>
+
+    <div class="container">
+        
+        <div class="health-dashboard">
+            <div class="health-title">📊 مؤشر صحة السيرفر المركزي</div>
+            <div class="progress-wrapper">
+                <div class="progress-bar" id="server-load-bar"></div>
+            </div>
+            <div class="health-stats">
+                <span id="load-text">استهلاك قاعدة البيانات 0%</span>
+                <span id="rows-count">الأسطر المستخدمة 0 / 10000</span>
+            </div>
+            <div style="margin-top:15px; font-size:12px; color:#666;">
+                النظام يعمل بكفاءة عالية طالما المؤشر باللون الأخضر ☺️
+            </div>
+        </div>
+
+        <div class="tools-grid">
+            
+            <div class="tool-card">
+                <div class="tool-icon">💾</div>
+                <div class="tool-title">النسخ الاحتياطي الشامل</div>
+                <div class="tool-desc">تنزيل نسخة آمنة ومفرغة من جميع بيانات الإمبراطورية والشركات والطلبات كملف JSON مشفر</div>
+                <button class="btn-action btn-backup" onclick="backupData()">سحب نسخة احتياطية 🚀</button>
+                <div id="backup-msg" class="status-msg" style="color:#64b5f6;"></div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-icon">📦</div>
+                <div class="tool-title">الأرشفة التلقائية الذكية</div>
+                <div class="tool-desc">تنزيل الطلبات المكتملة وحذفها من السيرفر المركزي لتخفيف الضغط وتسريع استجابة النظام</div>
+                <button class="btn-action btn-archive" onclick="autoArchive()">بدء الأرشفة والتفريغ 🚀</button>
+                <div id="archive-msg" class="status-msg" style="color:#ffb74d;"></div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-icon">🧹</div>
+                <div class="tool-title">تنظيف الذاكرة الميتة</div>
+                <div class="tool-desc">مسح الجلسات المنتهية والشوائب البرمجية من الذاكرة المحلية لضمان عمل المتصفح بأقصى سرعة</div>
+                <button class="btn-action btn-clean" onclick="cleanMemory()">تنظيف الذاكرة الآن 🚀</button>
+                <div id="clean-msg" class="status-msg" style="color:#81c784;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 💎 الرابط الملكي 💎
+        const API_URL = "https://script.google.com/macros/s/AKfycby8Lvhri3wDGXFwXY2EPKy_sf6vrIEAyPVGreob8gDe_mx9EbpqWsqqR511LXdqjjU1/exec";
+        
+        let systemData = [];
+
+        window.onload = async function() {
+            // حماية الجلسة والزر الخلفي
+            window.history.pushState(null, "", window.location.href);
+            window.onpopstate = function() {
+                window.history.pushState(null, "", window.location.href);
+            };
+
+            // التحقق المعمق من التشفير
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'admin' || !user.sessionToken || !user.sessionToken.includes('N1_SECURE')) {
+                window.location.replace('index.html');
+                return;
+            }
+            
+            await fetchHealthStatus();
+        };
+
+        // دالة قراءة صحة السيرفر
+        async function fetchHealthStatus() {
+            showLoader("جاري فحص نبض السيرفر ⏳");
+            try {
+                const res = await fetch(API_URL + "?action=read");
+                systemData = await res.json();
+                
+                const totalRows = systemData.length;
+                const maxRows = 10000; // الحد الآمن الموصى به لسرعة الأداء
+                let percentage = (totalRows / maxRows) * 100;
+                if(percentage > 100) percentage = 100;
+
+                const bar = document.getElementById('server-load-bar');
+                bar.style.width = percentage + '%';
+                
+                // تغيير لون المؤشر حسب الضغط
+                if(percentage < 50) bar.style.background = "#2e7d32"; 
+                else if(percentage < 80) bar.style.background = "#f57f17"; 
+                else bar.style.background = "#c62828"; 
+
+                document.getElementById('load-text').innerText = `استهلاك قاعدة البيانات ${percentage.toFixed(1)}%`;
+                document.getElementById('rows-count').innerText = `الأسطر المستخدمة ${totalRows} / ${maxRows}`;
+                
+            } catch (e) {
+                console.error(e);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // 1. ميزة النسخ الاحتياطي
+        function backupData() {
+            if(systemData.length === 0) return alert("لا توجد بيانات للسحب ☺️");
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(systemData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "N_One_Backup_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+
+            const msg = document.getElementById('backup-msg');
+            msg.innerText = "تم حفظ النسخة الاحتياطية بنجاح ☺️✅";
+            msg.style.display = "block";
+            setTimeout(() => msg.style.display = "none", 4000);
+        }
+
+        // 2. خوارزمية الأرشفة الذكية (تعتمد على حذف الطلبات القديمة بعد حفظها)
+        async function autoArchive() {
+            if(!confirm("هل أنت متأكد من بدء عملية الأرشفة سيتم تفريغ الطلبات لتخفيف السيرفر ☺️")) return;
+            
+            // فلترة الطلبات فقط للحفاظ على بيانات الشركات والكباتن
+            const ordersToArchive = systemData.filter(item => item.type === 'order');
+            
+            if(ordersToArchive.length === 0) {
+                alert("السيرفر نظيف ولا يوجد طلبات للأرشفة ☺️");
+                return;
+            }
+
+            // أولا تحميل نسخة من الطلبات قبل الحذف لضمان عدم ضياعها
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ordersToArchive, null, 2));
+            const dlNode = document.createElement('a');
+            dlNode.setAttribute("href", dataStr);
+            dlNode.setAttribute("download", "Archive_Orders_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(dlNode);
+            dlNode.click();
+            dlNode.remove();
+
+            showLoader("جاري تنظيف السيرفر من الطلبات المؤرشفة الرجاء عدم إغلاق الصفحة ⏳");
+
+            try {
+                // إرسال أوامر الحذف للسيرفر بشكل متتالي ومدروس
+                for(let i = 0; i < ordersToArchive.length; i++) {
+                    const orderId = ordersToArchive[i].id;
+                    await fetch(API_URL + "?action=delete&user=" + orderId, { method: 'POST', mode: 'no-cors' });
+                }
+                
+                const msg = document.getElementById('archive-msg');
+                msg.innerText = "تمت الأرشفة وتفريغ السيرفر بنجاح ☺️✅";
+                msg.style.display = "block";
+                setTimeout(() => msg.style.display = "none", 4000);
+                
+                await fetchHealthStatus(); // تحديث العدادات
+
+            } catch (error) {
+                alert("حدث خطأ أثناء التفريغ ☺️");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // 3. تنظيف الذاكرة الميتة
+        function cleanMemory() {
+            // مسح كل شيء عدا الجلسة الحالية للمدير
+            const current = localStorage.getItem('currentUser');
+            localStorage.clear();
+            sessionStorage.clear();
+            if(current) localStorage.setItem('currentUser', current);
+
+            const msg = document.getElementById('clean-msg');
+            msg.innerText = "تم تنظيف الشوائب والذاكرة الميتة ☺️✅";
+            msg.style.display = "block";
+            setTimeout(() => msg.style.display = "none", 4000);
+        }
+
+        function showLoader(text) {
+            document.getElementById('loader-msg').innerText = text;
+            document.getElementById('loader-overlay').style.display = 'flex';
+        }
+
+        function hideLoader() {
+            document.getElementById('loader-overlay').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
