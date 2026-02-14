@@ -1,6 +1,6 @@
 /**
  * ========================================================
- * N ONE CORE JS (Diamond Edition 💎)
+ * N ONE CORE (Diamond Edition 💎)
  * العقل المدبر المطور - يتولى الذكاء، الذاكرة، والتنسيق الرسمي
  * Developed for: Habbat al-Sukar
  * ========================================================
@@ -297,3 +297,4 @@ window.toggleStatus = async function(u, currentS) {
     
     document.getElementById('loader-overlay').style.display = 'none';
 }
+
