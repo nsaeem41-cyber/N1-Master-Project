@@ -3,441 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | غرفة القيادة المركزية</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>N One | بوابة شركات الشحن (Partner)</title>
+    <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
+
     <style>
-        /* ================= تصميم Ultimate Command Center ================= */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eef2f5; margin: 0; padding: 0;
-            user-select: none; height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column;
+        /* ================= تصميم Client Pro ================= */
+        :root {
+            --primary: #00695c; /* لون مميز للشركات (Teal) */
+            --gold: #d4af37; --bg: #f4f7f6; --text: #333;
+            --success: #2e7d32; --danger: #c62828; --warning: #f57f17;
         }
 
-        /* 1. الشريط العلوي (المالية والإعدادات) */
-        .top-bar {
-            background: #1a237e; color: white; padding: 0 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            height: 60px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1000;
-        }
-        .brand { font-size: 18px; font-weight: 900; }
-        .gold { color: #d4af37; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); user-select: none; }
+
+        .navbar { background: white; height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; box-shadow: 0 2px 15px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary); position: sticky; top: 0; z-index: 1000; }
+        .brand { font-size: 22px; font-weight: 900; color: var(--primary); }
+        .gold-text { color: var(--gold); }
+        .btn-logout { background: var(--danger); color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+
+        /* التبويبات */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; color: #555; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; transform: translateY(-2px); }
+
+        /* المحتوى */
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* الكروت والجداول */
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 25px; border-top: 4px solid var(--primary); }
+        .card-header { font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; display: flex; justify-content: space-between; }
         
-        .finance-controls { display: flex; gap: 10px; align-items: center; font-size: 13px; }
-        .finance-input {
-            width: 50px; padding: 5px; border-radius: 5px; border: none;
-            text-align: center; font-weight: bold; color: #1a237e;
-        }
-        .btn-reset {
-            background: #c62828; color: white; border: none; padding: 5px 10px;
-            border-radius: 5px; cursor: pointer; font-size: 11px;
-        }
-
-        /* 2. تقسيم الشاشة (تم تعديل الاتجاهات حسب الطلب) */
-        .main-layout {
-            display: flex; flex: 1; height: calc(100vh - 60px);
-        }
-
-        /* الجانب الأيمن: سجل المراقبة (Live Feed) */
-        .right-panel-feed {
-            width: 55%; background: #f4f7f6; padding: 20px;
-            overflow-y: auto; display: flex; flex-direction: column;
-            border-left: 2px solid #ddd;
-        }
-
-        /* الجانب الأيسر: الإدخال اليدوي */
-        .left-panel-form {
-            width: 45%; background: white; padding: 20px;
-            overflow-y: auto; box-shadow: 5px 0 15px rgba(0,0,0,0.05);
-        }
-
-        /* بطاقات الإدخال */
-        .card-title {
-            font-size: 18px; font-weight: bold; color: #1a237e;
-            border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 15px;
-            display: flex; justify-content: space-between;
-        }
-        .manual-tag {
-            background: #e3f2fd; color: #1565c0; padding: 2px 8px; 
-            border-radius: 4px; font-size: 12px; border: 1px solid #1565c0;
-        }
-
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 5px; }
-        input, select {
-            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;
-            font-size: 14px; background: #fafafa; outline: none; box-sizing: border-box;
-        }
-        input:focus { border-color: #1a237e; background: white; }
-
-        .btn-send {
-            width: 100%; padding: 15px; background: #1a237e; color: white;
-            border: none; border-radius: 12px; font-size: 16px; font-weight: bold;
-            cursor: pointer; margin-top: 10px; transition: 0.2s;
-        }
-        .btn-send:hover { background: #0d155a; transform: scale(1.02); }
-
-        /* بطاقات السجل (اليمين) - نبض القلب */
-        .log-card {
-            background: white; padding: 15px; border-radius: 10px;
-            margin-bottom: 10px; border-right: 4px solid #1a237e;
-            display: flex; justify-content: space-between; align-items: center;
-            animation: pulseFade 0.5s ease-in; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        @keyframes pulseFade { 
-            0% { opacity: 0; transform: scale(0.95); } 
-            50% { transform: scale(1.02); }
-            100% { opacity: 1; transform: scale(1); } 
-        }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; background: #fafafa; }
+        input:focus { border-color: var(--primary); background: white; }
         
-        .log-info { font-size: 13px; color: #333; }
-        .log-finance { font-size: 12px; color: #2e7d32; font-weight: bold; }
-        .log-time { font-size: 11px; color: #888; }
+        .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
+        .btn-add { background: var(--primary); } .btn-add:hover { background: #004d40; }
 
-        /* لوحة المديونية (Finance Dashboard) */
-        .finance-dashboard {
-            background: #fff3e0; padding: 15px; border-radius: 10px;
-            margin-bottom: 20px; border: 1px solid #ffe0b2;
-        }
-        .finance-item {
-            display: flex; justify-content: space-between; border-bottom: 1px solid #eee;
-            padding: 5px 0; font-size: 13px;
-        }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        thead { background: #f0f2f5; color: #444; }
+        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #eee; font-size: 14px; }
+        
+        .badge { padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; }
+        .bg-paid { background: #e3f2fd; color: #1565c0; }
+        .bg-free { background: #f3e5f5; color: #7b1fa2; }
+        .bg-money { background: #e8f5e9; color: #2e7d32; font-family: 'Courier New', monospace; font-weight: bold; }
 
-        /* إخفاء العناصر القديمة للحفاظ على الكود (الميثاق) */
-        .legacy-hidden { display: none; }
+        .controls button { padding: 5px 10px; margin-left: 5px; border-radius: 5px; border: none; color: white; cursor: pointer; font-size: 12px; }
+        .btn-edit { background: var(--warning); }
+        .btn-freeze { background: #78909c; }
+        .btn-delete { background: var(--danger); }
 
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 5000; display: flex;
-            justify-content: center; align-items: center; flex-direction: column;
-        }
+        #loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <h2 style="color:#1a237e;">N <span style="color:#d4af37">One</span></h2>
-        <p>جاري ضبط الأقمار الصناعية ☺️🚀</p>
+    <div id="loader-overlay">
+        <div style="font-size:30px;">🚚</div>
+        <div>جاري الاتصال بالنظام المركزي...</div>
     </div>
 
-    <div class="top-bar">
-        <div class="brand">N <span class="gold">One</span> Admin</div>
-        <div class="finance-controls">
-            <span>نسبة الشركة (%):</span>
-            <input type="number" id="company_percentage" class="finance-input" value="10" onchange="saveSettings()">
-            <button class="btn-reset" onclick="resetFinanceWeek()">🔄 تصفير أسبوعي</button>
-            <button onclick="logout()" style="background:none; border:none; color:white; cursor:pointer;">🔒 خروج</button>
+    <nav class="navbar">
+        <div class="brand">N <span class="gold-text">One</span> Partner</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <span id="welcome-msg" style="font-size:14px; font-weight:bold;">مرحباً</span>
+            <button class="btn-logout" onclick="logout()">خروج</button>
         </div>
-    </div>
+    </nav>
 
-    <div class="main-layout">
+    <div class="container">
         
-        <div class="right-panel-feed">
-            <div class="finance-dashboard">
-                <h4 style="margin:0 0 10px 0; color:#e65100;">💰 سجل مستحقات الكباتن (النشاط المالي)</h4>
-                <div id="finance-list">
-                    <div style="text-align:center; color:#777;">جاري تحميل البيانات المالية ☺️</div>
-                </div>
-                <canvas id="financeChart" height="120" style="margin-top: 15px;"></canvas>
-            </div>
-
-            <h4 style="margin:0 0 10px 0; color:#555;">📡 مركز استقبال الطلبات (Live Feed)</h4>
-            <div id="live-feed">
-                </div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 لوحة المعلومات</button>
+            <button class="tab-btn" onclick="switchTab('shops')">🏪 منشآتي (إدارة المطاعم)</button>
+            <button class="tab-btn" onclick="switchTab('orders')">📦 مركز الطلبات</button>
         </div>
 
-        <div class="left-panel-form">
-            <div class="card-title">
-                <span>📝 تسجيل طلب جديد</span>
-                <span class="manual-tag">يدوي</span>
-            </div>
-
-            <div class="input-group">
-                <label>👤 اسم الكابتن</label>
-                <input type="text" id="manual_cap_name" placeholder="محمد أحمد">
-            </div>
-
-            <div class="input-group">
-                <label>📱 رقم هاتف الكابتن</label>
-                <input type="tel" id="manual_cap_phone" placeholder="079">
-            </div>
-
-            <div class="input-group">
-                <label>📍 المصدر / اسم المطعم (جلب الموقع تلقائياً)</label>
-                <input type="text" id="pickup_name" placeholder="مثال مطعم الشاورما الدوار السابع">
-            </div>
-
-            <div class="input-group">
-                <label>💰 قيمة الشحنة (الطلب)</label>
-                <input type="number" id="order_val" placeholder="0.00">
-            </div>
-
-            <div class="input-group">
-                <label>🛵 أجرة المندوب (التوصيل)</label>
-                <input type="number" id="delivery_fee" placeholder="0.00">
-            </div>
-
-            <button class="btn-send" onclick="sendOrder()">إرسال واتساب + توثيق 🚀</button>
-
-            <div class="legacy-hidden">
-                <select id="captain_select"></select>
-                <input type="text" id="pickup_loc_link">
-                <input type="text" id="cust_name" value="General">
-                <input type="text" id="cust_phone" value="000">
+        <div id="dashboard" class="tab-content active">
+            <div class="form-grid">
+                <div class="card" style="text-align:center;">
+                    <h3 style="margin:0; color:#555;">المنشآت التابعة</h3>
+                    <h1 id="total-shops" style="color:var(--primary); font-size:40px; margin:10px 0;">0</h1>
+                </div>
+                <div class="card" style="text-align:center; border-top-color:var(--success);">
+                    <h3 style="margin:0; color:#555;">إجمالي الأرباح (النسبة)</h3>
+                    <h1 id="total-profit" style="color:var(--success); font-size:40px; margin:10px 0;">0 د.أ</h1>
+                </div>
             </div>
         </div>
+
+        <div id="shops" class="tab-content">
+            <div class="card">
+                <div class="card-header">✨ إضافة منشأة جديدة تابعة لحسابي</div>
+                <div class="form-grid">
+                    <input type="text" id="shop_name" placeholder="اسم المنشأة (المطعم)">
+                    <input type="text" id="shop_user" placeholder="اسم المستخدم (للمنشأة)">
+                    <input type="password" id="shop_pass" placeholder="كلمة المرور">
+                    
+                    <select id="sub_type">
+                        <option value="paid">اشتراك مدفوع (Premium)</option>
+                        <option value="free">مجاني (Basic)</option>
+                    </select>
+                    
+                    <select id="commission_rate">
+                        <option value="10">نسبة الشركة 10%</option>
+                        <option value="15">نسبة الشركة 15%</option>
+                        <option value="20">نسبة الشركة 20%</option>
+                        <option value="0">بدون عمولة (0%)</option>
+                    </select>
+
+                    <button class="btn-action btn-add" onclick="addShop()">+ إضافة المنشأة</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">سجل المنشآت والتحكم</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المنشأة</th>
+                                <th>بيانات الدخول</th>
+                                <th>نوع الاشتراك</th>
+                                <th>نسبة الشركة</th>
+                                <th>الحالة</th>
+                                <th>تحكم</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shops-table-body">
+                            <tr><td colspan="6" style="text-align:center;">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="orders" class="tab-content">
+            <div class="card">
+                <div class="card-header">📦 سجل الطلبات الواردة والأرباح</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>المصدر (المنشأة)</th>
+                                <th>الموقع / الوجهة</th>
+                                <th>قيمة الطلب</th>
+                                <th>أجرة التوصيل</th>
+                                <th>صافي ربح الشركة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <tr><td colspan="6" style="text-align:center;">لا توجد طلبات بعد</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
-
-    <audio id="alert-sound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"></audio>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbytYicEdE87FeQ5j9K9l3wrM9YB9uDDojNhjIKLGDDijBfOxwJPxFYDILkfIfBxJiKP/exec";
-        
         let currentUser = null;
-        let myData = []; 
-        let orders = [];
-        let financeChartInstance = null;
-        
-        // سجل مالي ذكي يعتمد على السيرفر ويتم فلترته بناء على دورة الجرد
-        let cycleStartDate = localStorage.getItem('nOne_cycle_start') || '2000-01-01T00:00:00.000Z';
-        let capStats = {};
+        let allData = [];
 
         window.onload = async function() {
-            // استعادة الإعدادات المالية
-            if(localStorage.getItem('nOne_percent')) {
-                document.getElementById('company_percentage').value = localStorage.getItem('nOne_percent');
+            if (typeof N_ONE_CORE === 'undefined') { alert("خطأ في الاتصال بالنواة!"); return; }
+            
+            // التحقق من الجلسة (يجب أن يكون client)
+            currentUser = N_ONE_CORE.checkSession('client');
+            
+            if (currentUser) {
+                document.getElementById('welcome-msg').innerText = `أهلاً، ${currentUser.name}`;
+                await fetchData();
             }
-
-            currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser) { window.location.replace('index.html'); return; }
-
-            await refreshData();
-            document.getElementById('loader').style.display = 'none';
-            setInterval(checkMyStatus, 10000); 
         };
 
-        async function refreshData() {
+        async function fetchData() {
             try {
-                const res = await fetch(API_URL + "?action=read");
-                const all = await res.json();
-                myData = all.filter(item => (item.cl || item.client_user) === currentUser.user);
-                orders = myData.filter(i => i.type === 'order');
-                updateLiveFeed();
-                calculateServerFinance(); 
+                allData = await N_ONE_CORE.fetchData('read');
+                renderShops();
+                renderOrders();
             } catch (e) { console.error(e); }
         }
 
-        // دالة جديدة لحساب الجرد المالي مباشرة من بيانات السيرفر
-        function calculateServerFinance() {
-            capStats = {};
-            const cycleOrders = orders.filter(o => new Date(o.date) >= new Date(cycleStartDate));
-            
-            cycleOrders.forEach(o => {
-                const cName = o.cap_name;
-                if (!capStats[cName]) capStats[cName] = { count: 0, total_dues: 0 };
-                capStats[cName].count += 1;
-                const dailyTotal = parseFloat(o.fee || 0) + parseFloat(o.val || 0);
-                capStats[cName].total_dues = (parseFloat(capStats[cName].total_dues) + dailyTotal).toFixed(2);
-            });
-            updateFinanceDisplay();
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
         }
 
-        function updateLiveFeed() {
-            const feed = document.getElementById('live-feed');
-            feed.innerHTML = orders.slice().reverse().map(o => `
-                <div class="log-card">
-                    <div>
-                        <div style="font-weight:bold; color:#1a237e;">${o.cap_name}</div>
-                        <div class="log-info">${o.pickup.includes('http') ? 'موقع مسجل' : o.pickup} | ${o.val} د.أ</div>
-                    </div>
-                    <div style="text-align:left;">
-                        <div class="log-finance">أجرة: ${o.fee}</div>
-                        <div class="log-time">${o.date.split('T')[1].substring(0,5)}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
+        // ================= إدارة المنشآت =================
 
-        async function sendOrder() {
-            // 1. جمع البيانات اليدوية
-            const capName = document.getElementById('manual_cap_name').value;
-            const capPhone = document.getElementById('manual_cap_phone').value;
-            const shopName = document.getElementById('pickup_name').value;
-            const val = document.getElementById('order_val').value;
-            const fee = document.getElementById('delivery_fee').value;
+        async function addShop() {
+            const name = document.getElementById('shop_name').value;
+            const user = document.getElementById('shop_user').value;
+            const pass = document.getElementById('shop_pass').value;
+            const subType = document.getElementById('sub_type').value;
+            const comm = document.getElementById('commission_rate').value;
+
+            if (!name || !user || !pass) { alert("بيانات ناقصة ☺️"); return; }
+
+            // تحديد الموقع (مكان الكود اللي رح تبعثه لي)
+            // حالياً رح نستخدم قيمة افتراضية حتى ترسل الكود
+            const locationLink = "سيتم تفعيل الرابط التلقائي قريباً"; 
+
+            document.getElementById('loader-overlay').style.display = 'flex';
             
-            if(!capName || !shopName || !val || !fee) return alert("البيانات ناقصة يا حبة السكر ☺️");
-            
-            // إضافة فلاتر الحماية لمنع القيم السالبة
-            if(parseFloat(val) < 0 || parseFloat(fee) < 0) return alert("ممنوع إدخال قيم سالبة يا بطة ☺️");
-
-            // 2. إصلاح الموقع (Smart Link Generation) مع إضافة علامة الدولار البرمجية
-            const mapLink = `https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(shopName)}`;
-            document.getElementById('pickup_loc_link').value = mapLink; 
-
-            // 3. الحسابات المالية (نسبة الشركة)
-            const percent = document.getElementById('company_percentage').value;
-            const companyShare = (fee * (percent / 100)).toFixed(2);
-            
-            // حساب الأرقام اللحظية للواتساب قبل تحديث السيرفر
-            let currentDues = capStats[capName] ? parseFloat(capStats[capName].total_dues) : 0;
-            let currentCount = capStats[capName] ? capStats[capName].count : 0;
-            const dailyTotal = (currentDues + parseFloat(fee) + parseFloat(val)).toFixed(2);
-            const newCount = currentCount + 1;
-
-            // 4. بناء الطلب للسيرفر
-            const newOrder = {
-                id: "ORD_" + Date.now(),
-                type: "order",
-                client_user: currentUser.user,
-                cl_name: currentUser.name,
-                cap_name: capName,
-                cap_phone: capPhone,
-                pickup: mapLink, 
-                val: val,
-                fee: fee,
-                company_share: companyShare, 
-                cust_name: "General",
-                cust_phone: "000",
-                date: new Date().toISOString(),
-                status: "new"
+            const newShop = {
+                id: "SH_" + Date.now(),
+                user: user, pass: pass, name: name,
+                role: "shop", type: "shop", 
+                client_user: currentUser.user, // ربط المنشأة بهذه الشركة
+                status: "active",
+                sub_type: subType, // paid or free
+                commission: comm, // 10, 15, 20
+                location_data: locationLink
             };
 
-            // تشغيل صوت التنبيه
-            playAlert();
-
-            await sendData(newOrder);
-
-            // 5. واتساب المطور (الصيغة النهائية المعتمدة)
-            let p = capPhone.replace(/\D/g, '');
-            if (!p.startsWith('962')) p = '962' + p.replace(/^0+/, '');
+            await N_ONE_CORE.postData('add', [newShop]);
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
+            alert("تم إضافة المنشأة بنجاح ☺️");
             
-            const msg = `إشعار طلب جديد - N One%0a` +
-                        `👤 *المرسل إليه:* ${capName}%0a` +
-                        `يرجى استلام الطلب التالي:%0a` +
-                        `🏠 *المصدر:* ${shopName}%0a` +
-                        `📍 *الموقع الجغرافي:* ${mapLink}%0a` +
-                        `--------------------------------%0a` +
-                        `💵 *بيانات التوصيل:*%0a` +
-                        `🔸 *أجرة المندوب:* ${fee} د.أ%0a` +
-                        `🔸 *قيمة الشحنة:* ${val} د.أ%0a` +
-                        `--------------------------------%0a` +
-                        `📊 *ملخص النشاط اليومي:*%0a` +
-                        `📦 *إجمالي الطلبات:* (${newCount})%0a` +
-                        `💰 *إجمالي المستحقات:* ${dailyTotal} د.أ%0a` +
-                        `--------------------------------%0a` +
-                        `🛑 *نرجو الالتزام بمعايير الجودة والوقت والالتزام بتعاليم الشركة*%0a` +
-                        `يرجى تأكيد الاستلام 🚀`;
-            
-            window.open(`https://wa.me/${p}?text=${msg}`, '_blank');
-            
-            alert("تم التوثيق والإرسال ☺️");
-            refreshData(); // هذا السطر سيقوم بتحديث الجرد المالي والرسوم البيانية تلقائيا من السيرفر
+            // تفريغ
+            document.getElementById('shop_name').value = '';
+            document.getElementById('shop_user').value = '';
         }
 
-        // عرض السجل المالي والرسوم البيانية
-        function updateFinanceDisplay() {
-            const list = document.getElementById('finance-list');
-            let html = '';
-            let chartLabels = [];
-            let chartData = [];
+        function renderShops() {
+            const tbody = document.getElementById('shops-table-body');
+            // فلترة المنشآت التابعة لهذا المستخدم فقط
+            const myShops = allData.filter(i => i.type === 'shop' && i.client_user === currentUser.user).reverse();
 
-            for (let [cap, data] of Object.entries(capStats)) {
-                html += `
-                    <div class="finance-item">
-                        <span>${cap} (${data.count})</span>
-                        <span style="font-weight:bold; color:#d4af37;">${data.total_dues} د.أ</span>
-                    </div>
+            document.getElementById('total-shops').innerText = myShops.length;
+
+            if (myShops.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد منشآت مضافة</td></tr>'; return; }
+
+            tbody.innerHTML = '';
+            myShops.forEach(shop => {
+                const subBadge = shop.sub_type === 'paid' ? '<span class="badge bg-paid">مدفوع 💎</span>' : '<span class="badge bg-free">مجاني</span>';
+                const statusBtn = shop.status === 'active' ? 'تجميد ❄️' : 'تفعيل ▶️';
+                
+                const row = `
+                    <tr>
+                        <td><b>${shop.name}</b></td>
+                        <td>${shop.user} | ${shop.pass}</td>
+                        <td>${subBadge}</td>
+                        <td>${shop.commission || 0}%</td>
+                        <td>${shop.status}</td>
+                        <td class="controls">
+                            <button class="btn-edit" onclick="editShop('${shop.user}', '${shop.name}', '${shop.pass}')">✏️</button>
+                            <button class="btn-freeze" onclick="toggleStatus('${shop.user}', '${shop.status}')">${statusBtn}</button>
+                            <button class="btn-delete" onclick="deleteShop('${shop.user}')">❌</button>
+                        </td>
+                    </tr>
                 `;
-                chartLabels.push(cap);
-                chartData.push(parseFloat(data.total_dues));
-            }
-            if(html === '') html = '<div style="text-align:center; color:#777;">سجل نظيف</div>';
-            list.innerHTML = html;
-            
-            // تفعيل رسم المخططات البيانية
-            drawChart(chartLabels, chartData);
-        }
-
-        // دالة إنشاء الرسوم البيانية الذكية
-        function drawChart(labels, data) {
-            const ctx = document.getElementById('financeChart');
-            if(!ctx) return;
-            
-            if (financeChartInstance) {
-                financeChartInstance.destroy(); // تدمير الرسم القديم قبل تحديثه
-            }
-            
-            financeChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'إجمالي المستحقات (د.أ)',
-                        data: data,
-                        backgroundColor: '#1a237e',
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { beginAtZero: true }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
+                tbody.innerHTML += row;
             });
         }
 
-        function saveSettings() {
-            const p = document.getElementById('company_percentage').value;
-            localStorage.setItem('nOne_percent', p);
-        }
+        // ================= مركز الطلبات والمالية =================
 
-        function resetFinanceWeek() {
-            if(!confirm("هل أنت متأكد من بدء دورة مالية جديدة وتصفير العدادات ☺️")) return;
-            // تعيين تاريخ الدورة الجديدة بدل حذف البيانات لضمان بقائها في السيرفر
-            cycleStartDate = new Date().toISOString();
-            localStorage.setItem('nOne_cycle_start', cycleStartDate);
-            calculateServerFinance();
-            alert("تم بدء دورة مالية جديدة ☺️");
-        }
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            // جلب الطلبات اللي مصدرها (منشآت تابعة لي)
+            // نتأكد إن صاحب الطلب (client_user) هو واحد من المنشآت اللي أنا ضفتها
+            // أو إن الطلب مربوط فيني مباشرة
+            
+            // 1. أول شي نجيب قائمة اليوزرات تبعون محلاتي
+            const myShopsUsers = allData.filter(i => i.type === 'shop' && i.client_user === currentUser.user).map(s => s.user);
+            
+            // 2. نجيب الطلبات اللي جاية من هاي اليوزرات
+            const orders = allData.filter(i => i.type === 'order' && myShopsUsers.includes(i.client_user)).reverse();
 
-        function playAlert() {
-            const audio = document.getElementById('alert-sound');
-            if(audio) audio.play().catch(e => console.log("Audio requires interaction"));
-        }
+            let totalProfit = 0;
 
-        async function sendData(dataObj) {
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ action: 'add', data: dataObj })
+            if (orders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد طلبات واردة</td></tr>'; return; }
+
+            tbody.innerHTML = '';
+            orders.forEach(ord => {
+                // البحث عن المنشأة لمعرفة نسبتها
+                const shop = allData.find(s => s.user === ord.client_user);
+                const commRate = shop ? (shop.commission || 0) : 0;
+                
+                // الحساب الديناميكي: العمولة من أجرة التوصيل فقط
+                const deliveryFee = Number(ord.fee || 0);
+                const profit = deliveryFee * (commRate / 100);
+                totalProfit += profit;
+
+                const row = `
+                    <tr>
+                        <td>${ord.date.split('T')[0]}</td>
+                        <td><b>${shop ? shop.name : ord.client_user}</b></td>
+                        <td><a href="${ord.pickup}" target="_blank" style="text-decoration:none;">📍 الموقع</a></td>
+                        <td>${ord.val} د.أ</td>
+                        <td>${deliveryFee} د.أ</td>
+                        <td><span class="badge bg-money">+${profit.toFixed(2)} د.أ</span></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
             });
-            await new Promise(r => setTimeout(r, 1000));
+
+            document.getElementById('total-profit').innerText = totalProfit.toFixed(1) + " د.أ";
         }
 
-        async function checkMyStatus() {
-            try {
-                const res = await fetch(API_URL + "?action=read");
-                const all = await res.json();
-                const me = all.find(u => u.user === currentUser.user);
-                if (!me || me.status !== 'active') { alert("الحساب موقوف ☺️"); logout(); }
-            } catch(e) {}
+        // ================= أدوات التحكم =================
+
+        async function editShop(u, n, p) {
+            const newN = prompt("تعديل اسم المنشأة:", n);
+            if (!newN) return;
+            const newP = prompt("تعديل كلمة المرور:", p);
+            
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.postData('update', { user: u, data: { name: newN, pass: newP } });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
         }
 
-        function logout() {
-            localStorage.removeItem('currentUser');
-            sessionStorage.clear();
-            window.location.replace('index.html');
+        async function toggleStatus(u, currentS) {
+            const newS = currentS === 'active' ? 'paused' : 'active';
+            if(!confirm("تغيير حالة المنشأة؟")) return;
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.postData('update', { user: u, data: { status: newS } });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
         }
-        
-        // دوال وهمية للميثاق
-        function getMyGPS() {}
-        function fillCaptainData() {}
+
+        async function deleteShop(u) {
+            if(!confirm("حذف المنشأة نهائياً؟")) return;
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.fetchData('delete', { user: u });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
+        }
+
+        function logout() { N_ONE_CORE.logout(); }
     </script>
+
 </body>
 </html>
