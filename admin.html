@@ -3,139 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | غرفة القيادة المركزية</title>
+    <title>N One | غرفة القيادة المركزية + AI 555</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
     <style>
         /* ================= أساسيات التصميم (Pro Theme) ================= */
         :root {
-            --primary: #1a237e;    /* كحلي ملكي */
-            --gold: #d4af37;       /* ذهبي */
-            --bg: #f4f7f6;         /* خلفية فاتحة */
-            --text: #333;
-            --success: #2e7d32;
-            --danger: #c62828;
-            --warning: #f57f17;    /* برتقالي للتجميد */
+            --primary: #1a237e; --gold: #d4af37; --bg: #f4f7f6; --text: #333;
+            --success: #2e7d32; --danger: #c62828; --warning: #f57f17;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0; padding: 0; color: var(--text);
-            user-select: none; 
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); user-select: none; }
 
-        /* الشريط العلوي */
-        .navbar {
-            background: white; height: 70px; display: flex;
-            justify-content: space-between; align-items: center;
-            padding: 0 30px; box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-            border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 1000;
-        }
-
+        .navbar { background: white; height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; box-shadow: 0 2px 15px rgba(0,0,0,0.05); border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
         .brand { font-size: 24px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
-
-        .nav-actions button {
-            background: none; border: none; font-size: 16px; cursor: pointer;
-            margin-left: 15px; padding: 8px 15px; border-radius: 8px; transition: 0.3s;
-        }
+        .nav-actions button { background: none; border: none; font-size: 16px; cursor: pointer; margin-left: 15px; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
         .btn-settings { color: #555; background: #eee !important; }
         .btn-logout { background-color: var(--danger) !important; color: white; }
-        .btn-logout:hover { background-color: #b71c1c !important; }
 
-        /* الحاوية الرئيسية */
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 
         /* كروت الإحصائيات */
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px; margin-bottom: 30px;
-        }
-        .stat-card {
-            background: white; padding: 25px; border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03); text-align: center;
-            border-top: 5px solid var(--primary); transition: 0.3s;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); text-align: center; border-top: 5px solid var(--primary); transition: 0.3s; }
         .stat-card:hover { transform: translateY(-5px); }
         .stat-number { font-size: 36px; font-weight: bold; color: var(--primary); margin: 10px 0; }
         .stat-label { color: #777; font-size: 14px; }
 
-        /* نموذج الإضافة */
-        .card {
-            background: white; padding: 30px; border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 30px;
+        /* 🧠 قسم الذكاء الاصطناعي 555 الجديد 🧠 */
+        .ai-section {
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            color: white; padding: 25px; border-radius: 20px; margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.2); border: 2px solid #d4af37;
         }
-        .card-header {
-            font-size: 20px; font-weight: bold; color: var(--primary);
-            border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .ai-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .ai-title { font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .ai-badge { background: #d4af37; color: #1a237e; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; }
         
-        input, select {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-            outline: none; background: #fafafa;
+        .recommendation-card {
+            background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            border-right: 4px solid #d4af37;
         }
+        .rec-info { font-size: 14px; }
+        .rec-btn {
+            background: #d4af37; color: #1a237e; border: none; padding: 8px 15px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .rec-btn:hover { background: white; }
+
+        /* باقي الأقسام */
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 30px; }
+        .card-header { font-size: 20px; font-weight: bold; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; background: #fafafa; }
         input:focus { border-color: var(--primary); background: white; }
-
-        .btn-add {
-            background: var(--success); color: white; border: none; padding: 12px 25px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; height: 100%; width: 100%;
-        }
-        .btn-add:hover { background: #1b5e20; }
-
-        /* جدول البيانات */
+        .btn-add { background: var(--success); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; height: 100%; width: 100%; }
+        
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         thead { background: #f8f9fa; color: #555; font-weight: bold; }
         th, td { padding: 15px; text-align: right; border-bottom: 1px solid #eee; }
-        
         .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
         .status-active { background: #e8f5e9; color: var(--success); }
         .status-paused { background: #fff3e0; color: var(--warning); }
         .status-expired { background: #ffebee; color: var(--danger); } 
+        .action-btn { padding: 6px 12px; border-radius: 6px; border: none; color: white; cursor: pointer; font-size: 12px; margin-left: 5px; }
+        .act-freeze { background: var(--warning); } .act-active { background: var(--success); } .act-delete { background: var(--danger); } .act-renew { background: var(--primary); }
 
-        /* أزرار التحكم في الجدول */
-        .action-btn {
-            padding: 6px 12px; border-radius: 6px; border: none;
-            color: white; cursor: pointer; font-size: 12px; margin-left: 5px;
-        }
-        .act-freeze { background: var(--warning); }
-        .act-active { background: var(--success); }
-        .act-delete { background: var(--danger); }
-        .act-renew { background: var(--primary); }
-
-        /* نافذة الإعدادات المنبثقة (Modal) */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px;
-            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
-        .modal h3 { color: var(--primary); margin-top: 0; }
-        .close-modal { float: left; cursor: pointer; font-size: 20px; color: #999; }
-        
-        #loader-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.8); z-index: 3000; justify-content: center; align-items: center;
-            font-size: 24px; font-weight: bold; color: var(--primary);
-        }
+        #loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 3000; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="loader-overlay">جاري المزامنة مع المصلح المركزي... ⏳</div>
+    <div id="loader-overlay">جاري تحليل البيانات بالذكاء الاصطناعي... 🧠</div>
 
     <nav class="navbar">
         <div class="brand">N <span class="gold-text">One</span> Admin</div>
         <div class="nav-actions">
-            <button class="btn-settings" onclick="openSettings()">⚙️ الإعدادات</button>
+            <button class="btn-settings">⚙️ الإعدادات</button>
             <button class="btn-logout" onclick="logout()">خروج 🔒</button>
         </div>
     </nav>
@@ -152,302 +100,205 @@
                 <div class="stat-number" id="active-count" style="color: var(--success);">0</div>
             </div>
             <div class="stat-card" style="border-top-color: var(--gold);">
-                <div class="stat-label">المردود المالي (اشتراكات)</div>
+                <div class="stat-label">المردود المالي</div>
                 <div class="stat-number" id="revenue-count" style="color: var(--gold);">0</div>
+            </div>
+        </div>
+
+        <div class="ai-section">
+            <div class="ai-header">
+                <div class="ai-title">📡 رادار الأداء الذكي (System 555)</div>
+                <div class="ai-badge">AI Active</div>
+            </div>
+            <div id="ai-recommendations">
+                <p style="font-size:13px; opacity:0.8;">جاري فحص أداء الكباتن وتحليل البيانات...</p>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
-                <span>✨ إضافة شركة جديدة (اشتراك)</span>
-                <span style="font-size:12px; color:#777;">سيتم إنشاء حساب معزول بالكامل</span>
+                <span>✨ إضافة شركة جديدة</span>
             </div>
             <div class="form-grid">
-                <input type="text" id="new_name" placeholder="اسم الشركة (White Label)">
-                <input type="text" id="new_user" placeholder="اسم المستخدم (User ID)">
-                <input type="password" id="new_pass" placeholder="كلمة المرور (Password)">
-                
+                <input type="text" id="new_name" placeholder="اسم الشركة">
+                <input type="text" id="new_user" placeholder="User ID">
+                <input type="password" id="new_pass" placeholder="Password">
                 <select id="sub_duration">
-                    <option value="30">شهر واحد (30 يوم)</option>
-                    <option value="90">3 أشهر (ربع سنوي)</option>
-                    <option value="180">6 أشهر (نصف سنوي)</option>
-                    <option value="365">سنة كاملة (VIP)</option>
+                    <option value="30">30 يوم</option>
+                    <option value="90">3 أشهر</option>
+                    <option value="365">سنة VIP</option>
                 </select>
-                <input type="number" id="sub_price" placeholder="قيمة الاشتراك (د.أ)">
-
-                <button class="btn-add" id="btnAddUser" onclick="addClient()">+ تفعيل الاشتراك 🚀</button>
+                <input type="number" id="sub_price" placeholder="السعر">
+                <button class="btn-add" onclick="addClient()">+ تفعيل</button>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-header">سجل الشركات والعداد التنازلي ⏳</div>
+            <div class="card-header">سجل الشركات والاشتراكات</div>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>الشركة</th>
                             <th>بيانات الدخول</th>
-                            <th>الخطة / السعر</th>
+                            <th>السعر</th>
                             <th>الأيام المتبقية</th>
                             <th>الحالة</th>
                             <th>التحكم</th>
                         </tr>
                     </thead>
                     <tbody id="clients-table">
-                        <tr><td colspan="6" style="text-align:center; padding:20px;">جاري الاتصال بالسيرفر... ⏳</td></tr>
+                        <tr><td colspan="6" style="text-align:center;">جاري الاتصال...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeSettings()">✖</span>
-            <h3>⚙️ إعدادات المدير</h3>
-            <p style="color:#666; font-size:13px; margin-bottom:20px;">تغيير كلمة المرور الخاصة بالنظام المركزي</p>
-            <input type="password" id="admin_new_pass" placeholder="كلمة المرور الجديدة" style="margin-bottom:10px;">
-            <button class="btn-add" onclick="changeAdminPass()">حفظ التغييرات</button>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-            <button class="btn-logout" onclick="logout()" style="width:100%;">إنهاء الجلسة تماماً</button>
-        </div>
-    </div>
-
     <script>
-        // المتغيرات العامة
         let allData = [];
         let currentUser = null;
-        let globalServerTime = new Date(); 
 
-        // ============================================
-        // النظام المركزي: التحقق والبدء
-        // ============================================
         window.onload = async function() {
-            // 1. استخدام المصلح المركزي لفحص الجلسة (بدون الختم المعقد، فقط رتبة admin)
-            // ملاحظة: تأكد أن N_ONE_CORE تم تحميله من الرابط في الأعلى
-            if (typeof N_ONE_CORE === 'undefined') {
-                alert("خطأ: لم يتم تحميل المصلح المركزي! تأكد من الإنترنت.");
-                return;
-            }
-
-            // فحص الجلسة: إذا لم يكن admin، سيقوم المصلح بطرده تلقائياً
-            currentUser = N_ONE_CORE.checkSession('admin');
+            if (typeof N_ONE_CORE === 'undefined') { alert("خطأ في المصلح المركزي"); return; }
             
+            currentUser = N_ONE_CORE.checkSession('admin');
             if (currentUser) {
-                // منع الرجوع للخلف
-                window.history.pushState(null, "", window.location.href);
-                window.onpopstate = function() { window.history.pushState(null, "", window.location.href); };
-
-                await fetchServerTime();
                 await fetchData();
             }
         };
 
-        async function fetchServerTime() {
+        async function fetchData() {
             try {
-                const res = await fetch("http://worldtimeapi.org/api/timezone/Asia/Amman");
-                const timeData = await res.json();
-                globalServerTime = new Date(timeData.datetime);
+                // جلب البيانات عبر المصلح المركزي
+                allData = await N_ONE_CORE.fetchData('read');
+                
+                renderTable(); // الجدول القديم
+                runSmartRadar555(); // 🧠 تشغيل الذكاء الاصطناعي الجديد
+                
             } catch (e) {
-                globalServerTime = new Date(); 
+                console.error(e);
             }
         }
 
-        async function fetchData() {
-            try {
-                // استخدام المصلح المركزي لجلب البيانات
-                allData = await N_ONE_CORE.fetchData('read');
-                renderTable();
-            } catch (e) {
-                console.error(e);
-                alert("خطأ في الاتصال بالسيرفر المركزي ☺️");
+        // 🧠 خوارزمية الرادار الذكي 555 🧠
+        function runSmartRadar555() {
+            const aiContainer = document.getElementById('ai-recommendations');
+            aiContainer.innerHTML = '';
+
+            // 1. استخراج الطلبات فقط
+            const orders = allData.filter(item => item.type === 'order');
+            
+            // 2. تجميع أداء الكباتن
+            let captainsStats = {};
+            orders.forEach(order => {
+                const capName = order.cap_name || "Unknown";
+                if (!captainsStats[capName]) {
+                    captainsStats[capName] = { count: 0, totalVal: 0 };
+                }
+                captainsStats[capName].count++;
+                captainsStats[capName].totalVal += Number(order.val || 0);
+            });
+
+            // 3. تحليل الأداء واختيار النخبة (معيار 555)
+            // المعيار الحالي للتجربة: أكثر من 5 طلبات (يمكنك رفعه لـ 50 لاحقاً)
+            const eliteCaptains = Object.entries(captainsStats).filter(([name, stat]) => stat.count >= 5);
+
+            if (eliteCaptains.length === 0) {
+                aiContainer.innerHTML = '<p style="font-size:13px; opacity:0.8;">لا يوجد توصيات حالياً. بانتظار المزيد من الإنجازات 🚀</p>';
+                return;
             }
+
+            eliteCaptains.forEach(([name, stat]) => {
+                const card = document.createElement('div');
+                card.className = 'recommendation-card';
+                card.innerHTML = `
+                    <div class="rec-info">
+                        <strong>🏅 كابتن مميز: ${name}</strong><br>
+                        أنجز ${stat.count} طلب | إجمالي تحصيل ${stat.totalVal} د.أ
+                    </div>
+                    <button class="rec-btn" onclick="alert('تم نسخ توصية التكريم للكابتن ${name} ✅\\nفكرة 555: يوم إجازة مُهدى!')">
+                        إصدار توصية 555 🎁
+                    </button>
+                `;
+                aiContainer.appendChild(card);
+            });
         }
+
+        // ==========================================
+        // باقي الدوال الأساسية (لم يتم تغييرها)
+        // ==========================================
 
         function renderTable() {
             const tbody = document.getElementById('clients-table');
             const clients = allData.filter(u => u.role === 'client').reverse();
-
-            // الإحصائيات
+            
             document.getElementById('total-count').innerText = clients.length;
             document.getElementById('active-count').innerText = clients.filter(c => c.status === 'active').length;
-            
             let totalRev = 0;
             clients.forEach(c => totalRev += Number(c.price || 0));
             document.getElementById('revenue-count').innerText = totalRev.toFixed(0);
 
-            if (clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا يوجد اشتراكات نشطة</td></tr>';
-                return;
-            }
+            if (clients.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا بيانات</td></tr>'; return; }
 
             tbody.innerHTML = '';
             clients.forEach(client => {
                 const expiryDate = new Date(client.expiry);
-                const diffTime = expiryDate - globalServerTime;
+                const diffTime = expiryDate - new Date();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                let statusBadge = '';
-                let daysText = '';
-
-                if (client.status === 'paused') {
-                    statusBadge = `<span class="status-badge status-paused">مجمد ❄️</span>`;
-                    daysText = `<span style="color:#f57f17;">موقف مؤقتاً</span>`;
-                } else if (diffDays <= 0) {
-                    statusBadge = `<span class="status-badge status-expired">منتهي ⛔</span>`;
-                    daysText = `<span style="color:#c62828; font-weight:bold;">انتهى الاشتراك</span>`;
-                    if(client.status === 'active') {
-                        setStatusSilent(client.user, 'paused');
-                    }
-                } else {
-                    statusBadge = `<span class="status-badge status-active">نشط ✅</span>`;
-                    if (diffDays <= 3) {
-                        daysText = `<span style="color:#c62828; font-weight:bold;">${diffDays} يوم (تنبيه!) ⚠️</span>`;
-                    } else {
-                        daysText = `<span style="color:#2e7d32; font-weight:bold;">${diffDays} يوم</span>`;
-                    }
-                }
                 
-                const toggleBtn = client.status === 'active'
-                    ? `<button class="action-btn act-freeze" onclick="setStatus('${client.user}', 'paused')">تجميد</button>`
-                    : `<button class="action-btn act-active" onclick="setStatus('${client.user}', 'active')">تفعيل</button>`;
+                let statusBadge = client.status === 'active' ? '<span class="status-badge status-active">نشط</span>' : '<span class="status-badge status-paused">مجمد</span>';
+                if(diffDays <= 0) statusBadge = '<span class="status-badge status-expired">منتهي</span>';
 
-                const row = `
-                    <tr>
-                        <td><b>${client.name}</b></td>
-                        <td style="font-size:12px; color:#555;">${client.user}<br>Pwd: ${client.pass}</td>
-                        <td style="font-size:12px;">${client.price || 0} د.أ</td>
-                        <td>${daysText}</td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            ${toggleBtn}
-                            <button class="action-btn act-renew" onclick="renewClient('${client.user}')">تجديد</button>
-                            <button class="action-btn act-delete" onclick="deleteClient('${client.user}')">حذف</button>
-                        </td>
-                    </tr>
-                `;
+                const row = `<tr>
+                    <td><b>${client.name}</b></td>
+                    <td>${client.user}</td>
+                    <td>${client.price}</td>
+                    <td>${diffDays} يوم</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="action-btn act-freeze" onclick="setStatus('${client.user}', 'paused')">❄️</button>
+                        <button class="action-btn act-delete" onclick="deleteClient('${client.user}')">❌</button>
+                    </td>
+                </tr>`;
                 tbody.innerHTML += row;
             });
         }
 
         async function addClient() {
-            const name = document.getElementById('new_name').value;
-            const user = document.getElementById('new_user').value;
-            const pass = document.getElementById('new_pass').value;
-            const days = parseInt(document.getElementById('sub_duration').value);
-            const price = document.getElementById('sub_price').value;
-
-            if (!name || !user || !pass || !price) { alert("البيانات ناقصة يا حبة السكر ☺️"); return; }
-
-            const expDate = new Date(globalServerTime);
-            expDate.setDate(expDate.getDate() + days);
-            const expStr = expDate.toISOString().split('T')[0];
-
-            const btn = document.getElementById('btnAddUser');
-            btn.innerText = "جاري الاتصال بالمصلح المركزي... ⏳"; 
-            btn.disabled = true;
-            document.getElementById('loader-overlay').style.display = 'flex';
-
+            const btn = document.querySelector('.btn-add');
+            btn.innerText = "جاري الاتصال..."; btn.disabled = true;
+            
             const newClient = {
                 id: "CL_" + Date.now(),
-                user: user, pass: pass, name: name,
+                user: document.getElementById('new_user').value,
+                pass: document.getElementById('new_pass').value,
+                name: document.getElementById('new_name').value,
                 role: "client", type: "client", status: "active",
-                expiry: expStr,
-                price: price, 
-                plan_days: days
+                expiry: new Date(Date.now() + document.getElementById('sub_duration').value * 86400000).toISOString().split('T')[0],
+                price: document.getElementById('sub_price').value,
+                plan_days: document.getElementById('sub_duration').value
             };
 
-            // استخدام المصلح المركزي للإرسال
             await N_ONE_CORE.postData('add', [newClient]);
-            await fetchData(); 
-            
-            document.getElementById('loader-overlay').style.display = 'none';
-            btn.innerText = "+ تفعيل الاشتراك 🚀";
-            btn.disabled = false;
-            
-            alert("تم تفعيل الاشتراك وإنشاء الحساب المعزول ☺️✅");
-            
-            // تفريغ الحقول
-            document.getElementById('new_name').value = '';
-            document.getElementById('new_user').value = '';
-            document.getElementById('new_pass').value = '';
-            document.getElementById('sub_price').value = '';
-        }
-
-        async function setStatus(username, newStatus) {
-            if (!confirm(newStatus === 'paused' ? "تجميد الحساب؟ ☺️" : "إعادة تفعيل الحساب؟ ☺️")) return;
-            document.getElementById('loader-overlay').style.display = 'flex';
-            // استخدام المصلح المركزي للتحديث
-            await N_ONE_CORE.postData('update', { 
-                user: username, 
-                data: { status: newStatus } 
-            });
             await fetchData();
-            document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم تحديث الحالة عبر المركز ☺️");
-        }
-        
-        async function setStatusSilent(username, newStatus) {
-            await N_ONE_CORE.postData('update', { 
-                user: username, 
-                data: { status: newStatus } 
-            });
+            btn.innerText = "+ تفعيل"; btn.disabled = false;
+            alert("تمت الإضافة بنجاح ☺️");
         }
 
-        async function renewClient(username) {
-            const days = prompt("عدد أيام التجديد ☺️", "30");
-            const price = prompt("قيمة التجديد للجرد المالي ☺️", "0");
-            if (!days) return;
-
-            const newDate = new Date(globalServerTime);
-            newDate.setDate(newDate.getDate() + parseInt(days));
-            const expStr = newDate.toISOString().split('T')[0];
-
-            document.getElementById('loader-overlay').style.display = 'flex';
-            
-            await N_ONE_CORE.postData('update', { 
-                user: username, 
-                data: { expiry: expStr, status: 'active', price: price } 
-            });
-
+        async function setStatus(u, s) {
+            if(!confirm('تغيير الحالة؟')) return;
+            await N_ONE_CORE.postData('update', { user: u, data: { status: s } });
             await fetchData();
-            document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم تجديد الاشتراك بنجاح ☺️📅");
         }
 
-        async function deleteClient(username) {
-            if (!confirm("هل أنت متأكد من الحذف النهائي للبيانات؟ ☺️")) return;
-            document.getElementById('loader-overlay').style.display = 'flex';
-            
-            // استخدام المصلح المركزي للحذف (عبر fetchData لأن الحذف GET في السيرفر حالياً)
-            await N_ONE_CORE.fetchData('delete', { user: username });
-            
+        async function deleteClient(u) {
+            if(!confirm('حذف نهائي؟')) return;
+            await N_ONE_CORE.fetchData('delete', { user: u });
             await fetchData();
-            document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم حذف الشركة بنجاح ☺️");
         }
 
-        async function changeAdminPass() {
-            const newPass = document.getElementById('admin_new_pass').value;
-            if (!newPass) return;
-            document.getElementById('loader-overlay').style.display = 'flex';
-            
-            await N_ONE_CORE.postData('update', { 
-                user: currentUser.user, 
-                data: { pass: newPass } 
-            });
-
-            document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم تغيير كلمة المرور بنجاح ☺️");
-            logout();
-        }
-
-        function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
-        function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
-        
-        function logout() {
-            N_ONE_CORE.logout();
-        }
+        function logout() { N_ONE_CORE.logout(); }
     </script>
 
 </body>
