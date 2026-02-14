@@ -60,6 +60,7 @@
         
         .badge { padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; }
         .bg-money { background: #e8f5e9; color: var(--money); font-family: 'Courier New', monospace; font-weight: bold; font-size: 13px; }
+        .bg-val { background: #fff3e0; color: #e65100; font-family: 'Courier New', monospace; font-weight: bold; font-size: 13px; }
 
         /* تصميم القسمين (Split View) */
         .operations-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
@@ -203,10 +204,10 @@
                                 <thead>
                                     <tr>
                                         <th>الوقت</th>
-                                        <th>المصدر</th>
-                                        <th>الموقع (Smart Map)</th>
+                                        <th>المصدر (المطعم)</th>
+                                        <th>الموقع (المسجل)</th>
+                                        <th>قيمة الأوردر</th>
                                         <th>التوصيل</th>
-                                        <th>الربح</th>
                                     </tr>
                                 </thead>
                                 <tbody id="orders-table-body">
@@ -227,11 +228,12 @@
                                         <th>الكابتن</th>
                                         <th>المطعم</th>
                                         <th>التوصيل</th>
+                                        <th>النسبة (للشركة)</th>
                                         <th>الحالة</th>
                                     </tr>
                                 </thead>
                                 <tbody id="archive-table-body">
-                                    <tr><td colspan="4" style="text-align:center;">لم يتم إرسال طلبات يدوية اليوم</td></tr>
+                                    <tr><td colspan="5" style="text-align:center;">لم يتم إرسال طلبات يدوية اليوم</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -254,6 +256,10 @@
                         
                         <input type="text" id="man_loc" placeholder="اسم المطعم / المنطقة (بحث ذكي)">
                         
+                        <div style="display:flex; gap:10px;">
+                            <input type="number" id="man_ratio" placeholder="نسبة الشركة %" style="border-color:#d4af37;">
+                        </div>
+
                         <div style="display:flex; gap:10px;">
                             <input type="number" id="man_fee" placeholder="التوصيل (د.أ)">
                             <input type="number" id="man_price" placeholder="القيمة (د.أ)">
@@ -335,13 +341,14 @@
             }
         }
 
-        // ================= الإرسال اليدوي (واتساب + أرشفة) =================
+        // ================= الإرسال اليدوي (واتساب + أرشفة + نسبة الشركة) =================
         function sendManualOrder() {
             const phoneInput = document.getElementById('man_phone').value;
             const capName = document.getElementById('man_cap_name').value;
             const locName = document.getElementById('man_loc').value; // اسم المطعم
             const fee = document.getElementById('man_fee').value;
             const price = document.getElementById('man_price').value;
+            const ratio = document.getElementById('man_ratio').value || 0; // نسبة الشركة
 
             if(!phoneInput || !locName || !capName) { alert("بيانات ناقصة ☺️"); return; }
 
@@ -356,10 +363,12 @@
             const smartLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(locName);
 
             // 4. حساب النشاط اليومي لهذا الكابتن
-            // نعد كم مرة ظهر هذا الكابتن في الأرشيف اليومي + 1 (الطلب الحالي)
             const dailyCount = dailyArchive.filter(o => o.phone === phoneInput).length + 1;
 
-            // 5. تنسيق الرسالة الدقيق
+            // 5. حساب قيمة النسبة المقتطعة من التوصيل
+            const commValue = (fee * (ratio / 100)).toFixed(2);
+
+            // 6. تنسيق الرسالة الدقيق
             let msg = `إشعار طلب جديد - N One%0a`;
             msg += `المرسل إليه: ${capName}%0a`;
             msg += `يرجى استلام الطلب التالي:%0a`;
@@ -372,15 +381,16 @@
             msg += `إجمالي الطلبات: ${dailyCount}%0a`;
             msg += `نرجو الالتزام بمعايير الجودة والوقت.`;
 
-            // 6. فتح واتساب
+            // 7. فتح واتساب
             window.open(`https://wa.me/${finalPhone}?text=${msg}`, '_blank');
 
-            // 7. الأرشفة المحلية
-            addToArchive(capName, phoneInput, locName, fee);
+            // 8. الأرشفة المحلية (مع النسبة)
+            addToArchive(capName, phoneInput, locName, fee, commValue);
         }
 
-        function addToArchive(capName, phone, locName, fee) {
-            const order = { capName, phone, locName, fee, time: new Date().toLocaleTimeString() };
+        function addToArchive(capName, phone, locName, fee, commValue) {
+            // إضافة commValue للأرشفة
+            const order = { capName, phone, locName, fee, commValue, time: new Date().toLocaleTimeString() };
             dailyArchive.unshift(order); // إضافة للأول
             // تحديث التخزين المحلي لليوم
             localStorage.setItem('n1_daily_archive_' + new Date().toLocaleDateString(), JSON.stringify(dailyArchive));
@@ -390,11 +400,12 @@
             document.getElementById('man_loc').value = '';
             document.getElementById('man_fee').value = '';
             document.getElementById('man_price').value = '';
+            // لا نفرغ النسبة لتسهيل الإرسال المتكرر
         }
 
         function renderArchive() {
             const tbody = document.getElementById('archive-table-body');
-            if (dailyArchive.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">لم يتم إرسال طلبات يدوية اليوم</td></tr>'; return; }
+            if (dailyArchive.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لم يتم إرسال طلبات يدوية اليوم</td></tr>'; return; }
             
             tbody.innerHTML = '';
             dailyArchive.forEach(o => {
@@ -403,13 +414,14 @@
                         <td><b>${o.capName}</b></td>
                         <td>${o.locName}</td>
                         <td>${o.fee} د.أ</td>
+                        <td><span class="badge" style="background:#ffebee; color:#c62828;">${o.commValue} د.أ</span></td>
                         <td><span class="badge bg-paid">تم الإرسال ✅</span></td>
                     </tr>
                 `;
             });
         }
 
-        // ================= إدارة المنشآت =================
+        // ================= إدارة المنشآت (مع إصلاح التجميد) =================
         async function addShop() {
             const name = document.getElementById('shop_name').value;
             const user = document.getElementById('shop_user').value;
@@ -441,15 +453,25 @@
             tbody.innerHTML = '';
             myShops.forEach(shop => {
                 const subBadge = shop.sub_type === 'paid' ? '<span class="badge bg-paid">مدفوع 💎</span>' : '<span class="badge bg-free">مجاني</span>';
-                const statusHtml = shop.status === 'active' ? '<span class="badge" style="background:#e8f5e9; color:#2e7d32;">نشط ✅</span>' : '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ⏸️</span>';
-                const toggleBtn = shop.status === 'active' ? `<button class="btn-freeze" onclick="toggleStatus('${shop.user}', 'active')">تجميد</button>` : `<button class="btn-active" onclick="toggleStatus('${shop.user}', 'paused')">تفعيل</button>`;
+                
+                // منطق عرض الحالة الصحيح
+                const statusHtml = shop.status === 'active' 
+                    ? '<span class="badge" style="background:#e8f5e9; color:#2e7d32;">نشط ✅</span>' 
+                    : '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ⏸️</span>';
+                
+                // زر التبديل بناءً على الحالة الحالية
+                const toggleBtn = shop.status === 'active' 
+                    ? `<button class="btn-freeze" onclick="toggleStatus('${shop.user}', 'active')">تجميد</button>` 
+                    : `<button class="btn-active" onclick="toggleStatus('${shop.user}', 'paused')">تفعيل</button>`;
+                
                 tbody.innerHTML += `<tr><td><b>${shop.name}</b></td><td style="font-size:12px;">${shop.user} | ${shop.pass}</td><td>${subBadge}</td><td><b>${shop.commission || 0}%</b></td><td>${statusHtml}</td><td class="controls"><button class="btn-edit" onclick="editShop('${shop.user}', '${shop.name}', '${shop.pass}')">✏️</button>${toggleBtn}<button class="btn-delete" onclick="deleteShop('${shop.user}')">❌</button></td></tr>`;
             });
         }
 
-        // ================= مركز العمليات (Live) =================
+        // ================= مركز العمليات (Live - إصلاح المصدر والموقع وقيمة الأوردر) =================
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
+            // المستخدمون التابعون لي
             const myShopsUsers = allData.filter(i => i.type === 'shop' && i.client_user === currentUser.user).map(s => s.user);
             const orders = allData.filter(i => i.type === 'order' && myShopsUsers.includes(i.client_user)).reverse();
 
@@ -462,14 +484,36 @@
             let totalProfit = 0;
             if (orders.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد طلبات واردة</td></tr>'; return; }
             tbody.innerHTML = '';
+            
             orders.forEach(ord => {
+                // البحث عن كائن المنشأة للحصول على الاسم والموقع الحقيقي
                 const shop = allData.find(s => s.user === ord.client_user);
+                
+                // اسم المنشأة (إذا لم يوجد نعرض الاسم القديم)
+                const shopName = shop ? shop.name : (ord.cl_name || 'Unknown');
+                
+                // الموقع المسجل
+                const shopLoc = shop ? (shop.location_link || 'موقع غير مسجل') : '...';
+                
                 const commRate = shop ? Number(shop.commission || 0) : 0;
                 const deliveryFee = Number(ord.fee || 0);
+                const orderVal = Number(ord.val || 0); // قيمة الأوردر
+                
                 const profit = deliveryFee * (commRate / 100);
                 totalProfit += profit;
-                const mapUrl = ord.pickup || (shop ? shop.location_link : '#');
-                tbody.innerHTML += `<tr><td style="font-size:12px;">${ord.date.split('T')[1]?.substring(0,5) || 'Now'}</td><td><b>${shop ? shop.name : 'Unknown'}</b></td><td><a href="${mapUrl}" target="_blank" style="text-decoration:none; color:#1565c0;">📍 الموقع</a></td><td>${deliveryFee}</td><td><span class="badge bg-money">+${profit.toFixed(2)}</span></td></tr>`;
+                
+                // رابط الموقع
+                const mapUrl = (shopLoc.includes('http')) ? shopLoc : '#';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-size:12px;">${ord.date.split('T')[1]?.substring(0,5) || 'Now'}</td>
+                        <td><b>${shopName}</b></td>
+                        <td><a href="${mapUrl}" target="_blank" style="text-decoration:none; color:#1565c0;">📍 الموقع المسجل</a></td>
+                        <td><span class="badge bg-val">${orderVal} د.أ</span></td>
+                        <td><span class="badge bg-money">${deliveryFee} د.أ</span></td>
+                    </tr>
+                `;
             });
             document.getElementById('total-profit').innerText = totalProfit.toFixed(1) + " د.أ";
         }
@@ -487,10 +531,13 @@
 
         async function toggleStatus(u, currentS) {
             const newS = currentS === 'active' ? 'paused' : 'active';
-            if(!confirm("تغيير الحالة؟")) return;
+            if(!confirm(newS === 'paused' ? "تجميد الحساب؟" : "إعادة التفعيل؟")) return;
+            
             document.getElementById('loader-overlay').style.display = 'flex';
+            // إرسال التحديث للسيرفر
             await N_ONE_CORE.postData('update', { user: u, data: { status: newS } });
-            await fetchData();
+            // إعادة جلب البيانات فوراً لتحديث الواجهة
+            await fetchData(); 
             document.getElementById('loader-overlay').style.display = 'none';
         }
 
