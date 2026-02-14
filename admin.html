@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N One | غرفة القيادة المركزية</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
+
     <style>
         /* ================= أساسيات التصميم (Pro Theme) ================= */
         :root {
@@ -127,7 +130,7 @@
 </head>
 <body>
 
-    <div id="loader-overlay">جاري المزامنة مع السيرفر المركزي... ⏳</div>
+    <div id="loader-overlay">جاري المزامنة مع المصلح المركزي... ⏳</div>
 
     <nav class="navbar">
         <div class="brand">N <span class="gold-text">One</span> Admin</div>
@@ -211,29 +214,30 @@
     </div>
 
     <script>
-        // الرابط الجديد الذي تم إعداده وتجربته بنجاح
-        const API_URL = "https://script.google.com/macros/s/AKfycbytYicEdE87FeQ5j9K9l3wrM9YB9uDDojNhjIKLGDDijBfOxwJPxFYDILkfIfBxJiKP/exec";
-
+        // المتغيرات العامة
         let allData = [];
         let currentUser = null;
         let globalServerTime = new Date(); 
 
         // ============================================
-        // نظام الدخول "المبسط والآمن" (تم إزالة شرط الختم)
+        // النظام المركزي: التحقق والبدء
         // ============================================
         window.onload = async function() {
-            // منع الرجوع للخلف للحفاظ على الجلسة
-            window.history.pushState(null, "", window.location.href);
-            window.onpopstate = function() {
-                window.history.pushState(null, "", window.location.href);
-            };
+            // 1. استخدام المصلح المركزي لفحص الجلسة (بدون الختم المعقد، فقط رتبة admin)
+            // ملاحظة: تأكد أن N_ONE_CORE تم تحميله من الرابط في الأعلى
+            if (typeof N_ONE_CORE === 'undefined') {
+                alert("خطأ: لم يتم تحميل المصلح المركزي! تأكد من الإنترنت.");
+                return;
+            }
 
-            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            // فحص الجلسة: إذا لم يكن admin، سيقوم المصلح بطرده تلقائياً
+            currentUser = N_ONE_CORE.checkSession('admin');
             
-            // الفحص المبسط: نتأكد من وجود المستخدم وإن رتبته أدمن فقط (بدون شرط الختم المعقد)
-            if (!currentUser || currentUser.role !== 'admin') {
-                window.location.replace('index.html'); 
-            } else {
+            if (currentUser) {
+                // منع الرجوع للخلف
+                window.history.pushState(null, "", window.location.href);
+                window.onpopstate = function() { window.history.pushState(null, "", window.location.href); };
+
                 await fetchServerTime();
                 await fetchData();
             }
@@ -251,8 +255,8 @@
 
         async function fetchData() {
             try {
-                const res = await fetch(API_URL + "?action=read");
-                allData = await res.json();
+                // استخدام المصلح المركزي لجلب البيانات
+                allData = await N_ONE_CORE.fetchData('read');
                 renderTable();
             } catch (e) {
                 console.error(e);
@@ -340,7 +344,7 @@
             const expStr = expDate.toISOString().split('T')[0];
 
             const btn = document.getElementById('btnAddUser');
-            btn.innerText = "جاري إنشاء الحساب... ⏳"; 
+            btn.innerText = "جاري الاتصال بالمصلح المركزي... ⏳"; 
             btn.disabled = true;
             document.getElementById('loader-overlay').style.display = 'flex';
 
@@ -353,7 +357,8 @@
                 plan_days: days
             };
 
-            await sendToServer('add', [newClient]);
+            // استخدام المصلح المركزي للإرسال
+            await N_ONE_CORE.postData('add', [newClient]);
             await fetchData(); 
             
             document.getElementById('loader-overlay').style.display = 'none';
@@ -362,6 +367,7 @@
             
             alert("تم تفعيل الاشتراك وإنشاء الحساب المعزول ☺️✅");
             
+            // تفريغ الحقول
             document.getElementById('new_name').value = '';
             document.getElementById('new_user').value = '';
             document.getElementById('new_pass').value = '';
@@ -371,14 +377,21 @@
         async function setStatus(username, newStatus) {
             if (!confirm(newStatus === 'paused' ? "تجميد الحساب؟ ☺️" : "إعادة تفعيل الحساب؟ ☺️")) return;
             document.getElementById('loader-overlay').style.display = 'flex';
-            await sendToServer('update', { status: newStatus }, username);
+            // استخدام المصلح المركزي للتحديث
+            await N_ONE_CORE.postData('update', { 
+                user: username, 
+                data: { status: newStatus } 
+            });
             await fetchData();
             document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم تحديث الحالة ☺️");
+            alert("تم تحديث الحالة عبر المركز ☺️");
         }
         
         async function setStatusSilent(username, newStatus) {
-            await sendToServer('update', { status: newStatus }, username);
+            await N_ONE_CORE.postData('update', { 
+                user: username, 
+                data: { status: newStatus } 
+            });
         }
 
         async function renewClient(username) {
@@ -391,7 +404,12 @@
             const expStr = newDate.toISOString().split('T')[0];
 
             document.getElementById('loader-overlay').style.display = 'flex';
-            await sendToServer('update', { expiry: expStr, status: 'active', price: price }, username);
+            
+            await N_ONE_CORE.postData('update', { 
+                user: username, 
+                data: { expiry: expStr, status: 'active', price: price } 
+            });
+
             await fetchData();
             document.getElementById('loader-overlay').style.display = 'none';
             alert("تم تجديد الاشتراك بنجاح ☺️📅");
@@ -400,7 +418,10 @@
         async function deleteClient(username) {
             if (!confirm("هل أنت متأكد من الحذف النهائي للبيانات؟ ☺️")) return;
             document.getElementById('loader-overlay').style.display = 'flex';
-            await fetch(API_URL + "?action=delete&user=" + username, { method: 'POST' });
+            
+            // استخدام المصلح المركزي للحذف (عبر fetchData لأن الحذف GET في السيرفر حالياً)
+            await N_ONE_CORE.fetchData('delete', { user: username });
+            
             await fetchData();
             document.getElementById('loader-overlay').style.display = 'none';
             alert("تم حذف الشركة بنجاح ☺️");
@@ -410,30 +431,22 @@
             const newPass = document.getElementById('admin_new_pass').value;
             if (!newPass) return;
             document.getElementById('loader-overlay').style.display = 'flex';
-            await sendToServer('update', { pass: newPass }, currentUser.user);
+            
+            await N_ONE_CORE.postData('update', { 
+                user: currentUser.user, 
+                data: { pass: newPass } 
+            });
+
             document.getElementById('loader-overlay').style.display = 'none';
             alert("تم تغيير كلمة المرور بنجاح ☺️");
             logout();
-        }
-
-        async function sendToServer(action, data, user = null) {
-            let url = API_URL + "?action=" + action;
-            if (user) url += "&user=" + user;
-            await fetch(url, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: action, data: data, user: user })
-            });
-            await new Promise(r => setTimeout(r, 1500));
         }
 
         function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
         function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
         
         function logout() {
-            localStorage.removeItem('currentUser');
-            sessionStorage.clear(); 
-            window.location.replace('index.html'); 
+            N_ONE_CORE.logout();
         }
     </script>
 
