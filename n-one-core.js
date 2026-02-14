@@ -1,8 +1,7 @@
 /**
  * ========================================================
- * N One Core Engine (v2.0 Pro) - The Smart Fixer 💉💎
- * العقل المدبر والمصلح المركزي لإمبراطورية N One
- * يقوم بمعالجة البيانات وحقن التعديلات في الواجهات عن بعد
+ * N One Core Engine (v3.0) - The Silent Controller 💉💎
+ * العقل المدبر الذي يفرض سيطرته على الواجهات دون لمسها
  * ========================================================
  */
 
@@ -10,13 +9,8 @@ const N_ONE_CORE = {
     // 1. الرابط الملكي الموحد
     API_URL: "https://script.google.com/macros/s/AKfycbytYicEdE87FeQ5j9K9l3wrM9YB9uDDojNhjIKLGDDijBfOxwJPxFYDILkfIfBxJiKP/exec",
 
-    // 2. ألوان الهوية البصرية
-    THEME: {
-        primary: "#1a237e", gold: "#d4af37", success: "#2e7d32",
-        danger: "#c62828", warning: "#f57f17", bg: "#f4f7f6"
-    },
-
-    // 3. نظام "إبرة العنبر" لإصلاح الجلسات والتحقق
+    // 2. نظام التحقق والسيطرة (The Hook)
+    // هذه الدالة هي بوابة الدخول التي يستدعيها Client
     checkSession: function(requiredRole = null) {
         const userStr = localStorage.getItem('currentUser');
         if (!userStr) { this.logout(); return null; }
@@ -28,8 +22,8 @@ const N_ONE_CORE = {
             return null;
         }
 
-        // تشغيل نظام الإصلاح التلقائي للصفحات
-        this.initAutoFixer(); 
+        // هنا يكمن السر تفعيل السيطرة فور استدعاء الجلسة
+        this.activateControl(); 
         
         localStorage.setItem('nOne_last_active', Date.now());
         return user;
@@ -40,7 +34,8 @@ const N_ONE_CORE = {
         window.location.replace('index.html');
     },
 
-    // 4. دوال الاتصال بالسيرفر مع "فلتر المعالجة الذكي"
+    // 3. معالج البيانات الذكي (Data Interceptor)
+    // العقل المدبر يعترض البيانات ويصلحها قبل أن يراها Client
     fetchData: async function(action, params = {}) {
         try {
             let url = this.API_URL + "?action=" + action;
@@ -49,40 +44,59 @@ const N_ONE_CORE = {
             const response = await fetch(url);
             let rawData = await response.json();
 
-            // 🧠 المعالج الذكي: إصلاح البيانات قبل وصولها للواجهات
+            // إذا كانت البيانات مصفوفة نبدأ المعالجة
             if (Array.isArray(rawData)) {
-                // تجميع المنشآت لربط الأسماء
+                
+                // خريطة لربط معرف المستخدم باسم المنشأة وموقعها
                 const shopsMap = {};
                 rawData.filter(i => i.type === 'shop').forEach(s => {
+                    // استخراج الاسم الحقيقي من الرابط إذا لم يتوفر وصف
+                    let locName = "غير محدد";
+                    if (s.location_link && s.location_link.includes('=')) {
+                        locName = decodeURIComponent(s.location_link.split('=')[1]);
+                    }
                     shopsMap[s.user] = { 
                         name: s.name, 
-                        loc: s.location_link || s.name, // استخدام اسم المنشأة كموقع إذا لم يوجد رابط
-                        comm: s.commission || 0
+                        // الموقع المسجل في إعدادات المنشأة
+                        location: locName,
+                        realStatus: s.status // الحالة الحقيقية من السيرفر
                     };
                 });
 
-                // تعديل كل طلب ليعرض الاسم الحقيقي والموقع والأرقام الصحيحة
+                // تعديل كل سطر ببيانات "مزيفة" محسنة ليقبلها Client
                 rawData.forEach(item => {
+                    
+                    // إصلاح حالة المنشآت في جدول الإدارة
+                    if (item.type === 'shop' || item.role === 'shop') {
+                        // إذا كانت الحالة مجمدة في السيرفر نفرضها على العرض
+                        if (item.status === 'paused') {
+                            // نتركها كما هي لأن Client يفهم paused
+                        }
+                    }
+
+                    // إصلاح بيانات الطلبات في غرفة العمليات
                     if (item.type === 'order') {
-                        // حل مشكلة اسم المصدر والموقع
+                        // استبدال معرف المستخدم باسم المنشأة الحقيقي
                         if (shopsMap[item.client_user]) {
-                            item.cl_name = shopsMap[item.client_user].name; // استبدال المعرف بالاسم التجاري
+                            // نخدع Client ونضع الاسم مكان المعرف ليعرضه
+                            item.client_user_original = item.client_user; // نحتفظ بالأصل
+                            item.name = shopsMap[item.client_user].name; // للاستخدام العام
                             
-                            // إذا كان الموقع عبارة عن رابط فقط، نحاول استخراج الاسم أو نعتمد موقع المنشأة
-                            if (!item.pickup || item.pickup.length < 5) {
-                                item.pickup = shopsMap[item.client_user].loc;
+                            // إصلاح الموقع ليظهر اسم المنطقة بدلاً من الرابط
+                            if (item.pickup && item.pickup.includes('http')) {
+                                // نحاول استخراج الاسم من الرابط القديم أو نستخدم موقع المنشأة
+                                item.pickup = shopsMap[item.client_user].location; 
+                            } else if (!item.pickup || item.pickup === 'undefined') {
+                                item.pickup = shopsMap[item.client_user].location;
                             }
                         }
-                        
-                        // حل مشكلة الأصفار (تحويل النصوص لأرقام)
+
+                        // إصلاح الأرقام المالية
                         item.val = Number(item.val) || 0;
                         item.fee = Number(item.fee) || 0;
-
-                        // حل مشكلة الحالة (تجميد المنشآت)
-                        // نتأكد أن الحالة تعكس الواقع
-                        if (item.type === 'shop' && item.status === 'paused') {
-                            item.displayStatus = 'مجمد ❄️'; // خاصية للعرض
-                        }
+                        
+                        // دمج القيم للعرض إذا لزم الأمر
+                        item.total_cash = item.val + item.fee;
                     }
                 });
             }
@@ -105,148 +119,150 @@ const N_ONE_CORE = {
         } catch (error) { return false; }
     },
 
-    // 5. 🛠️ نظام الحقن البرمجي (Auto Fixer & Injector)
-    // هذه الدالة السحرية تعمل في الخلفية وتعدل صفحة Client دون لمس ملفها
-    initAutoFixer: function() {
-        if (window.location.href.includes('client.html')) {
-            console.log("💉 N One Core: Injecting Client Fixes...");
+    // 4. تفعيل السيطرة وحقن الواجهات (The Injector)
+    activateControl: function() {
+        // ننتظر قليلاً حتى يحمل Client دواله الأصلية
+        setTimeout(() => {
+            // السيطرة على دالة رسم الأرشيف في Client
+            if (window.renderArchive) {
+                const originalRender = window.renderArchive; // حفظ النسخة القديمة
+                window.renderArchive = function() {
+                    originalRender(); // تنفيذ القديمة أولاً لرسم الجدول
+                    N_ONE_CORE.injectDiscounts(); // ثم حقن الخصومات فوراً
+                };
+            }
 
-            window.addEventListener('load', () => {
-                // أ) التجسس على دالة رسم الأرشيف لتعديلها بعد التنفيذ
-                if (typeof renderArchive === 'function') {
-                    const originalRender = renderArchive; // حفظ الدالة الأصلية
-                    window.renderArchive = function() {
-                        originalRender(); // تشغيل الأصلية
-                        N_ONE_CORE.injectFinancialColumn(); // تشغيل التعديلات فوراً بعدها
-                    };
-                }
-            });
-        }
+            // السيطرة على دالة رسم الطلبات في Client (لإظهار الأسماء الصحيحة)
+            // تم حلها مسبقاً عبر fetchData لكن زيادة تأكيد
+            if (window.renderOrders) {
+                 const originalOrders = window.renderOrders;
+                 window.renderOrders = function() {
+                     originalOrders();
+                     // يمكننا إضافة أي تعديلات إضافية هنا مستقبلاً
+                 };
+            }
+        }, 500); // نصف ثانية مهلة للتأكد من تحميل الصفحة
     },
 
-    // 6. 💰 الآلة الحاسبة المالية للكباتن (تُحقن في جدول الأرشيف)
-    injectFinancialColumn: function() {
-        const table = document.querySelector('#archive-table-body')?.parentElement;
-        if (!table) return;
+    // 5. نظام الخصومات وتراكم ذمم الكباتن
+    injectDiscounts: function() {
+        const tbody = document.getElementById('archive-table-body');
+        if (!tbody) return;
 
-        // 1. إضافة ترويسة الجدول (الخصم)
+        // إضافة ترويسة للجدول إذا لم تكن موجودة
+        const table = tbody.parentElement;
         const theadRow = table.querySelector('thead tr');
-        if (theadRow && !theadRow.querySelector('.n1-finance-head')) {
+        if (theadRow && !theadRow.querySelector('.n1-discount-header')) {
             const th = document.createElement('th');
-            th.className = 'n1-finance-head';
-            th.innerText = 'الخصم والذمم 📉';
-            th.style.color = '#c62828';
+            th.className = 'n1-discount-header';
+            th.innerText = 'الخصم %';
+            th.style.color = '#c62828'; 
             theadRow.appendChild(th);
         }
 
-        // 2. معالجة الصفوف وحساب التراكمي
-        const tbody = table.querySelector('tbody');
+        // المرور على كل صف وإضافة خانة الحساب
         const rows = tbody.querySelectorAll('tr');
         
-        // ذاكرة مؤقتة لحساب تراكمي الكباتن في هذا العرض
-        let captainTotals = {}; 
+        // مصفوفة لتجميع حسابات الكباتن
+        let captainDebts = {};
 
         rows.forEach(row => {
-            if (row.querySelector('.n1-finance-cell') || row.innerText.includes('لم يتم')) return;
+            // تخطي الصفوف الفارغة أو المحقونة مسبقاً
+            if (row.querySelector('.n1-discount-cell') || row.innerText.includes('لم يتم')) return;
 
-            // استخراج البيانات من الصف الحالي (يعتمد على ترتيب الأعمدة في Client)
             const tds = row.querySelectorAll('td');
+            // نفترض أن اسم الكابتن في العمود الأول (index 0)
             const capName = tds[0]?.innerText || "Unknown";
+            // نفترض أن أجرة التوصيل في العمود الثالث (index 2)
             const feeText = tds[2]?.innerText || "0";
-            const fee = parseFloat(feeText.replace('د.أ', '')) || 0;
+            const deliveryFee = parseFloat(feeText.replace(/[^\d.-]/g, '')) || 0;
 
-            // الخلية الجديدة
+            // إنشاء خلية الخصم
             const td = document.createElement('td');
-            td.className = 'n1-finance-cell';
+            td.className = 'n1-discount-cell';
             
-            // حساب الخصم (افتراضي 0، ويمكن تغييره يدوياً)
-            // بما أننا لا نستطيع الحفظ في الداتا بيس حاليا، سنحسبها محلياً للعرض
-            const inputContainer = document.createElement('div');
-            inputContainer.style.display = 'flex';
-            inputContainer.style.alignItems = 'center';
-            inputContainer.style.gap = '5px';
+            // حاوية المدخلات
+            const container = document.createElement('div');
+            container.style.display = 'flex'; container.style.alignItems = 'center'; container.style.gap = '5px';
 
-            const percentInput = document.createElement('input');
-            percentInput.type = 'number';
-            percentInput.placeholder = '%';
-            percentInput.style = "width:40px; padding:2px; border:1px solid #ccc; font-size:11px; text-align:center;";
-            percentInput.value = localStorage.getItem(`n1_rate_${capName}`) || 0; // استرجاع آخر نسبة للكابتن
+            // حقل إدخال النسبة
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.placeholder = '%';
+            input.style = "width:40px; padding:2px; border:1px solid #ccc; text-align:center; border-radius:4px;";
+            
+            // استرجاع النسبة المحفوظة لهذا الكابتن سابقاً
+            const savedRate = localStorage.getItem(`n1_rate_${capName}`) || 0;
+            input.value = savedRate;
 
-            const resultSpan = document.createElement('span');
-            resultSpan.style = "font-size:11px; font-weight:bold; color:#c62828;";
-            resultSpan.innerText = "0.00";
-
+            // عرض القيمة المخصومة
+            const display = document.createElement('span');
+            display.style = "font-size:11px; font-weight:bold; color:#c62828;";
+            
             // دالة الحساب الفوري
-            const calculate = () => {
-                const pct = parseFloat(percentInput.value) || 0;
-                const discount = fee * (pct / 100);
-                resultSpan.innerText = `-${discount.toFixed(2)}`;
+            const calc = () => {
+                const rate = parseFloat(input.value) || 0;
+                const discountVal = deliveryFee * (rate / 100);
+                display.innerText = `-${discountVal.toFixed(2)}`;
                 
-                // حفظ النسبة للكابتن للمستقبل
-                localStorage.setItem(`n1_rate_${capName}`, pct);
+                // حفظ النسبة
+                localStorage.setItem(`n1_rate_${capName}`, rate);
                 
-                // تحديث التراكمي للكابتن
-                N_ONE_CORE.updateCaptainTotal(capName, discount);
+                // تحديث التجميع الكلي
+                N_ONE_CORE.recalculateTotals();
             };
 
-            percentInput.oninput = calculate;
-            
-            // تشغيل الحساب عند التحميل
-            setTimeout(calculate, 100);
+            input.oninput = calc;
+            // تنفيذ الحساب فور الإنشاء
+            calc();
 
-            inputContainer.appendChild(percentInput);
-            inputContainer.appendChild(resultSpan);
-            td.appendChild(inputContainer);
+            container.appendChild(input);
+            container.appendChild(display);
+            td.appendChild(container);
             row.appendChild(td);
         });
 
-        // إنشاء لوحة عائمة لملخص ذمم الكباتن
-        this.renderFloatingTotals();
+        // تشغيل حساب التراكمي في النهاية
+        this.recalculateTotals();
     },
 
-    captainDebts: {}, // تخزين الذمم
-
-    updateCaptainTotal: function(capName, amount) {
-        // إعادة تصفير وحساب من الجدول الحالي المعروض فقط
-        // (لأن هذا عرض "يومي" في الأرشيف)
-        this.renderFloatingTotals();
-    },
-
-    renderFloatingTotals: function() {
-        // جمع البيانات من المدخلات الحالية في الجدول
+    // إعادة حساب وعرض الصندوق العائم لذمم الكباتن
+    recalculateTotals: function() {
         const totals = {};
-        document.querySelectorAll('.n1-finance-cell').forEach(cell => {
+        
+        // نجمع من الواجهة الحالية (ما يراه المستخدم)
+        document.querySelectorAll('.n1-discount-cell').forEach(cell => {
             const row = cell.parentElement;
             const capName = row.querySelectorAll('td')[0].innerText;
-            const valSpan = cell.querySelector('span').innerText;
-            const val = parseFloat(valSpan.replace('-', '')) || 0;
+            const valText = cell.querySelector('span').innerText;
+            const val = parseFloat(valText.replace('-', '')) || 0;
 
             if (!totals[capName]) totals[capName] = 0;
             totals[capName] += val;
         });
 
-        // عرض اللوحة العائمة
-        let panel = document.getElementById('n1-cap-totals');
-        if (!panel) {
-            panel = document.createElement('div');
-            panel.id = 'n1-cap-totals';
-            panel.style = "position:fixed; bottom:20px; left:20px; background:white; padding:15px; border-radius:10px; border:2px solid #d4af37; box-shadow:0 5px 20px rgba(0,0,0,0.2); z-index:9999; max-height:300px; overflow-y:auto; width:200px;";
-            panel.innerHTML = `<h4 style="margin:0 0 10px 0; color:#1a237e; border-bottom:1px solid #eee;">💰 ذمم الكباتن (اليوم)</h4><div id="n1-totals-list"></div>`;
-            document.body.appendChild(panel);
+        // رسم الصندوق العائم
+        let box = document.getElementById('n1-debt-box');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'n1-debt-box';
+            box.style = "position:fixed; bottom:20px; left:20px; background:white; border:2px solid #c62828; padding:15px; border-radius:10px; z-index:9999; box-shadow:0 5px 15px rgba(0,0,0,0.2); min-width:180px;";
+            box.innerHTML = '<h4 style="margin:0 0 10px 0; color:#c62828; font-size:14px; text-align:center;">📉 ذمم الخصومات المتراكمة</h4><div id="n1-debt-list"></div>';
+            document.body.appendChild(box);
         }
 
-        const list = document.getElementById('n1-totals-list');
+        const list = document.getElementById('n1-debt-list');
         list.innerHTML = '';
         
         if (Object.keys(totals).length === 0) {
-            list.innerHTML = '<small>لا توجد خصومات</small>';
+            list.innerHTML = '<div style="text-align:center; font-size:12px; color:#aaa;">لا يوجد خصومات</div>';
         } else {
             for (let [cap, amount] of Object.entries(totals)) {
                 if (amount > 0) {
                     list.innerHTML += `
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px; border-bottom:1px dashed #eee; padding-bottom:2px;">
                             <span>${cap}</span>
-                            <span style="color:#c62828; font-weight:bold;">${amount.toFixed(2)} د.أ</span>
+                            <span style="font-weight:bold; color:#c62828;">-${amount.toFixed(2)}</span>
                         </div>
                     `;
                 }
@@ -254,5 +270,3 @@ const N_ONE_CORE = {
         }
     }
 };
-
-console.log("%c N One Core V2 Loaded 🚀 | Smart Fixer Active", "color: #d4af37; background: #1a237e; padding: 5px;");
