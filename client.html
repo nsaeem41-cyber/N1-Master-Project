@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | غرفة عمليات الشحن (Diamond)</title>
+    <title>N One | غرفة عمليات الشحن (Diamond Pro)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
@@ -24,13 +24,17 @@
         .btn-logout { background: var(--danger); color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-logout:hover { background: #b71c1c; }
 
-        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; } /* توسيع الحاوية للقسمين */
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
 
         /* التبويبات */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; color: #555; transition: 0.3s; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; overflow-x: auto; }
+        .tab-btn { padding: 10px 20px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; color: #555; transition: 0.3s; white-space: nowrap; }
         .tab-btn:hover { background: #e0e0e0; }
         .tab-btn.active { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 105, 92, 0.3); }
+        
+        /* زر القائمة الخارجية (مميز) */
+        .tab-link { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+        .tab-link:hover { background: #ffe0b2; }
 
         /* المحتوى */
         .tab-content { display: none; animation: fadeIn 0.4s; }
@@ -47,16 +51,15 @@
         
         .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
         .btn-add { background: var(--primary); } .btn-add:hover { background: #004d40; }
-        .btn-whatsapp { background: #25d366; } .btn-whatsapp:hover { background: #128c7e; }
+        .btn-whatsapp { background: #25d366; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; } 
+        .btn-whatsapp:hover { background: #128c7e; }
 
-        .table-wrapper { overflow-x: auto; max-height: 500px; } /* سكرول للجدول */
+        .table-wrapper { overflow-x: auto; max-height: 500px; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        thead { background: #f0f2f5; color: #444; position: sticky; top: 0; }
+        thead { background: #f0f2f5; color: #444; position: sticky; top: 0; z-index: 10; }
         th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #eee; font-size: 14px; }
         
         .badge { padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; }
-        .bg-paid { background: #e3f2fd; color: #1565c0; }
-        .bg-free { background: #f3e5f5; color: #7b1fa2; }
         .bg-money { background: #e8f5e9; color: var(--money); font-family: 'Courier New', monospace; font-weight: bold; font-size: 13px; }
 
         /* تصميم القسمين (Split View) */
@@ -71,6 +74,11 @@
         .btn-delete { background: var(--danger); }
         .btn-active { background: var(--success); }
 
+        /* تنسيق خانة الهاتف مع المقدمة */
+        .phone-input-group { position: relative; }
+        .phone-prefix { position: absolute; left: 10px; top: 12px; color: #555; font-weight: bold; direction: ltr; }
+        #man_phone { padding-left: 50px; text-align: left; direction: ltr; }
+
         #loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; font-weight: bold; color: var(--primary); }
     </style>
 </head>
@@ -79,7 +87,7 @@
     <audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
     <div id="loader-overlay">
-        <div style="font-size:35px; margin-bottom:10px;">📡</div>
+        <div style="font-size:35px; margin-bottom:10px;">🚚</div>
         <div>جاري الاتصال بالنواة المركزية...</div>
     </div>
 
@@ -97,6 +105,7 @@
             <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 لوحة المعلومات</button>
             <button class="tab-btn" onclick="switchTab('shops', event)">🏪 إدارة المنشآت</button>
             <button class="tab-btn" onclick="switchTab('operations', event)">📡 غرفة العمليات (Live)</button>
+            <button class="tab-btn tab-link" onclick="window.open('prices.html', '_blank')">📋 قائمة الأسعار للمناطق ↗️</button>
         </div>
 
         <div id="dashboard" class="tab-content active">
@@ -188,17 +197,30 @@
                 <div class="card" style="border-top-color: #25d366;">
                     <div class="card-header">
                         <span>📲 إرسال يدوي للكابتن</span>
-                        <span style="font-size:20px;">🤖</span>
+                        <span style="font-size:20px;">👨‍✈️</span>
                     </div>
                     <div style="display:flex; flex-direction:column; gap:10px;">
-                        <input type="tel" id="man_phone" placeholder="رقم الكابتن (9627...)">
-                        <input type="text" id="man_loc" placeholder="اسم المطعم/الموقع (جلب ذكي)">
-                        <input type="number" id="man_fee" placeholder="أجرة التوصيل">
-                        <input type="number" id="man_price" placeholder="قيمة الطلب">
-                        <button class="btn-action btn-whatsapp" onclick="sendManualOrder()">إرسال عبر واتساب 📤</button>
+                        <input type="text" id="man_cap_name" placeholder="اسم الكابتن (مطلوب)">
+                        
+                        <div class="phone-input-group">
+                            <span class="phone-prefix">+962</span>
+                            <input type="tel" id="man_phone" placeholder="79xxxxxxx">
+                        </div>
+
+                        <input type="text" id="man_loc" placeholder="موقع التحميل (مثال: مطعم هاشم - وسط البلد)">
+                        
+                        <div style="display:flex; gap:10px;">
+                            <input type="number" id="man_fee" placeholder="التوصيل (د.أ)">
+                            <input type="number" id="man_price" placeholder="القيمة (د.أ)">
+                        </div>
+
+                        <button class="btn-action btn-whatsapp" onclick="sendManualOrder()">
+                            <span>إرسال للكابتن</span>
+                            <span>📤</span>
+                        </button>
                     </div>
                     <p style="font-size:11px; color:#777; margin-top:10px; line-height:1.4;">
-                        * عند كتابة اسم المطعم، سيقوم النظام تلقائياً بتوليد رابط خرائط جوجل وإرساله للكابتن.
+                        * سيتم تحويل "اسم المنطقة" لرابط خرائط جوجل دقيق وتضمينه في الرسالة تلقائياً.
                     </p>
                 </div>
 
@@ -210,7 +232,7 @@
     <script>
         let currentUser = null;
         let allData = [];
-        let lastOrderCount = 0; // للمقارنة وتشغيل الصوت
+        let lastOrderCount = 0; 
 
         window.onload = async function() {
             if (typeof N_ONE_CORE === 'undefined') { alert("خطأ: المصلح المركزي غير متصل!"); return; }
@@ -220,7 +242,7 @@
             if (currentUser) {
                 document.getElementById('welcome-msg').innerText = `أهلاً، ${currentUser.name}`;
                 await fetchData();
-                // تحديث تلقائي كل 10 ثواني لجلب الطلبات الجديدة
+                // تحديث تلقائي كل 10 ثواني (Live)
                 setInterval(fetchDataSilent, 10000);
             }
         };
@@ -233,7 +255,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // تحديث صامت بدون لودر عشان الصوت يشتغل
         async function fetchDataSilent() {
             try {
                 allData = await N_ONE_CORE.fetchData('read');
@@ -255,7 +276,7 @@
             const user = document.getElementById('shop_user').value;
             const pass = document.getElementById('shop_pass').value;
             const subType = document.getElementById('sub_type').value;
-            const comm = document.getElementById('commission_rate').value; // الإدخال اليدوي
+            const comm = document.getElementById('commission_rate').value;
 
             if (!name || !user || !pass || !comm) { alert("يرجى تعبئة كافة الحقول والنسبة ☺️"); return; }
 
@@ -271,7 +292,7 @@
                 client_user: currentUser.user,
                 status: "active",
                 sub_type: subType,
-                commission: comm, // تخزين النسبة اليدوية
+                commission: comm, 
                 location_link: smartMapLink
             };
 
@@ -283,7 +304,6 @@
             document.getElementById('shop_name').value = '';
             document.getElementById('shop_user').value = '';
             document.getElementById('shop_pass').value = '';
-            document.getElementById('commission_rate').value = '';
         }
 
         function renderShops() {
@@ -323,7 +343,7 @@
             });
         }
 
-        // ================= مركز العمليات (تلقائي + يدوي) =================
+        // ================= مركز العمليات (القلب النابض) =================
 
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
@@ -331,10 +351,11 @@
             const myShopsUsers = allData.filter(i => i.type === 'shop' && i.client_user === currentUser.user).map(s => s.user);
             const orders = allData.filter(i => i.type === 'order' && myShopsUsers.includes(i.client_user)).reverse();
 
-            // 🔔 منطق التنبيه الصوتي (نبض القلب)
+            // 🔔 منطق التنبيه الصوتي (نبض القلب الرقيق)
             if (orders.length > lastOrderCount && lastOrderCount !== 0) {
                 const audio = document.getElementById('notif-sound');
-                audio.play().catch(e => console.log("Audio permission needed"));
+                // محاولة التشغيل (تتطلب تفاعل مسبق من المستخدم مع الصفحة)
+                audio.play().catch(e => console.log("Sound muted: User interaction needed"));
             }
             lastOrderCount = orders.length;
 
@@ -368,21 +389,28 @@
             document.getElementById('total-profit').innerText = totalProfit.toFixed(1) + " د.أ";
         }
 
-        // إرسال يدوي للكابتن (واتساب)
+        // ================= الإرسال اليدوي للكابتن (واتساب) =================
         function sendManualOrder() {
-            const phone = document.getElementById('man_phone').value;
+            const capName = document.getElementById('man_cap_name').value;
+            const phoneInput = document.getElementById('man_phone').value;
             const locName = document.getElementById('man_loc').value;
             const fee = document.getElementById('man_fee').value;
             const price = document.getElementById('man_price').value;
 
-            if(!phone || !locName) { alert("أدخل رقم الكابتن والموقع ☺️"); return; }
+            if(!capName || !phoneInput || !locName) { alert("أدخل اسم الكابتن، الرقم والموقع ☺️"); return; }
 
-            // توليد الرابط الذكي
+            // 1. معالجة رقم الهاتف (إزالة الصفر في البداية إن وجد)
+            let finalPhone = phoneInput.startsWith('0') ? phoneInput.substring(1) : phoneInput;
+            // إضافة المقدمة 962
+            finalPhone = "962" + finalPhone;
+
+            // 2. الموقع الذكي (بحث جوجل)
             const smartLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(locName);
             
-            const msg = `*طلب جديد من ${currentUser.name}* 🚚%0a%0a📍 الموقع: ${locName}%0a🗺️ الخريطة: ${smartLink}%0a💰 التوصيل: ${fee} د.أ%0a📦 قيمة الطلب: ${price} د.أ%0a%0aنتمنى لك التوفيق!`;
+            // 3. صياغة الرسالة
+            const msg = `*طلب جديد للكابتن: ${capName}* 👨‍✈️%0a%0a📍 *الموقع:* ${locName}%0a🗺️ *رابط الخريطة:* ${smartLink}%0a%0a💰 *التوصيل:* ${fee || 0} د.أ%0a📦 *قيمة الطلب:* ${price || 0} د.أ%0a%0a*مرسل من:* ${currentUser.name}`;
 
-            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            window.open(`https://wa.me/${finalPhone}?text=${msg}`, '_blank');
         }
 
         // ================= أدوات التحكم =================
