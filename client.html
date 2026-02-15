@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | غرفة عمليات الشحن (Golden Diamond)</title>
+    <title>N One | غرفة عمليات الشحن (Final Connection)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
     <style>
         /* ================= تصميم Client Pro (Teal Theme) ================= */
         :root {
-            --primary: #00695c; /* لون مميز للشركات (Teal) */
-            --gold: #d4af37; --bg: #f4f7f6; --text: #333;
-            --success: #2e7d32; --danger: #c62828; --warning: #f57f17;
-            --money: #1b5e20;
+            --primary: #00695c; --gold: #d4af37; --bg: #f4f7f6; --text: #333;
+            --success: #2e7d32; --danger: #c62828; --warning: #f57f17; --money: #1b5e20;
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); user-select: none; }
@@ -61,17 +59,17 @@
         .bg-val { background: #fff3e0; color: #e65100; font-family: 'Courier New', monospace; font-weight: bold; font-size: 13px; }
         .bg-ratio { background: #ffebee; color: #c62828; font-family: 'Courier New', monospace; font-weight: bold; font-size: 13px; }
 
-        /* تصميم القسمين (Split View) */
+        /* تصميم القسمين */
         .operations-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         @media (max-width: 900px) { .operations-grid { grid-template-columns: 1fr; } }
 
-        /* تصميم خانة الهاتف المدمجة */
+        /* خانة الهاتف */
         .phone-wrapper { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; overflow: hidden; transition: 0.3s; }
         .phone-wrapper:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 105, 92, 0.1); }
         .phone-prefix { background: #e0e0e0; padding: 12px 15px; font-weight: bold; color: #555; border-left: 1px solid #ccc; direction: ltr; }
         #man_phone { border: none; box-shadow: none; background: transparent; margin: 0; direction: ltr; text-align: left; }
 
-        /* أزرار التحكم */
+        /* التحكم */
         .controls button { padding: 6px 10px; border-radius: 6px; border: none; color: white; cursor: pointer; font-size: 12px; margin-left:5px; }
         .btn-edit { background: var(--warning); }
         .btn-freeze { background: #78909c; }
@@ -81,7 +79,7 @@
         .btn-save-day { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-save-day:hover { background: #004d40; }
 
-        /* تصميم المحاسب التاريخي */
+        /* المحاسب التاريخي */
         .history-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; }
         .history-item { background: #fff; padding: 15px; border-radius: 10px; border-right: 5px solid var(--gold); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .history-date { font-weight: bold; color: var(--primary); }
@@ -279,7 +277,7 @@
         let currentUser = null;
         let allData = [];
         let lastOrderCount = 0;
-        let soundEnabled = false; // حالة تفعيل الصوت
+        let soundEnabled = false; 
         
         // الذاكرة المحلية والأنظمة
         let captainMemory = JSON.parse(localStorage.getItem('n1_captains') || '{}');
@@ -296,23 +294,19 @@
                 
                 await fetchData();
                 
-                // تحديد المنشآت التابعة لي
-                const myShops = allData.filter(i => (i.type === 'shop' || i.role === 'shop') && i.client_user === currentUser.user);
-                const myShopIds = myShops.map(s => s.user);
-                
-                // تحديد عدد الطلبات الأولي بدون رنين
-                const initialOrders = allData.filter(i => i.type === 'order' && myShopIds.includes(i.client_user));
+                // تحديد المنشآت لتحديد عدد الطلبات الأولي
+                const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && i.client_user == currentUser.user);
+                const myShopIds = myShops.map(s => s.user.toString());
+                const initialOrders = allData.filter(i => i.type == 'order' && myShopIds.includes(i.client_user.toString()));
                 lastOrderCount = initialOrders.length;
 
                 renderArchive();
                 renderHistory();
                 
-                // تفعيل التحديث السريع (كل 8 ثواني)
                 setInterval(fetchDataSilent, 8000); 
             }
         };
 
-        // دالة كسر الصمت (تفعيل الصوت عند أول نقرة)
         function enableSound() {
             if (!soundEnabled) {
                 const audio = document.getElementById('notif-sound');
@@ -334,7 +328,6 @@
 
         async function fetchDataSilent() {
             try {
-                // جلب بيانات جديدة
                 const newData = await N_ONE_CORE.fetchData('read');
                 if (newData.length > 0) {
                     allData = newData;
@@ -354,31 +347,26 @@
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
             
-            // 1. تحديد منشآتي بدقة (توسيع دائرة البحث لتشمل كل الأنواع المحتملة)
-            const myShops = allData.filter(i => (i.type === 'shop' || i.role === 'shop') && i.client_user === currentUser.user);
-            const myShopIds = myShops.map(s => s.user);
+            // 1. تحديد منشآتي بدقة (تحويل الـ IDs لنصوص لضمان التطابق)
+            const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && i.client_user == currentUser.user);
+            const myShopIds = myShops.map(s => s.user.toString());
 
-            // 2. سحب الطلبات المطابقة لأحد هذه المنشآت
+            // 2. سحب الطلبات المطابقة (الرادار الشامل)
             const orders = allData
-                .filter(i => i.type === 'order' && myShopIds.includes(i.client_user))
+                .filter(i => i.type == 'order' && myShopIds.includes(i.client_user.toString()))
                 .reverse();
 
             // 3. منطق الجرس (رنة 3 ثواني)
             if (orders.length > lastOrderCount) {
                 const audio = document.getElementById('notif-sound');
-                // محاولة التشغيل
                 const playPromise = audio.play();
-                
                 if (playPromise !== undefined) {
                     playPromise.then(_ => {
-                        // التشغيل نجح، ننتظر 3 ثواني ثم نوقف
                         setTimeout(() => {
                             audio.pause();
                             audio.currentTime = 0;
-                        }, 3000);
-                    }).catch(error => {
-                        console.log("Sound blocked. Click page to enable.");
-                    });
+                        }, 3000); // 3 ثواني بالضبط
+                    }).catch(error => { console.log("Sound check required"); });
                 }
             }
             lastOrderCount = orders.length;
@@ -387,10 +375,8 @@
             tbody.innerHTML = '';
             
             orders.forEach(ord => {
-                // البحث عن بيانات المنشأة لعرض الاسم الحقيقي
                 const shop = allData.find(s => s.user === ord.client_user);
                 
-                // الاسم والموقع
                 const shopName = shop ? shop.name : (ord.cl_name || 'Unknown');
                 let shopLoc = '...';
                 if (shop && shop.location_link) {
@@ -426,7 +412,6 @@
 
             if(!phoneInput || !locName || !capName) { alert("بيانات ناقصة ☺️"); return; }
 
-            // حفظ الكابتن
             if (phoneInput && capName) {
                 captainMemory[phoneInput] = capName;
                 localStorage.setItem('n1_captains', JSON.stringify(captainMemory));
@@ -436,7 +421,6 @@
             finalPhone = "962" + finalPhone;
             const smartLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(locName);
 
-            // حساب النسبة
             const commValue = (fee * (ratio / 100)).toFixed(2);
             const dailyCount = dailyArchive.filter(o => o.phone === phoneInput).length + 1;
 
@@ -563,7 +547,6 @@
             renderHistory();
         }
 
-        // ================= ذاكرة الكباتن الذكية (بحث) =================
         function checkCaptainMemory() {
             const phone = document.getElementById('man_phone').value;
             const hint = document.getElementById('cap_memory_hint');
@@ -602,7 +585,7 @@
 
         function renderShops() {
             const tbody = document.getElementById('shops-table-body');
-            const myShops = allData.filter(i => (i.type === 'shop' || i.role === 'shop') && i.client_user === currentUser.user).reverse();
+            const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && i.client_user == currentUser.user).reverse();
             document.getElementById('total-shops').innerText = myShops.length;
             if (myShops.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد منشآت</td></tr>'; return; }
             tbody.innerHTML = '';
