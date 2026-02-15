@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | مصفوفة الأسعار الذكية (Ultimate Matrix)</title>
+    <title>N One | مصفوفة الأسعار الماسية (Final Edition)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
     <style>
-        /* ================= تصميم Ultimate Matrix (Navy & Gold) ================= */
+        /* ================= تصميم Diamond Matrix (Navy & Gold) ================= */
         :root {
             --primary: #1a237e;      /* كحلي ملكي */
             --gold: #d4af37;         /* ذهبي */
-            --bg: #f0f2f5;           /* خلفية عصرية */
-            --panel: #ffffff;        
-            --text: #333;            
+            --bg: #eceff1;           /* خلفية رمادية فاتحة جداً */
+            --text: #37474f;            
             --success: #2e7d32;      
             --danger: #c62828;
             --night: #311b92;        /* لون الوضع الليلي */
@@ -45,14 +44,21 @@
 
         .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
 
-        /* شريط التنبيهات الذكي */
-        .smart-banner {
-            display: none; align-items: center; justify-content: center; gap: 10px;
-            background: #311b92; color: white; padding: 10px; border-radius: 8px;
-            margin-bottom: 20px; box-shadow: 0 4px 10px rgba(49, 27, 146, 0.4);
-            animation: fadeIn 0.5s;
+        /* بنر التحكم الليلي */
+        .night-control-bar {
+            background: white; padding: 15px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 5px solid var(--night);
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* زر التبديل (Switch) */
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--night); }
+        input:checked + .slider:before { transform: translateX(26px); }
 
         /* لوحة التحكم */
         .controls-panel { 
@@ -113,8 +119,17 @@
         .area-name-input { border: none; font-weight: bold; font-size: 14px; color: #333; flex: 1; outline: none; background: transparent; }
         .area-name-input:focus { border-bottom: 2px solid var(--primary); }
 
+        /* خانة السعر */
+        .price-wrapper { position: relative; display: flex; align-items: center; }
         .price-val-input { width: 60px; padding: 5px; border: 1px solid #ddd; border-radius: 6px; text-align: center; font-weight: bold; color: var(--primary); outline: none; }
         .price-val-input:focus { border-color: var(--gold); background: #fff; }
+        
+        /* شارة الزيادة الليلية */
+        .night-badge { 
+            font-size: 10px; background: var(--night); color: white; 
+            padding: 2px 5px; border-radius: 4px; position: absolute; 
+            top: -10px; right: 0; white-space: nowrap; pointer-events: none;
+        }
 
         /* أدوات الكرت الصغيرة */
         .card-tools { display: flex; gap: 5px; align-items: center; }
@@ -130,7 +145,7 @@
         /* ================= تصميم الطباعة ================= */
         @media print {
             body { background: white; -webkit-print-color-adjust: exact; }
-            .navbar, .controls-panel, .smart-banner, .card-tools, .btn-main { display: none !important; }
+            .navbar, .controls-panel, .night-control-bar, .card-tools, .btn-main, .night-badge { display: none !important; }
             .container { margin: 0; padding: 0; max-width: 100%; }
             .print-header { display: block; }
             .matrix-container { display: block; column-count: 2; column-gap: 20px; }
@@ -149,12 +164,18 @@
 
     <div class="container">
         
-        <div id="night-banner" class="smart-banner">
-            <span style="font-size:20px;">🌙</span>
-            <div>
-                <strong>التسعير الليلي مفعل تلقائياً</strong><br>
-                <span style="font-size:12px;">تم إضافة (0.50 د.أ) على جميع الأسعار (من 11:00 م حتى 6:00 ص)</span>
+        <div class="night-control-bar">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:24px;">🌙</span>
+                <div>
+                    <div style="font-weight:bold; font-size:14px; color:#37474f;">الحارس الليلي (التسعير التلقائي)</div>
+                    <div style="font-size:11px; color:#777;">عند التفعيل: زيادة 0.50 د.أ بعد الساعة 11:00 م</div>
+                </div>
             </div>
+            <label class="switch">
+                <input type="checkbox" id="night-toggle" onchange="toggleNightModeOverride()" checked>
+                <span class="slider"></span>
+            </label>
         </div>
 
         <div class="controls-panel">
@@ -164,7 +185,7 @@
                     <select id="source-select" class="source-select" onchange="renderMatrix()">
                         </select>
                     <button class="btn-icon" onclick="addSource()" title="إضافة مصدر جديد">➕</button>
-                    <button class="btn-icon" onclick="duplicateSource()" title="نسخ القائمة الحالية لمدينة جديدة (Quick Duplicate)" style="background:#e3f2fd; color:#1565c0;">📑</button>
+                    <button class="btn-icon" onclick="duplicateSource()" title="نسخ القائمة (Quick Duplicate)" style="background:#e3f2fd; color:#1565c0;">📑</button>
                     <button class="btn-icon" onclick="deleteSource()" title="حذف المصدر" style="background:#ffebee; color:var(--danger);">🗑️</button>
                 </div>
 
@@ -191,22 +212,18 @@
         <div id="matrix-grid" class="matrix-container">
             </div>
 
-        <div style="text-align:center; margin-top:20px; color:#999; font-size:11px;">
-            🔒 القفل الآمن نشط: يتم مزامنة الأسعار لحظياً مع صفحات المنشآت.
-        </div>
-
     </div>
 
     <script>
         // ========================================================
-        // كود المصفوفة الأسطورية - v4.0 (Night Mode & Trends)
+        // كود المصفوفة الماسية - v5.0 (Full Manual Control)
         // ========================================================
         
         // البيانات الافتراضية
         const defaultData = {
             "الجبيهة": [
                 { area: "حي الريان / الزوتنية", price: 1.50, isOffer: false, lastMod: Date.now() },
-                { area: "ضاحية الرشيد", price: 2.00, isOffer: true, lastMod: Date.now() }, // مثال على عرض
+                { area: "ضاحية الرشيد", price: 2.00, isOffer: true, lastMod: Date.now() },
                 { area: "تلاع العلي / سوق السلطان", price: 2.50, isOffer: false, lastMod: Date.now() },
                 { area: "خلدا / أم السماق", price: 3.00, isOffer: false, lastMod: Date.now() },
                 { area: "دابوق / الرابية", price: 4.00, isOffer: false, lastMod: Date.now() },
@@ -216,44 +233,58 @@
 
         // استرجاع البيانات
         let pricingData = JSON.parse(localStorage.getItem('nOne_global_prices')) || defaultData;
-        let isNight = false;
+        let isNightActive = false; // هل التسعير الليلي مفعل حالياً؟
 
         window.onload = function() {
+            // استرجاع حالة مفتاح الأمان الليلي
+            const savedToggle = localStorage.getItem('nOne_night_toggle');
+            if (savedToggle !== null) {
+                document.getElementById('night-toggle').checked = (savedToggle === 'true');
+            }
+            
             checkNightMode();
             populateSources();
             renderMatrix();
             
-            // فحص الوضع الليلي كل دقيقة
+            // فحص الوقت كل دقيقة
             setInterval(checkNightMode, 60000);
         };
 
-        // 1. نظام الحارس الليلي (Night Watch Logic)
+        // 1. منطق الحارس الليلي (يدوي + أوتوماتيك)
         function checkNightMode() {
             const hour = new Date().getHours();
-            // الوضع الليلي: من 23:00 (11م) حتى 06:00 (6ص)
-            const nightTime = (hour >= 23 || hour < 6);
+            // الوقت: من 11 م (23) إلى 6 ص (6)
+            const isNightTime = (hour >= 23 || hour < 6);
+            // المفتاح اليدوي: هل سمح المستخدم بالتسعير الليلي؟
+            const isToggleOn = document.getElementById('night-toggle').checked;
             
-            if (nightTime !== isNight) {
-                isNight = nightTime;
+            // النتيجة النهائية: الوقت ليل + المفتاح شغال
+            const shouldBeNight = isNightTime && isToggleOn;
+
+            if (shouldBeNight !== isNightActive) {
+                isNightActive = shouldBeNight;
                 renderMatrix(); // إعادة رسم الأسعار
             }
 
-            const banner = document.getElementById('night-banner');
+            // تحديث ستايل الهيدر فقط
             const nav = document.getElementById('main-nav');
-            
-            if (isNight) {
-                banner.style.display = 'flex';
-                nav.classList.add('night-mode');
-            } else {
-                banner.style.display = 'none';
-                nav.classList.remove('night-mode');
-            }
+            if (isNightActive) nav.classList.add('night-mode');
+            else nav.classList.remove('night-mode');
         }
 
-        // 2. إدارة المصادر والنسخ السريع
+        function toggleNightModeOverride() {
+            // حفظ تفضيل المستخدم
+            const isChecked = document.getElementById('night-toggle').checked;
+            localStorage.setItem('nOne_night_toggle', isChecked);
+            
+            // إعادة الفحص الفوري
+            checkNightMode();
+        }
+
+        // 2. إدارة المصادر
         function populateSources() {
             const select = document.getElementById('source-select');
-            const currentVal = select.value; // حفظ الاختيار الحالي
+            const currentVal = select.value;
             select.innerHTML = '';
             Object.keys(pricingData).forEach(source => {
                 const option = document.createElement('option');
@@ -278,18 +309,12 @@
         function duplicateSource() {
             const current = document.getElementById('source-select').value;
             const newName = prompt(`نسخ قائمة (${current}) إلى مدينة جديدة باسم:`);
-            
             if (newName && !pricingData[newName]) {
-                // النسخ العميق (Deep Copy) لتجنب تداخل البيانات
                 pricingData[newName] = JSON.parse(JSON.stringify(pricingData[current]));
-                
                 populateSources();
                 document.getElementById('source-select').value = newName;
                 renderMatrix();
                 saveData(true);
-                alert("تم نسخ القائمة بنجاح! 🚀");
-            } else if (pricingData[newName]) {
-                alert("هذا الاسم موجود مسبقاً ☺️");
             }
         }
 
@@ -304,7 +329,7 @@
             }
         }
 
-        // 3. رسم المصفوفة الذكية (The Super Render)
+        // 3. رسم المصفوفة (Smart Render)
         function renderMatrix() {
             const source = document.getElementById('source-select').value;
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
@@ -318,20 +343,26 @@
             areas.forEach((item, index) => {
                 if (searchTerm && !item.area.toLowerCase().includes(searchTerm)) return;
 
-                // منطق التسعير الليلي
-                let displayPrice = parseFloat(item.price);
-                if (isNight) displayPrice += 0.50; // زيادة الليل
+                // السعر الأساسي (للتعديل)
+                const basePrice = parseFloat(item.price);
+                
+                // السعر المعروض (مع الزيادة إذا كان الوضع الليلي نشطاً)
+                let displayPrice = basePrice;
+                let nightBadgeHtml = '';
+                
+                if (isNightActive) {
+                    displayPrice += 0.50;
+                    nightBadgeHtml = `<span class="night-badge">+0.50 ليلي 🌙</span>`;
+                }
 
-                // منطق الألوان
+                // الألوان والترند
                 let colorClass = 'med-price';
-                if (item.price < 3) colorClass = 'low-price';
-                if (item.price >= 5) colorClass = 'high-price';
+                if (basePrice < 3) colorClass = 'low-price';
+                if (basePrice >= 5) colorClass = 'high-price';
 
-                // منطق العرض الذهبي
                 const offerClass = item.isOffer ? 'gold-offer' : '';
                 const starClass = item.isOffer ? 'active' : '';
 
-                // منطق الترند (هل تغير السعر في آخر 24 ساعة؟)
                 let trendHtml = '';
                 const oneDay = 24 * 60 * 60 * 1000;
                 if (item.lastMod && (Date.now() - item.lastMod < oneDay)) {
@@ -345,7 +376,10 @@
                         
                         <input type="text" class="area-name-input" value="${item.area}" onchange="updateItem('${source}', ${index}, 'area', this.value)">
                         
-                        <input type="number" class="price-val-input" value="${displayPrice.toFixed(2)}" step="0.25" onchange="updateItem('${source}', ${index}, 'price', this.value)" ${isNight ? 'disabled title="لا يمكن التعديل أثناء الوضع الليلي"' : ''}>
+                        <div class="price-wrapper">
+                            ${nightBadgeHtml}
+                            <input type="number" class="price-val-input" value="${displayPrice.toFixed(2)}" step="0.25" onchange="updateItem('${source}', ${index}, 'price', this.value)">
+                        </div>
                         
                         <div class="card-tools">
                             <span style="font-size:10px; color:#777;">د.أ</span>
@@ -361,19 +395,24 @@
             });
         }
 
-        // 4. الوظائف التفاعلية
+        // 4. التعديل الذكي (Manual Edit)
         function updateItem(source, index, field, value) {
-            if (isNight && field === 'price') {
-                alert("⚠️ التعديل مغلق أثناء الوضع الليلي للحفاظ على دقة الجرد.");
-                renderMatrix(); // إعادة القيمة السابقة
-                return;
-            }
-
+            // إذا عدل المستخدم السعر، بدنا نحفظ "السعر الأساسي"
             if (field === 'price') {
-                value = parseFloat(value);
-                pricingData[source][index].lastMod = Date.now(); // تحديث وقت التعديل للترند
+                let newVal = parseFloat(value);
+                // إذا كان الوضع الليلي شغال، المستخدم شايف (السعر + 0.50)
+                // لما يعدل، هو بيعدل القيمة النهائية، فلازم نخصم الزيادة عشان نحفظ الأساس
+                if (isNightActive) {
+                    newVal -= 0.50; 
+                }
+                // منع القيم السالبة
+                if (newVal < 0) newVal = 0;
+                
+                pricingData[source][index].price = newVal;
+                pricingData[source][index].lastMod = Date.now();
+            } else {
+                pricingData[source][index][field] = value;
             }
-            pricingData[source][index][field] = value;
             renderMatrix();
         }
 
@@ -399,12 +438,11 @@
         }
 
         function openMap(area, source) {
-            // البحث الذكي في جوجل ماب
             const query = encodeURIComponent(`${area} ${source} Jordan`);
-            window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+            window.open(`http://googleusercontent.com/maps.google.com/search?q=${query}`, '_blank');
         }
 
-        // 5. الحفظ والتعميم (The Bridge)
+        // 5. الحفظ (The Bridge)
         function saveData(silent = false) {
             localStorage.setItem('nOne_global_prices', JSON.stringify(pricingData));
             
@@ -416,7 +454,7 @@
                 setTimeout(() => {
                     btn.innerHTML = originalHtml;
                     btn.style.background = "var(--success)";
-                    alert("✅ تم تحديث الأسعار!\n\n- الوضع الليلي: " + (isNight ? "نشط (+0.50)" : "غير نشط") + "\n- تم حفظ العروض والترندات.");
+                    alert("✅ تم حفظ المصفوفة!\n- التسعير الليلي: " + (isNightActive ? "نشط (+0.50)" : "متوقف") + "\n- تم تحديث الأسعار لدى جميع المنشآت.");
                 }, 1000);
             }
         }
