@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | غرفة عمليات الشحن (Final Fixed)</title>
+    <title>N One | غرفة عمليات الشحن (Final Secure)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
@@ -252,7 +252,6 @@
     </div>
 
     <script>
-        // ================= تحديث العقل المدبر بالرابط الجديد =================
         if (typeof N_ONE_CORE !== 'undefined') {
             N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbxMzCw3e2LXl5vqNMKd1qB4OkEcagVD68cyBc8VttWwLHTlMDUT82tgIbFml0Ve3Yx3/exec";
         }
@@ -273,7 +272,6 @@
                 
                 await fetchData();
                 
-                // حساب أولي للطلبات
                 const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user));
                 const myShopIds = myShops.map(s => String(s.user));
                 myShopIds.push(String(currentUser.user));
@@ -323,7 +321,6 @@
             event.target.classList.add('active');
         }
 
-        // ================= Live Orders =================
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
             
@@ -385,7 +382,7 @@
             });
         }
 
-        // ================= إدارة المنشآت (إصلاح التجميد) =================
+        // ================= إدارة المنشآت (مع إصلاح الحالة) =================
         async function addShop() {
             const name = document.getElementById('shop_name').value;
             const user = document.getElementById('shop_user').value;
@@ -418,18 +415,17 @@
             myShops.forEach(shop => {
                 const subBadge = shop.sub_type === 'paid' ? '<span class="badge bg-paid">مدفوع 💎</span>' : '<span class="badge bg-free">مجاني</span>';
                 
-                // التأكد من حالة التجميد
-                const isPaused = shop.status === 'paused';
+                // توحيد الحالة لحروف صغيرة للتحقق
+                let currentStatus = String(shop.status || 'active').toLowerCase().trim();
+                
+                const isPaused = currentStatus === 'paused';
                 const statusHtml = isPaused 
                     ? '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ⏸️</span>' 
                     : '<span class="badge" style="background:#e8f5e9; color:#2e7d32;">نشط ✅</span>';
                 
-                // التصحيح: إرسال الحالة الحالية كما هي للدالة
-                const currentStatusForFunc = shop.status || 'active'; // افتراض active إذا لم توجد
-                
                 const toggleBtn = isPaused 
-                    ? `<button class="btn-active" onclick="toggleStatus('${shop.user}', '${currentStatusForFunc}')">تفعيل</button>` 
-                    : `<button class="btn-freeze" onclick="toggleStatus('${shop.user}', '${currentStatusForFunc}')">تجميد</button>`;
+                    ? `<button class="btn-active" onclick="toggleStatus('${shop.user}', 'paused')">تفعيل</button>` 
+                    : `<button class="btn-freeze" onclick="toggleStatus('${shop.user}', 'active')">تجميد</button>`;
                 
                 tbody.innerHTML += `<tr><td><b>${shop.name}</b></td><td style="font-size:12px;">${shop.user} | ${shop.pass}</td><td>${subBadge}</td><td><b>${shop.commission || 0}%</b></td><td>${statusHtml}</td><td class="controls"><button class="btn-edit" onclick="editShop('${shop.user}', '${shop.name}', '${shop.pass}')">✏️</button>${toggleBtn}<button class="btn-delete" onclick="deleteShop('${shop.user}')">❌</button></td></tr>`;
             });
@@ -445,20 +441,16 @@
             document.getElementById('loader-overlay').style.display = 'none';
         }
 
-        // دالة التجميد المصححة
+        // دالة التجميد المصححة والنهائية
         async function toggleStatus(u, currentS) {
-            // تنظيف النص من أي مسافات زائدة
-            currentS = currentS.trim();
-            
-            // تحديد الحالة الجديدة بناءً على الحالة الحالية
-            const newS = (currentS === 'active') ? 'paused' : 'active';
-            
-            const msg = (newS === 'paused') ? "هل أنت متأكد من تجميد الحساب؟ ❄️" : "هل تريد إعادة تفعيل الحساب؟ ✅";
+            const nextS = (currentS === 'active') ? 'paused' : 'active';
+            const msg = (nextS === 'paused') ? "هل أنت متأكد من تجميد الحساب؟ ❄️" : "هل تريد إعادة تفعيل الحساب؟ ✅";
             
             if(!confirm(msg)) return;
             
             document.getElementById('loader-overlay').style.display = 'flex';
-            await N_ONE_CORE.postData('update', { user: u, data: { status: newS } });
+            // نرسل الحالة الجديدة للسيرفر
+            await N_ONE_CORE.postData('update', { user: u, data: { status: nextS } });
             await fetchData(); 
             document.getElementById('loader-overlay').style.display = 'none';
         }
@@ -471,7 +463,6 @@
             document.getElementById('loader-overlay').style.display = 'none';
         }
 
-        // ================= الإرسال اليدوي والأرشيف =================
         function sendManualOrder() {
             const phoneInput = document.getElementById('man_phone').value;
             const capName = document.getElementById('man_cap_name').value;
