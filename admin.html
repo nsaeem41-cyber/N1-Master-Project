@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | غرفة قيادة الشركات (Corporate Only)</title>
+    <title>N One | غرفة قيادة الشركات (Secure Isolation)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
@@ -94,11 +94,11 @@
 
         <div class="card">
             <div class="card-header">
-                <span>✨ إضافة شركة نقل جديدة (Client)</span>
+                <span>✨ إضافة شركة نقل جديدة (System Isolation)</span>
             </div>
             <div class="form-grid">
                 <input type="text" id="new_name" placeholder="الاسم التجاري للشركة">
-                <input type="text" id="new_user" placeholder="اسم المستخدم (User ID)">
+                <input type="text" id="new_user" placeholder="اسم المستخدم (User ID) - يجب أن يكون فريداً">
                 <input type="password" id="new_pass" placeholder="كلمة المرور">
                 <select id="sub_duration">
                     <option value="30">30 يوم</option>
@@ -107,7 +107,7 @@
                     <option value="365">سنة كاملة</option>
                 </select>
                 <input type="number" id="sub_price" placeholder="قيمة الاشتراك (د.أ)">
-                <button class="btn-add" id="btnAddUser" onclick="addUser()">+ إضافة وتفعيل 🚀</button>
+                <button class="btn-add" id="btnAddUser" onclick="addUser()">+ إضافة بقاعدة بيانات مستقلة 🚀</button>
             </div>
         </div>
 
@@ -121,7 +121,7 @@
                     <thead>
                         <tr>
                             <th>الشركة</th>
-                            <th>بيانات الدخول</th>
+                            <th>بيانات الدخول (ID)</th>
                             <th>الخطة / السعر</th>
                             <th>الصلاحية</th>
                             <th>الحالة</th>
@@ -138,7 +138,7 @@
     </div>
 
     <script>
-        // رابط السيرفر المحدث (نفس اللي اعتمدناه)
+        // رابط السيرفر المحدث
         if (typeof N_ONE_CORE !== 'undefined') {
             N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbxMzCw3e2LXl5vqNMKd1qB4OkEcagVD68cyBc8VttWwLHTlMDUT82tgIbFml0Ve3Yx3/exec";
         }
@@ -172,10 +172,9 @@
         function renderTables() {
             const clientTbody = document.getElementById('clients-table');
             
-            // عرض الشركات فقط (Clients)
+            // عرض الشركات فقط
             const clients = allData.filter(u => u.role === 'client' || u.type === 'client').reverse();
 
-            // تحديث الإحصائيات (خاصة بالشركات فقط)
             document.getElementById('count-clients').innerText = clients.length;
             document.getElementById('count-active').innerText = clients.filter(c => c.status === 'active').length;
             
@@ -240,15 +239,21 @@
         // ================= العمليات =================
 
         async function addUser() {
-            // تثبيت النوع كـ client تلقائياً
             const role = 'client';
             const name = document.getElementById('new_name').value;
-            const user = document.getElementById('new_user').value;
+            const user = document.getElementById('new_user').value.trim(); // تنظيف المسافات
             const pass = document.getElementById('new_pass').value;
             const days = document.getElementById('sub_duration').value;
             const price = document.getElementById('sub_price').value;
 
             if (!name || !user || !pass || !price) { alert("يرجى تعبئة كافة الحقول ☺️"); return; }
+
+            // ⛔ ميزة العزل: التحقق من عدم تكرار اسم المستخدم ⛔
+            const exists = allData.some(u => String(u.user).toLowerCase() === user.toLowerCase());
+            if (exists) {
+                alert("⛔ تنبيه: اسم المستخدم هذا موجود بالفعل! يرجى اختيار اسم آخر لضمان عزل البيانات.");
+                return;
+            }
 
             const expDate = new Date(globalServerTime);
             expDate.setDate(expDate.getDate() + parseInt(days));
@@ -263,7 +268,7 @@
             await N_ONE_CORE.postData('add', [newItem]);
             await fetchData();
             document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم إضافة الشركة بنجاح ☺️✅");
+            alert("تم إضافة الشركة بنجاح مع قاعدة بيانات معزولة ☺️✅");
             
             document.getElementById('new_name').value = '';
             document.getElementById('new_user').value = '';
