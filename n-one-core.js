@@ -7,7 +7,7 @@
 
 const N_ONE_CORE = {
     // 1. الرابط الملكي الموحد (يتعدل هنا ويتطبق في كل الإمبراطورية)
-    API_URL: "https://script.google.com/macros/s/AKfycbytYicEdE87FeQ5j9K9l3wrM9YB9uDDojNhjIKLGDDijBfOxwJPxFYDILkfIfBxJiKP/exec",
+    API_URL: "https://script.google.com/macros/s/AKfycbxMzCw3e2LXl5vqNMKd1qB4OkEcagVD68cyBc8VttWwLHTlMDUT82tgIbFml0Ve3Yx3/exec",
 
     // 2. ألوان الهوية البصرية (Theme)
     THEME: {
@@ -107,3 +107,4 @@ const N_ONE_CORE = {
 // تفعيل فوري: طباعة رسالة في الكونسول للتأكد أن النواة تعمل
 
 console.log("%c N One Core Loaded 🚀 | V1.0 Amber Needle", "color: #d4af37; background: #1a237e; font-size: 14px; padding: 5px;");
+
