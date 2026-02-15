@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | غرفة عمليات الشحن (Professional)</title>
+    <title>N One | غرفة عمليات الشحن (Final Fixed)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
@@ -252,6 +252,11 @@
     </div>
 
     <script>
+        // ================= تحديث العقل المدبر بالرابط الجديد =================
+        if (typeof N_ONE_CORE !== 'undefined') {
+            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbxMzCw3e2LXl5vqNMKd1qB4OkEcagVD68cyBc8VttWwLHTlMDUT82tgIbFml0Ve3Yx3/exec";
+        }
+
         let currentUser = null;
         let allData = [];
         let lastOrderCount = 0;
@@ -268,10 +273,9 @@
                 
                 await fetchData();
                 
-                // حساب أولي للطلبات دون رنين
+                // حساب أولي للطلبات
                 const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user));
                 const myShopIds = myShops.map(s => String(s.user));
-                // إضافة المستخدم الحالي لقائمة الـ IDs المسموح لها
                 myShopIds.push(String(currentUser.user));
 
                 const initialOrders = allData.filter(i => i.type == 'order' && myShopIds.includes(String(i.client_user)));
@@ -279,7 +283,6 @@
 
                 renderArchive();
                 
-                // تحديث كل 8 ثواني
                 setInterval(fetchDataSilent, 8000); 
             }
         };
@@ -320,22 +323,18 @@
             event.target.classList.add('active');
         }
 
-        // ================= Live Orders (الكود المصحح والمضمون) =================
+        // ================= Live Orders =================
         function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
             
-            // 1. تجميع كل معرفات المنشآت المرتبطة بهذا المستخدم
             const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user));
             const myShopIds = myShops.map(s => String(s.user));
-            // إضافة المستخدم نفسه أيضاً للقائمة
             myShopIds.push(String(currentUser.user));
 
-            // 2. سحب الطلبات (مع تحويل الأنواع لنصوص لضمان المطابقة)
             const orders = allData
                 .filter(i => i.type == 'order' && myShopIds.includes(String(i.client_user)))
                 .reverse();
 
-            // 3. الجرس
             if (orders.length > lastOrderCount) {
                 const audio = document.getElementById('notif-sound');
                 const playPromise = audio.play();
@@ -364,13 +363,11 @@
                 const orderVal = Number(ord.val || 0);
                 const mapUrl = (shop && shop.location_link) ? shop.location_link : '#';
 
-                // معالجة التاريخ بأمان تام
                 let timeDisplay = 'Now';
                 try {
                     if(ord.date && ord.date.includes('T')) {
                         timeDisplay = ord.date.split('T')[1].substring(0,5);
                     } else if (ord.date) {
-                         // في حال كان التاريخ بتنسيق مختلف
                         let d = new Date(ord.date);
                         timeDisplay = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     }
@@ -386,6 +383,92 @@
                     </tr>
                 `;
             });
+        }
+
+        // ================= إدارة المنشآت (إصلاح التجميد) =================
+        async function addShop() {
+            const name = document.getElementById('shop_name').value;
+            const user = document.getElementById('shop_user').value;
+            const pass = document.getElementById('shop_pass').value;
+            const subType = document.getElementById('sub_type').value;
+            const comm = document.getElementById('commission_rate').value;
+
+            if (!name || !user || !pass || !comm) { alert("يرجى تعبئة كافة الحقول والنسبة ☺️"); return; }
+            const smartMapLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(name);
+
+            document.getElementById('loader-overlay').style.display = 'flex';
+            const newShop = {
+                id: "SH_" + Date.now(), user: user, pass: pass, name: name,
+                role: "shop", type: "shop", client_user: currentUser.user,
+                status: "active", sub_type: subType, commission: comm, location_link: smartMapLink
+            };
+            await N_ONE_CORE.postData('add', [newShop]);
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
+            alert("تم إضافة المنشأة بنجاح ☺️✅");
+            document.getElementById('shop_name').value = ''; document.getElementById('shop_user').value = ''; document.getElementById('shop_pass').value = '';
+        }
+
+        function renderShops() {
+            const tbody = document.getElementById('shops-table-body');
+            const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user)).reverse();
+            document.getElementById('total-shops').innerText = myShops.length;
+            if (myShops.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد منشآت</td></tr>'; return; }
+            tbody.innerHTML = '';
+            myShops.forEach(shop => {
+                const subBadge = shop.sub_type === 'paid' ? '<span class="badge bg-paid">مدفوع 💎</span>' : '<span class="badge bg-free">مجاني</span>';
+                
+                // التأكد من حالة التجميد
+                const isPaused = shop.status === 'paused';
+                const statusHtml = isPaused 
+                    ? '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ⏸️</span>' 
+                    : '<span class="badge" style="background:#e8f5e9; color:#2e7d32;">نشط ✅</span>';
+                
+                // التصحيح: إرسال الحالة الحالية كما هي للدالة
+                const currentStatusForFunc = shop.status || 'active'; // افتراض active إذا لم توجد
+                
+                const toggleBtn = isPaused 
+                    ? `<button class="btn-active" onclick="toggleStatus('${shop.user}', '${currentStatusForFunc}')">تفعيل</button>` 
+                    : `<button class="btn-freeze" onclick="toggleStatus('${shop.user}', '${currentStatusForFunc}')">تجميد</button>`;
+                
+                tbody.innerHTML += `<tr><td><b>${shop.name}</b></td><td style="font-size:12px;">${shop.user} | ${shop.pass}</td><td>${subBadge}</td><td><b>${shop.commission || 0}%</b></td><td>${statusHtml}</td><td class="controls"><button class="btn-edit" onclick="editShop('${shop.user}', '${shop.name}', '${shop.pass}')">✏️</button>${toggleBtn}<button class="btn-delete" onclick="deleteShop('${shop.user}')">❌</button></td></tr>`;
+            });
+        }
+
+        async function editShop(u, n, p) {
+            const newN = prompt("تعديل اسم المنشأة:", n); if (!newN) return;
+            const newP = prompt("تعديل كلمة المرور:", p);
+            const newMapLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(newN);
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.postData('update', { user: u, data: { name: newN, pass: newP, location_link: newMapLink } });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
+        }
+
+        // دالة التجميد المصححة
+        async function toggleStatus(u, currentS) {
+            // تنظيف النص من أي مسافات زائدة
+            currentS = currentS.trim();
+            
+            // تحديد الحالة الجديدة بناءً على الحالة الحالية
+            const newS = (currentS === 'active') ? 'paused' : 'active';
+            
+            const msg = (newS === 'paused') ? "هل أنت متأكد من تجميد الحساب؟ ❄️" : "هل تريد إعادة تفعيل الحساب؟ ✅";
+            
+            if(!confirm(msg)) return;
+            
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.postData('update', { user: u, data: { status: newS } });
+            await fetchData(); 
+            document.getElementById('loader-overlay').style.display = 'none';
+        }
+
+        async function deleteShop(u) {
+            if(!confirm("حذف نهائي؟")) return;
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.fetchData('delete', { user: u });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
         }
 
         // ================= الإرسال اليدوي والأرشيف =================
@@ -409,7 +492,6 @@
             const smartLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(locName);
 
             const commValue = (fee * (ratio / 100)).toFixed(2);
-            // رقم الطلب بناءً على الأرشيف
             const dailyCount = fullArchive.filter(o => o.phone === phoneInput).length + 1;
 
             let msg = `إشعار طلب جديد - N One%0a`;
@@ -496,79 +578,6 @@
                 document.getElementById('mem_cap_name').innerText = captainMemory[phone];
                 nameInput.value = captainMemory[phone];
             } else { hint.style.display = 'none'; }
-        }
-
-        // ================= إدارة المنشآت =================
-        async function addShop() {
-            const name = document.getElementById('shop_name').value;
-            const user = document.getElementById('shop_user').value;
-            const pass = document.getElementById('shop_pass').value;
-            const subType = document.getElementById('sub_type').value;
-            const comm = document.getElementById('commission_rate').value;
-
-            if (!name || !user || !pass || !comm) { alert("يرجى تعبئة كافة الحقول والنسبة ☺️"); return; }
-            const smartMapLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(name);
-
-            document.getElementById('loader-overlay').style.display = 'flex';
-            const newShop = {
-                id: "SH_" + Date.now(), user: user, pass: pass, name: name,
-                role: "shop", type: "shop", client_user: currentUser.user,
-                status: "active", sub_type: subType, commission: comm, location_link: smartMapLink
-            };
-            await N_ONE_CORE.postData('add', [newShop]);
-            await fetchData();
-            document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم إضافة المنشأة بنجاح ☺️✅");
-            document.getElementById('shop_name').value = ''; document.getElementById('shop_user').value = ''; document.getElementById('shop_pass').value = '';
-        }
-
-        function renderShops() {
-            const tbody = document.getElementById('shops-table-body');
-            const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user)).reverse();
-            document.getElementById('total-shops').innerText = myShops.length;
-            if (myShops.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد منشآت</td></tr>'; return; }
-            tbody.innerHTML = '';
-            myShops.forEach(shop => {
-                const subBadge = shop.sub_type === 'paid' ? '<span class="badge bg-paid">مدفوع 💎</span>' : '<span class="badge bg-free">مجاني</span>';
-                
-                const isPaused = shop.status === 'paused';
-                const statusHtml = isPaused 
-                    ? '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ⏸️</span>' 
-                    : '<span class="badge" style="background:#e8f5e9; color:#2e7d32;">نشط ✅</span>';
-                
-                const toggleBtn = isPaused 
-                    ? `<button class="btn-active" onclick="toggleStatus('${shop.user}', 'active')">تفعيل</button>` 
-                    : `<button class="btn-freeze" onclick="toggleStatus('${shop.user}', 'paused')">تجميد</button>`;
-                
-                tbody.innerHTML += `<tr><td><b>${shop.name}</b></td><td style="font-size:12px;">${shop.user} | ${shop.pass}</td><td>${subBadge}</td><td><b>${shop.commission || 0}%</b></td><td>${statusHtml}</td><td class="controls"><button class="btn-edit" onclick="editShop('${shop.user}', '${shop.name}', '${shop.pass}')">✏️</button>${toggleBtn}<button class="btn-delete" onclick="deleteShop('${shop.user}')">❌</button></td></tr>`;
-            });
-        }
-
-        async function editShop(u, n, p) {
-            const newN = prompt("تعديل اسم المنشأة:", n); if (!newN) return;
-            const newP = prompt("تعديل كلمة المرور:", p);
-            const newMapLink = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(newN);
-            document.getElementById('loader-overlay').style.display = 'flex';
-            await N_ONE_CORE.postData('update', { user: u, data: { name: newN, pass: newP, location_link: newMapLink } });
-            await fetchData();
-            document.getElementById('loader-overlay').style.display = 'none';
-        }
-
-        async function toggleStatus(u, currentS) {
-            const newS = currentS === 'active' ? 'paused' : 'active';
-            if(!confirm(newS === 'paused' ? "تجميد الحساب؟ لن يتمكن من إرسال طلبات." : "إعادة التفعيل؟")) return;
-            document.getElementById('loader-overlay').style.display = 'flex';
-            await N_ONE_CORE.postData('update', { user: u, data: { status: newS } });
-            await fetchData(); 
-            document.getElementById('loader-overlay').style.display = 'none';
-        }
-
-        async function deleteShop(u) {
-            if(!confirm("حذف نهائي؟")) return;
-            document.getElementById('loader-overlay').style.display = 'flex';
-            await N_ONE_CORE.fetchData('delete', { user: u });
-            await fetchData();
-            document.getElementById('loader-overlay').style.display = 'none';
         }
 
         function logout() { N_ONE_CORE.logout(); }
