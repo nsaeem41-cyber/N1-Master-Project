@@ -1,1 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N One | إدارة قوائم الأسعار المركزية</title>
+    
+    <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
+    <style>
+        /* ================= تصميم Pricing Royal (Teal & Gold) - مستوحى من الصورة ================= */
+        :root {
+            --primary: #00838f; /* لون التيل الموجود في الصورة */
+            --gold: #fbc02d;    /* الذهبي الموجود في الأسهم */
+            --bg: #f0f4f4;      
+            --text: #37474f;
+            --white: #ffffff;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg); margin: 0; padding: 0; 
+            color: var(--text); user-select: none; 
+        }
+
+        /* الهيدر */
+        .navbar { 
+            background: #006064; height: 70px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            border-bottom: 5px solid var(--gold);
+        }
+        .brand { font-size: 24px; font-weight: 900; color: white; letter-spacing: 1px; }
+        .gold-text { color: var(--gold); }
+        
+        .btn-back { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 15px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .btn-back:hover { background: rgba(255,255,255,0.2); }
+
+        .container { max-width: 1100px; margin: 30px auto; padding: 20px; }
+
+        /* أدوات التحكم العلوية */
+        .controls-bar { 
+            background: white; padding: 20px; border-radius: 15px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-right: 5px solid var(--primary);
+        }
+        
+        .source-select { padding: 10px; border: 2px solid var(--primary); border-radius: 8px; font-weight: bold; color: var(--primary); outline: none; min-width: 250px; font-size: 16px; }
+        
+        .action-btns { display: flex; gap: 10px; }
+        .btn-main { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; color: white; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .btn-save { background: linear-gradient(45deg, #2e7d32, #43a047); }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 10px rgba(46, 125, 50, 0.3); }
+        
+        .btn-print { background: linear-gradient(45deg, #00838f, #0097a7); }
+        .btn-print:hover { transform: translateY(-2px); }
+        
+        .btn-add { background: linear-gradient(45deg, #fbc02d, #fdd835); color: #333; }
+        .btn-add:hover { transform: translateY(-2px); }
+
+        /* جدول الأسعار الفخم */
+        .price-sheet { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+        
+        /* ترويسة الورقة (للطلبات الرسمية) */
+        .sheet-header { 
+            text-align: center; padding: 40px 20px 20px 20px; 
+            border-bottom: 3px solid var(--gold); 
+            display: none; /* تظهر فقط عند الطباعة */
+            background: #fcfcfc;
+        }
+        .sheet-logo h1 { margin: 0; color: var(--primary); font-size: 36px; text-transform: uppercase; }
+        .sheet-meta { margin-top: 10px; color: #555; font-size: 14px; font-weight: bold; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: #e0f7fa; color: #006064; }
+        th { padding: 18px; text-align: right; font-weight: 900; border-bottom: 2px solid #b2ebf2; font-size: 15px; }
+        td { padding: 12px 18px; border-bottom: 1px solid #eee; font-size: 15px; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #f9fbfb; }
+        
+        /* خانات الإدخال داخل الجدول */
+        .price-input { 
+            width: 90px; padding: 8px; border: 1px solid #cfd8dc; 
+            border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px;
+            color: #2e7d32; font-family: 'Segoe UI', sans-serif; background: #f1f8e9;
+        }
+        .price-input:focus { border-color: var(--gold); outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.2); }
+
+        .area-input { border: none; background: transparent; font-size: 15px; width: 100%; font-weight: 600; color: #37474f; }
+        .area-input:focus { outline: none; border-bottom: 2px solid var(--primary); background: #e0f7fa; }
+
+        /* تنبيه جاري التسعير */
+        .pricing-status { font-size: 11px; font-weight: bold; padding: 5px 10px; border-radius: 20px; }
+        .status-ok { color: #00695c; background: #b2dfdb; }
+        .status-wait { color: #e65100; background: #ffe0b2; animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        /* زر الحذف */
+        .btn-del { background: none; border: none; color: #ff5252; cursor: pointer; font-size: 18px; opacity: 0.6; transition: 0.2s; }
+        .btn-del:hover { opacity: 1; transform: scale(1.2) rotate(90deg); }
+
+        /* ================= تصميم الطباعة (CSS Magic) ================= */
+        @media print {
+            body { background: white; -webkit-print-color-adjust: exact; }
+            .navbar, .controls-bar, .btn-del, .no-print { display: none !important; }
+            .container { margin: 0; padding: 0; max-width: 100%; box-shadow: none; }
+            .price-sheet { box-shadow: none; border: none; border-radius: 0; }
+            .sheet-header { display: block; }
+            .price-input { border: none; background: transparent; text-align: right; padding: 0; color: black; }
+            .area-input { border: none; color: black; }
+            th { background-color: #00838f !important; color: white !important; border-bottom: 2px solid black !important; }
+            td { border-bottom: 1px solid #ccc !important; }
+            tr.row-pending { display: none; } /* إخفاء المناطق غير المسعرة */
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand">N <span class="gold-text">One</span> Central Pricing</div>
+        <a href="client.html" class="btn-back">⬅️ لوحة التحكم</a>
+    </nav>
+
+    <div class="container">
+        
+        <div class="controls-bar">
+            <div>
+                <label style="font-size:12px; font-weight:bold; color:#777; display:block; margin-bottom:5px;">مصدر التوصيل (المنشأ):</label>
+                <select id="source-selector" class="source-select" onchange="renderPrices()">
+                    <option value="Jubaiha">الجبيهة ومحيطها 📍 (القائمة المعتمدة)</option>
+                    <option value="AmmanCenter">وسط عمّان (عام)</option>
+                    <option value="Zarqa">الزرقاء</option>
+                </select>
+            </div>
+            
+            <div class="action-btns">
+                <button class="btn-main btn-add" onclick="addNewArea()">+ إضافة منطقة</button>
+                <button class="btn-main btn-print" onclick="window.print()">🖨️ طباعة رسمية</button>
+                <button class="btn-main btn-save" onclick="savePrices()">💾 حفظ وتعميم الأسعار</button>
+            </div>
+        </div>
+
+        <div class="price-sheet">
+            
+            <div class="sheet-header">
+                <div class="sheet-logo">
+                    <h1>N <span style="color:#fbc02d">One</span> Delivery</h1>
+                    <div style="width: 100px; height: 3px; background: #fbc02d; margin: 10px auto;"></div>
+                </div>
+                <div class="sheet-meta">
+                    قائمة أسعار التوصيل الرسمية | المصدر: <span id="print-source">الجبيهة</span> | 2026<br>
+                    <span style="font-size:11px; font-weight:normal;">تعتمد هذه الأسعار لجميع المنشآت ويمنع تعديلها إلا من الإدارة المركزية</span>
+                </div>
+            </div>
+
+            <table id="price-table">
+                <thead>
+                    <tr>
+                        <th style="width: 55%;">المنطقة / الحي</th>
+                        <th style="width: 25%;">سعر التوصيل (د.أ)</th>
+                        <th style="width: 15%;">الحالة</th>
+                        <th style="width: 5%;" class="no-print"></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    </tbody>
+            </table>
+        </div>
+        
+        <div style="text-align:center; margin-top:20px; color:#777; font-size:12px; display:flex; align-items:center; justify-content:center; gap:5px;">
+            <span>ℹ️</span>
+            <span>نظام الربط الذكي: عند الحفظ، سيتم إرسال هذه القائمة فوراً إلى حسابات المنشآت (Shop) لتظهر لهم كقائمة منسدلة مغلقة.</span>
+        </div>
+
+    </div>
+
+    <script>
+        // ========================================================
+        // كود تسعير الإمبراطورية - v2.0 (مطابق للصورة)
+        // ========================================================
+        
+        // تفريغ البيانات من الصورة الورقية لتكون هي الأساس
+        const defaultData = {
+            "Jubaiha": [
+                // فئة 1.50
+                { area: "حي الريان / الزوتنية / طلوع البلدية", price: 1.50 },
+                
+                // فئة 2.00
+                { area: "المحبة / أم حجير", price: 2.00 },
+                { area: "ضاحية الرشيد", price: 2.00 },
+                { area: "حي المنصورة", price: 2.00 },
+                
+                // فئة 2.50
+                { area: "تلاع العلي / سوق السلطان / طلوع نيفين", price: 2.50 },
+                { area: "أبو نصير", price: 2.50 },
+                { area: "صويلح / البشائر / الفضيلة / الحي الشرقي", price: 2.50 },
+
+                // فئة 3.00
+                { area: "خلدا / صالحين / أم السماق / الخالدين", price: 3.00 },
+                { area: "الخزنة", price: 3.00 },
+                { area: "شفا بدران", price: 3.00 },
+                { area: "صويلح / ميسلون", price: 3.00 },
+                
+                // فئة 3.50
+                { area: "مرج الحمام", price: 6.00 }, // تصحيح حسب الصورة (مرج الحمام 6.00)
+                { area: "منطقة وادي السير / الجندول / الصوفية", price: 3.50 },
+                { area: "منطقة وادي السير / الكرسي", price: 3.50 },
+                { area: "صويلح / الكمالية", price: 3.50 },
+
+                // فئة 4.00
+                { area: "طبربور", price: 4.00 },
+                { area: "الرابية", price: 4.00 },
+                { area: "الشميساني", price: 4.00 },
+                { area: "أم أذينة", price: 4.00 },
+                { area: "دابوق", price: 4.00 },
+                { area: "جبل الحسين", price: 4.00 },
+                { area: "جبل النزهة", price: 4.00 },
+                { area: "منطقة وادي السير / البيادر", price: 4.00 },
+
+                // فئة 5.00
+                { area: "أبو عليا", price: 5.00 },
+                { area: "عبدون", price: 5.00 },
+                
+                // مناطق أخرى من الصورة
+                { area: "وسط البلد", price: 3.00 }, // تقديري لعدم وضوحه تماماً، قابل للتعديل
+            ],
+            "AmmanCenter": [
+                { area: "جبل عمان", price: 2.00 }
+            ],
+            "Zarqa": []
+        };
+
+        // استرجاع البيانات المحفوظة أو استخدام بيانات الصورة الافتراضية
+        let pricingData = JSON.parse(localStorage.getItem('nOne_global_prices')) || defaultData;
+
+        window.onload = function() {
+            renderPrices();
+        };
+
+        function renderPrices() {
+            const source = document.getElementById('source-selector').value;
+            // تحديث اسم المصدر في ترويسة الطباعة
+            document.getElementById('print-source').innerText = document.getElementById('source-selector').options[document.getElementById('source-selector').selectedIndex].text.split('(')[0];
+            
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            
+            const areas = pricingData[source] || [];
+
+            if (areas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#aaa;">لا توجد مناطق مسجلة لهذا المصدر</td></tr>';
+                return;
+            }
+
+            // ترتيب المناطق حسب السعر تصاعدياً لجمالية العرض (مثل الصورة)
+            areas.sort((a, b) => a.price - b.price);
+
+            areas.forEach((item, index) => {
+                const isPriced = item.price > 0;
+                const statusHtml = isPriced 
+                    ? `<span class="pricing-status status-ok">معتمد ✅</span>` 
+                    : `<span class="pricing-status status-wait">جاري التسعير ⏳</span>`;
+                
+                const rowClass = isPriced ? '' : 'row-pending';
+
+                tbody.innerHTML += `
+                    <tr class="${rowClass}">
+                        <td><input type="text" class="area-input" value="${item.area}" onchange="updateData('${source}', ${index}, 'area', this.value)"></td>
+                        <td>
+                            <input type="number" class="price-input" value="${item.price}" step="0.25" onchange="updateData('${source}', ${index}, 'price', this.value)">
+                        </td>
+                        <td>${statusHtml}</td>
+                        <td class="no-print">
+                            <button class="btn-del" onclick="deleteArea('${source}', ${index})" title="حذف">×</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateData(source, index, field, value) {
+            if (field === 'price') value = parseFloat(value);
+            pricingData[source][index][field] = value;
+            renderPrices(); 
+        }
+
+        function addNewArea() {
+            const source = document.getElementById('source-selector').value;
+            const name = prompt("أدخل اسم المنطقة الجديدة:");
+            if (!name) return;
+            
+            pricingData[source].push({ area: name, price: 0 }); 
+            renderPrices();
+        }
+
+        function deleteArea(source, index) {
+            if (confirm("حذف المنطقة؟")) {
+                pricingData[source].splice(index, 1);
+                renderPrices();
+            }
+        }
+
+        // ========================================================
+        // نظام الربط الذكي (Feed The Shops) 🧠
+        // ========================================================
+        function savePrices() {
+            // 1. الحفظ في المخزن المركزي للمتصفح
+            localStorage.setItem('nOne_global_prices', JSON.stringify(pricingData));
+            
+            // 2. محاكاة الإرسال
+            const btn = document.querySelector('.btn-save');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "تم التعميم بنجاح 📡";
+            btn.style.background = "#004d40"; 
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = "linear-gradient(45deg, #2e7d32, #43a047)";
+                alert("تم تحديث الأسعار! ☺️\nالآن عندما تفتح أي منشأة صفحة الطلبات، ستظهر لها هذه المناطق والأسعار حصراً.");
+            }, 1000);
+        }
+
+    </script>
+
+</body>
+</html>
