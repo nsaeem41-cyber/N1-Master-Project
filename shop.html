@@ -2,377 +2,429 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | بوابة المنشآت الملكية (Royal Access)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>N One | Business Elite</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
     <style>
-        /* ================= تصميم Royal Shop (Navy & Gold) ================= */
+        /* ================= تصميم N One Legendary (Minimalist Luxury) ================= */
         :root {
-            --primary: #1a237e;      /* كحلي ملكي */
-            --gold: #d4af37;         /* ذهبي */
-            --bg: #f5f5f5;           
-            --panel: #ffffff;        
-            --text: #333;            
-            --success: #2e7d32;      
-            --danger: #c62828;
-            --night: #311b92;        /* لون الوضع الليلي */
+            --primary: #0f172a;      /* نيفي بلو عميق جداً (Midnight) */
+            --accent: #1e293b;       /* نيفي بلو فاتح قليلاً للكروت */
+            --gold: #d4af37;         /* ذهبي ملكي */
+            --gold-light: #fbe083;   /* ذهبي فاتح للتدرجات */
+            --bg: #f8fafc;           /* خلفية رمادية ثلجية */
+            --text: #334155;         /* نص رمادي غامق */
+            --text-light: #64748b;   /* نص ثانوي */
+            --success: #10b981;      /* أخضر زمردي */
+            --danger: #ef4444;       /* أحمر حيوي */
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: var(--bg); margin: 0; padding: 0; 
-            color: var(--text); user-select: none; padding-bottom: 80px;
+            color: var(--text); user-select: none; padding-bottom: 100px;
         }
 
-        /* الهيدر الملكي */
-        .navbar { 
-            background: var(--primary); height: 70px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-            border-bottom: 4px solid var(--gold);
-            position: sticky; top: 0; z-index: 1000;
+        /* 1. الهيدر الأسطوري */
+        .header {
+            background: var(--primary);
+            padding: 20px 25px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+            position: relative; z-index: 10;
         }
-        .brand { font-size: 20px; font-weight: 900; color: white; letter-spacing: 1px; }
+
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .brand { font-size: 22px; font-weight: 900; color: white; letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
-
-        /* شريط التقييم والإنجاز */
-        .stats-panel {
-            background: white; padding: 15px 20px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+        .rating-badge { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 5px 12px; border-radius: 20px; 
+            color: var(--gold); font-weight: bold; font-size: 13px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            display: flex; align-items: center; gap: 5px;
         }
-        .shop-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .shop-name { font-weight: bold; color: var(--primary); font-size: 16px; display: flex; align-items: center; gap: 5px; }
-        .stars { color: #ffb300; font-size: 14px; }
+
+        /* كارت الإنجاز المدمج في الهيدر */
+        .achievement-card { color: white; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; color: #cbd5e1; }
+        .progress-track { background: rgba(255, 255, 255, 0.1); height: 8px; border-radius: 10px; overflow: hidden; }
+        .progress-fill { 
+            height: 100%; width: 0%; 
+            background: linear-gradient(90deg, var(--gold), var(--gold-light)); 
+            border-radius: 10px; transition: width 1s ease-out;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 2. المحتوى الرئيسي */
+        .container { max-width: 500px; margin: -20px auto 0; padding: 0 20px; position: relative; z-index: 20; }
+
+        /* كارت الطلب العائم */
+        .order-card {
+            background: white; padding: 30px 25px; border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid var(--gold);
+        }
+
+        .section-title { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 25px; text-align: center; }
+
+        /* حقول الإدخال الحديثة */
+        .input-wrapper { position: relative; margin-bottom: 20px; }
+        .input-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
         
-        /* شريط التقدم */
-        .progress-container { width: 100%; background-color: #eee; border-radius: 10px; height: 10px; overflow: hidden; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), #5c6bc0); width: 0%; transition: 1s; }
-        .progress-text { font-size: 11px; color: #777; margin-top: 5px; text-align: left; }
-
-        .container { max-width: 500px; margin: 0 auto; padding: 0 20px; }
-
-        /* كارت الطلب الرئيسي */
-        .order-card { 
-            background: white; padding: 25px; border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            border-top: 5px solid var(--gold); 
-            position: relative; overflow: hidden;
+        input {
+            width: 100%; padding: 16px 50px 16px 20px; /* مساحة للأيقونة */
+            border: 2px solid #e2e8f0; border-radius: 16px;
+            font-size: 15px; background: #f8fafc; outline: none; transition: 0.3s;
+            color: var(--primary); font-weight: 600;
         }
-
-        .input-group { margin-bottom: 15px; position: relative; }
-        label { display: block; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 5px; }
-        
-        input { 
-            width: 100%; padding: 14px; border: 2px solid #eee; border-radius: 12px; 
-            font-size: 16px; background: #fafafa; outline: none; box-sizing: border-box; 
-            transition: 0.3s; 
-        }
-        input:focus { border-color: var(--primary); background: white; }
+        input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
+        input::placeholder { color: #94a3b8; font-weight: normal; }
 
         /* حقل السعر المغلق (The Safe) */
-        .readonly-field { 
-            background: #e8eaf6; color: var(--primary); font-weight: bold; 
-            border-color: #c5cae9; pointer-events: none; 
-        }
-        .readonly-field.night-active { 
-            background: #ede7f6; color: var(--night); border-color: #b39ddb; 
-        }
+        .readonly-field { background: #f1f5f9; border-color: #cbd5e1; color: var(--text-light); pointer-events: none; }
+        .readonly-field.night-mode { background: #e0e7ff; border-color: #818cf8; color: #312e81; }
 
         /* أيقونة القمر */
-        .night-icon { 
-            position: absolute; left: 15px; top: 38px; font-size: 18px; 
-            display: none; animation: float 2s infinite; 
+        .moon-badge {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            background: #312e81; color: var(--gold); padding: 4px 8px; border-radius: 8px;
+            font-size: 10px; font-weight: bold; display: none;
+            box-shadow: 0 2px 5px rgba(49, 46, 129, 0.3);
         }
-        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
 
-        /* الأزرار */
-        .btn-send { 
-            width: 100%; padding: 16px; background: var(--primary); color: white; 
-            border: none; border-radius: 12px; font-size: 16px; font-weight: bold; 
-            cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(26,35,126,0.2); 
-            margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        /* الأزرار الأسطورية */
+        .btn-primary {
+            width: 100%; padding: 18px; background: var(--primary); color: white;
+            border: none; border-radius: 16px; font-size: 16px; font-weight: 800;
+            cursor: pointer; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-send:active { transform: scale(0.98); }
+        .btn-primary:active { transform: scale(0.98); box-shadow: 0 5px 10px rgba(15, 23, 42, 0.2); }
 
-        .btn-urgent { 
-            width: 100%; padding: 14px; background: white; color: var(--danger); 
-            border: 2px solid var(--danger); border-radius: 12px; font-size: 14px; font-weight: bold; 
-            cursor: pointer; margin-top: 10px; transition: 0.2s; 
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+        /* زر VIP الذكي */
+        .btn-vip {
+            width: 100%; padding: 16px; margin-top: 15px;
+            background: white; color: var(--danger);
+            border: 2px solid #fecaca; border-radius: 16px;
+            font-size: 14px; font-weight: 800; cursor: pointer;
+            transition: 0.2s; display: flex; justify-content: space-between; align-items: center;
         }
-        .btn-urgent:hover { background: #ffebee; }
+        .btn-vip:hover { background: #fef2f2; border-color: var(--danger); }
+        
+        .quota-badge { 
+            background: var(--danger); color: white; padding: 4px 10px; 
+            border-radius: 20px; font-size: 11px; 
+        }
 
-        /* سجل الطلبات */
-        .history-section { margin-top: 30px; }
-        .history-title { font-size: 14px; color: #777; margin-bottom: 10px; font-weight: bold; }
-        .history-item { 
-            background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03); border-right: 4px solid #eee;
+        /* 3. سجل الطلبات المصغر */
+        .history-mini { margin-top: 30px; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 10px; }
+        .history-title { font-size: 14px; font-weight: bold; color: var(--text-light); }
+        
+        .history-card {
+            background: white; padding: 15px; border-radius: 16px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border-right: 4px solid #e2e8f0;
         }
-        .history-item.confirmed { border-right-color: var(--success); }
-        .history-item.pending { border-right-color: var(--gold); }
+        .history-card.status-new { border-right-color: var(--primary); }
+        .history-card.status-vip { border-right-color: var(--danger); }
 
         /* إشعارات */
         .toast {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: #333; color: white; padding: 10px 20px; border-radius: 20px;
-            font-size: 12px; display: none; z-index: 2000; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white; padding: 12px 25px; border-radius: 30px;
+            font-size: 13px; font-weight: bold; display: none; z-index: 100;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
+            animation: slideUp 0.3s ease-out;
         }
+        @keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="brand">N <span class="gold-text">One</span> Business</div>
-        <div style="font-size:24px;">🏢</div>
-    </nav>
-
-    <div class="stats-panel">
-        <div class="shop-info">
-            <div class="shop-name">
-                <span id="shop-display-name">N One Shop</span>
-                <span class="stars">★★★★.9</span> </div>
-            <div style="font-size:12px; color:var(--success); font-weight:bold;">نشط ✅</div>
+    <header class="header">
+        <div class="header-top">
+            <div class="brand">N <span class="gold-text">One</span></div>
+            <div class="rating-badge">
+                <span>⭐ 4.9</span>
+                <span>|</span>
+                <span id="shop-name-display">My Shop</span>
+            </div>
         </div>
-        <div class="progress-container">
-            <div class="progress-bar" id="daily-progress"></div>
+        
+        <div class="achievement-card">
+            <div class="progress-label">
+                <span>🚀 إنجاز اليوم</span>
+                <span><span id="orders-count">0</span> / 10 طلبات</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-bar"></div>
+            </div>
+            <div style="font-size:10px; color:#94a3b8; margin-top:5px; text-align:left;">أكمل 10 طلبات لفتح مكافأة VIP</div>
         </div>
-        <div class="progress-text">🚀 إنجاز اليوم: <span id="daily-count">0</span> طلبات (استمر للوصول للمستوى الذهبي!)</div>
-    </div>
+    </header>
 
     <div class="container">
         
         <div class="order-card">
-            <h3 style="margin-top:0; color:var(--primary); text-align:center;">إرسال طلب جديد 📦</h3>
+            <div class="section-title">إرسال طلب جديد 📦</div>
 
-            <div class="input-group">
-                <label>📍 وجهة الطلب (ابحث عن المنطقة)</label>
-                <input type="text" id="destination" list="areas-list" placeholder="اكتب اسم المنطقة (مثلاً: تلاع...)" onchange="calculateFee()">
+            <div class="input-wrapper">
+                <span class="input-icon">📍</span>
+                <input type="text" id="destination" list="areas-list" placeholder="وجهة الطلب (مثلاً: تلاع...)" onchange="calculateFee()">
                 <datalist id="areas-list">
                     </datalist>
             </div>
 
-            <div class="input-group">
-                <label>💰 قيمة التحصيل (سعر الأوردر)</label>
-                <input type="number" id="order_val" placeholder="0.00">
+            <div class="input-wrapper">
+                <span class="input-icon">💰</span>
+                <input type="number" id="order_val" placeholder="قيمة التحصيل (د.أ)">
             </div>
 
-            <div class="input-group">
-                <label>🛵 رسوم التوصيل (محسوبة آلياً)</label>
-                <input type="text" id="delivery_fee" class="readonly-field" placeholder="0.00" readonly>
-                <span class="night-icon" id="night-moon" title="تطبيق التسعير الليلي">🌙</span>
+            <div class="input-wrapper">
+                <span class="input-icon">🛵</span>
+                <input type="text" id="delivery_fee" class="readonly-field" placeholder="سعر التوصيل (تلقائي)" readonly>
+                <div id="night-badge" class="moon-badge">🌙 +0.50 ليلي</div>
             </div>
 
-            <button class="btn-send" onclick="sendOrder(false)">
-                <span>إرسال الطلب فوراً</span> 🚀
+            <button class="btn-primary" onclick="sendOrder(false)">
+                إرسال الطلب فوراً 🚀
             </button>
             
-            <button class="btn-urgent" onclick="sendOrder(true)">
-                <span>⚡ طلب مستعجل (VIP)</span>
+            <button class="btn-vip" id="btn-vip" onclick="sendOrder(true)">
+                <span>⚡ طلب مستعجل (Priority)</span>
+                <span class="quota-badge" id="vip-quota">3 محاولات</span>
             </button>
+
         </div>
 
-        <div class="history-section">
-            <div class="history-title">📝 آخر طلباتك اليوم</div>
+        <div class="history-mini">
+            <div class="history-header">
+                <span class="history-title">نشاطك اليوم 📅</span>
+            </div>
             <div id="history-list">
                 </div>
         </div>
 
     </div>
 
-    <div id="toast" class="toast">تم الإرسال بنجاح ✅</div>
+    <div id="toast" class="toast">✅ تم إرسال الطلب بنجاح!</div>
 
     <script>
         // ========================================================
-        // كود المنشأة الملكية - v6.0 (المربوط بالمصفوفة)
+        // كود الواجهة الأسطورية - v7.0 (The Legend)
         // ========================================================
 
-        // رابط السيرفر (النواة)
         const API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
         
-        // المتغيرات المحلية
-        let pricingMatrix = {}; // لتخزين الأسعار المسحوبة
-        let shopData = JSON.parse(localStorage.getItem('nOne_shop_data')) || { 
+        // بيانات الجلسة المحلية
+        let shopData = JSON.parse(localStorage.getItem('nOne_shop_data_v7')) || { 
             ordersToday: 0, 
+            vipCredits: 3, // رصيد ابتدائي
             history: [] 
         };
+        let pricingMatrix = {}; 
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
         window.onload = function() {
-            if (!currentUser) {
-                // محاكاة للدخول إذا لم يكن هناك جلسة (للتجربة)
-                currentUser = { name: "منشأة تجريبية", user: "demo_shop" };
-            }
-            document.getElementById('shop-display-name').innerText = currentUser.name;
+            // محاكاة مستخدم إذا لم يوجد (للتجربة)
+            if (!currentUser) currentUser = { name: "منشأة تجريبية", user: "demo" };
+            
+            document.getElementById('shop-name-display').innerText = currentUser.name.split(' ')[0];
             
             // 1. تحميل المصفوفة الماسية (The Bridge)
-            loadPricingMatrix();
+            loadMatrix();
             
-            // 2. تحديث شريط الإنجاز
-            updateProgressBar();
-            renderHistory();
+            // 2. تحديث الواجهة
+            updateUI();
         };
 
-        // دالة سحب الأسعار من "المخزن المركزي" الذي أنشأناه في prices.html
-        function loadPricingMatrix() {
+        // --- نظام الجسر (سحب الأسعار) ---
+        function loadMatrix() {
             const rawData = localStorage.getItem('nOne_global_prices');
             if (rawData) {
                 const allData = JSON.parse(rawData);
                 const datalist = document.getElementById('areas-list');
                 
-                // دمج جميع المصادر (الجبيهة، عمان، إلخ) في قائمة واحدة للبحث السهل
-                // في نظام متقدم، نربط كل مستخدم بمصدر محدد، هنا سنجعل البحث مفتوحاً للسهولة
+                // دمج المصادر للبحث
                 Object.keys(allData).forEach(source => {
                     allData[source].forEach(item => {
-                        // إضافة المنطقة للمصفوفة السريعة
                         pricingMatrix[item.area] = parseFloat(item.price);
-                        
-                        // إضافة للقائمة المنسدلة
-                        const option = document.createElement('option');
-                        option.value = item.area;
-                        datalist.appendChild(option);
+                        const opt = document.createElement('option');
+                        opt.value = item.area;
+                        datalist.appendChild(opt);
                     });
                 });
-                console.log("تم تحميل المصفوفة الماسية بنجاح 💎");
             }
         }
 
-        // خوارزمية التسعير الذكي + الحارس الليلي
+        // --- نظام الحارس الليلي والتسعير ---
         function calculateFee() {
-            const areaName = document.getElementById('destination').value;
+            const dest = document.getElementById('destination').value;
             const feeInput = document.getElementById('delivery_fee');
-            const moonIcon = document.getElementById('night-moon');
+            const badge = document.getElementById('night-badge');
             
-            if (pricingMatrix[areaName]) {
-                let basePrice = pricingMatrix[areaName];
+            if (pricingMatrix[dest]) {
+                let price = pricingMatrix[dest];
                 
-                // فحص الحارس الليلي
+                // فحص الليل
                 const hour = new Date().getHours();
-                const isNightTime = (hour >= 23 || hour < 6);
-                const isNightToggleOn = localStorage.getItem('nOne_night_toggle') === 'true'; // نقرأ من إعدادات الإدارة
+                const isNight = (hour >= 23 || hour < 6);
+                const isNightActive = localStorage.getItem('nOne_night_toggle') === 'true';
                 
-                if (isNightTime && isNightToggleOn) {
-                    basePrice += 0.50;
-                    feeInput.classList.add('night-active');
-                    moonIcon.style.display = 'block';
+                if (isNight && isNightActive) {
+                    price += 0.50;
+                    feeInput.classList.add('night-mode');
+                    badge.style.display = 'block';
                 } else {
-                    feeInput.classList.remove('night-active');
-                    moonIcon.style.display = 'none';
+                    feeInput.classList.remove('night-mode');
+                    badge.style.display = 'none';
                 }
-
-                feeInput.value = basePrice.toFixed(2);
                 
-                // وميض بسيط لتأكيد السعر
-                feeInput.style.backgroundColor = "#fff9c4"; // أصفر فاتح
-                setTimeout(() => {
-                    feeInput.style.backgroundColor = feeInput.classList.contains('night-active') ? '#ede7f6' : '#e8eaf6';
-                }, 500);
-
+                feeInput.value = price.toFixed(2);
+                
+                // تأثير بصري (Flash)
+                feeInput.style.transform = "scale(1.02)";
+                setTimeout(() => feeInput.style.transform = "scale(1)", 200);
             } else {
                 feeInput.value = "";
-                moonIcon.style.display = 'none';
+                badge.style.display = 'none';
             }
         }
 
+        // --- نظام الإرسال والكوتا الذكي ---
         async function sendOrder(isUrgent) {
             const dest = document.getElementById('destination').value;
             const val = document.getElementById('order_val').value;
             const fee = document.getElementById('delivery_fee').value;
 
-            if (!dest || !val || !fee) {
-                alert("الرجاء اختيار منطقة صحيحة وتعبئة القيمة ☺️");
-                return;
+            // تحقق
+            if (!dest || !val || !fee) { showToast("⚠️ يرجى تعبئة جميع الحقول"); return; }
+            
+            // فحص الكوتا للمستعجل
+            if (isUrgent) {
+                if (shopData.vipCredits <= 0) {
+                    showToast("⛔ نفذ رصيد VIP! أكمل 5 طلبات عادية لشحنه.");
+                    return;
+                }
             }
 
-            const btn = document.querySelector('.btn-send');
+            // تجميد الزر
+            const btn = isUrgent ? document.getElementById('btn-vip') : document.querySelector('.btn-primary');
             const originalText = btn.innerHTML;
-            btn.innerHTML = "جاري الإرسال 📡...";
-            btn.disabled = true;
+            btn.innerHTML = "جاري الاتصال...";
+            btn.style.opacity = "0.7";
 
             // تجهيز الطلب
-            const newOrder = {
+            const orderData = {
                 id: "ORD_" + Date.now(),
                 type: "order",
                 client_user: currentUser.user,
                 cl_name: currentUser.name,
-                
-                // البيانات المالية
-                pickup: dest, // الوجهة
+                pickup: dest,
                 val: val,
                 fee: fee,
-                
                 date: new Date().toISOString(),
                 is_emergency: isUrgent,
                 status: isUrgent ? "emergency" : "new"
             };
 
             try {
-                // إرسال للسيرفر
+                // إرسال
                 await fetch(API_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ action: 'add', data: newOrder })
+                    body: JSON.stringify({ action: 'add', data: orderData })
                 });
 
-                // تحديث الإنجازات المحلية
+                // --- تحديث البيانات المحلية (Gamification Logic) ---
                 shopData.ordersToday++;
-                shopData.history.unshift({ dest: dest, val: val, time: new Date().toLocaleTimeString() });
-                localStorage.setItem('nOne_shop_data', JSON.stringify(shopData));
                 
-                showToast();
-                updateProgressBar();
-                renderHistory();
+                if (isUrgent) {
+                    shopData.vipCredits--; // خصم رصيد
+                } else {
+                    // كل 5 طلبات عادية = 1 VIP هدية
+                    if (shopData.ordersToday % 5 === 0) {
+                        shopData.vipCredits++;
+                        showToast("🎉 مبروك! كسبت محاولة VIP إضافية");
+                    }
+                }
+
+                // حفظ في السجل
+                shopData.history.unshift({
+                    dest: dest, val: val, 
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    type: isUrgent ? 'vip' : 'normal'
+                });
+                
+                localStorage.setItem('nOne_shop_data_v7', JSON.stringify(shopData));
+                
+                // تحديث الواجهة
+                updateUI();
+                showToast("✅ تم إرسال الطلب بنجاح!");
                 
                 // تنظيف
                 document.getElementById('destination').value = '';
                 document.getElementById('order_val').value = '';
                 document.getElementById('delivery_fee').value = '';
-                document.getElementById('night-moon').style.display = 'none';
+                document.getElementById('night-badge').style.display = 'none';
 
             } catch (e) {
-                alert("خطأ في الاتصال بالسيرفر 😔");
+                showToast("❌ خطأ في الاتصال");
             } finally {
                 btn.innerHTML = originalText;
-                btn.disabled = false;
+                btn.style.opacity = "1";
             }
         }
 
-        function updateProgressBar() {
+        // --- تحديث الواجهة الشامل ---
+        function updateUI() {
+            // 1. شريط الإنجاز
             const count = shopData.ordersToday;
-            const max = 10; // الهدف اليومي
+            const max = 10;
             const percent = Math.min((count / max) * 100, 100);
-            
-            document.getElementById('daily-progress').style.width = percent + "%";
-            document.getElementById('daily-count').innerText = count;
-            
-            if (count >= max) {
-                document.getElementById('daily-progress').style.background = "linear-gradient(90deg, #fbc02d, #fdd835)"; // تحول لذهبي
-            }
-        }
+            document.getElementById('progress-bar').style.width = percent + "%";
+            document.getElementById('orders-count').innerText = count;
 
-        function renderHistory() {
+            // 2. زر VIP
+            const vipBtn = document.getElementById('vip-quota');
+            vipBtn.innerText = shopData.vipCredits + " محاولات";
+            if (shopData.vipCredits <= 0) vipBtn.style.background = "#94a3b8"; // رمادي
+            else vipBtn.style.background = "var(--danger)"; // أحمر
+
+            // 3. السجل
             const list = document.getElementById('history-list');
             list.innerHTML = '';
-            // عرض آخر 3 طلبات
             shopData.history.slice(0, 3).forEach(item => {
+                const isVip = item.type === 'vip';
+                const statusClass = isVip ? 'status-vip' : 'status-new';
+                const icon = isVip ? '⚡' : '📦';
+                
                 list.innerHTML += `
-                    <div class="history-item pending">
-                        <div>
-                            <div style="font-weight:bold; color:var(--primary);">${item.dest}</div>
-                            <div style="font-size:11px; color:#aaa;">${item.time}</div>
+                    <div class="history-card ${statusClass}">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="background:#f1f5f9; padding:8px; border-radius:10px;">${icon}</div>
+                            <div>
+                                <div style="font-weight:bold; color:var(--primary); font-size:14px;">${item.dest}</div>
+                                <div style="font-size:11px; color:#94a3b8;">${item.time}</div>
+                            </div>
                         </div>
-                        <div style="font-weight:bold; color:var(--success);">${item.val} د.أ</div>
+                        <div style="font-weight:800; color:var(--primary);">${item.val} د.أ</div>
                     </div>
                 `;
             });
         }
 
-        function showToast() {
+        function showToast(msg) {
             const toast = document.getElementById('toast');
+            toast.innerText = msg;
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
         }
