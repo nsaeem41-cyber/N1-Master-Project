@@ -140,7 +140,7 @@
         }
         .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2); }
 
-        .mini-btn { background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.5; transition: 0.2s; }
+        .mini-btn { background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.6; transition: 0.2s; margin: 0 2px; }
         .mini-btn:hover { opacity: 1; transform: scale(1.2); }
 
         .memory-hint { font-size: 11px; color: var(--gold); background: #fffbeb; padding: 8px; border-radius: 8px; display: none; margin-top: -10px; border: 1px solid #fde68a; }
@@ -245,7 +245,7 @@
                                 <th>الكابتن</th>
                                 <th>المكان</th>
                                 <th>عمولة</th>
-                                <th></th>
+                                <th>تحكم</th>
                             </tr>
                         </thead>
                         <tbody id="archive-body">
@@ -260,7 +260,7 @@
 
     <script>
         // ========================================================
-        // كود الرادار الماسي - v10.0 (Diamond Edition)
+        // كود الرادار الكامل (Diamond V11) - الصوت + التعديل
         // ========================================================
         
         if (typeof N_ONE_CORE !== 'undefined') {
@@ -325,6 +325,7 @@
             const pendingCount = orders.filter(o => !acknowledgedSet.has(o.id)).length;
             document.getElementById('stat-pending').innerText = pendingCount;
             
+            // تشغيل الجرس إذا كان هناك طلبات معلقة
             if (pendingCount > 0) playAlarm(); else stopAlarm();
 
             if (orders.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#94a3b8;">الرادار هادئ...</td></tr>'; return; }
@@ -348,8 +349,7 @@
 
                 const ackIcon = isAck ? '✔' : '✓';
                 
-                // === التأكد من رقم الهاتف (الأولوية للرقم المرسل مع الطلب) ===
-                // إذا لم يوجد cap_phone، نبحث في قاعدة بيانات المستخدمين
+                // التأكد من رقم الهاتف
                 let shopPhone = ord.cap_phone;
                 if (!shopPhone || shopPhone === "غير مسجل") {
                     const userRecord = allData.find(u => u.user === ord.client_user && u.type === 'shop');
@@ -414,7 +414,7 @@
             });
         }
 
-        // ================= المرسل اليدوي =================
+        // ================= المرسل اليدوي والأرشيف =================
         function checkCaptainMemory() {
             const phone = document.getElementById('man_phone').value;
             const hint = document.getElementById('mem_hint');
@@ -492,7 +492,10 @@
                             <td>${item.cap}</td>
                             <td>${item.rest}</td>
                             <td style="color:var(--success); font-weight:bold;">${item.comm}</td>
-                            <td><button class="mini-btn" onclick="deleteItem(${index})" style="color:var(--danger);">×</button></td>
+                            <td>
+                                <button class="mini-btn" onclick="editItem(${index})" title="تعديل" style="color:var(--primary);">✏️</button>
+                                <button class="mini-btn" onclick="deleteItem(${index})" title="حذف" style="color:var(--danger);">❌</button>
+                            </td>
                         </tr>`;
                 });
             }
@@ -500,6 +503,8 @@
         }
 
         function deleteItem(index) { if(confirm("حذف؟")) { dailyArchive.splice(index, 1); saveAndRender(); } }
+        
+        // استرجاع دالة التعديل كاملة
         function editItem(index) { 
             const item = dailyArchive[index];
             document.getElementById('man_phone').value = item.phone;
@@ -512,6 +517,8 @@
             document.getElementById('cancel_edit_btn').style.display = 'block';
             document.querySelector('.btn-whatsapp span').innerText = "حفظ التعديلات"; 
         }
+        
+        // استرجاع دالة الإلغاء كاملة
         function cancelEdit() { 
             document.getElementById('edit_mode_index').value = "-1";
             document.getElementById('cancel_edit_btn').style.display = 'none';
@@ -520,6 +527,7 @@
             document.getElementById('man_val').value = '';
             document.getElementById('man_fee').value = '';
         }
+        
         function clearDailyArchive() { if(confirm("تصفير؟")) { dailyArchive = []; saveAndRender(); } }
         function saveAndRender() { localStorage.setItem('n1_daily_archive', JSON.stringify(dailyArchive)); renderArchive(); }
     </script>
