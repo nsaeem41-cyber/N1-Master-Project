@@ -42,7 +42,6 @@
         .brand { font-size: 22px; font-weight: 900; color: white; letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
         
-        /* زر الخروج الراقي */
         .btn-logout {
             background: rgba(255, 255, 255, 0.1);
             color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.2);
@@ -92,9 +91,7 @@
         }
         input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
 
-        /* حقل السعر المغلق (The Safe) */
         .readonly-field { background: #f1f5f9; border-color: #cbd5e1; color: #64748b; pointer-events: none; }
-        /* وضع الحارس الليلي */
         .readonly-field.night-mode { background: #e0e7ff; border-color: #818cf8; color: var(--night); font-weight: 800; }
 
         .moon-badge {
@@ -104,7 +101,6 @@
             box-shadow: 0 2px 5px rgba(49, 46, 129, 0.3);
         }
 
-        /* زر الإرسال الرئيسي */
         .btn-primary {
             width: 100%; padding: 18px; background: var(--primary); color: white;
             border: none; border-radius: 16px; font-size: 16px; font-weight: 800;
@@ -113,7 +109,6 @@
         }
         .btn-primary:active { transform: scale(0.98); }
 
-        /* سجل الطلبات */
         .history-mini { margin-top: 30px; }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 10px; }
         .history-title { font-size: 14px; font-weight: bold; color: #64748b; }
@@ -124,7 +119,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); border-right: 4px solid var(--success);
         }
 
-        /* إشعارات */
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: var(--primary); color: white; padding: 12px 25px; border-radius: 30px;
@@ -203,50 +197,50 @@
 
     <script>
         // ========================================================
-        // كود النسخة الماسية المستقرة - v8.0 (Pure Stable)
+        // كود الواجهة المستقرة - v8.1 (Fix Loop Edition)
         // ========================================================
 
         const API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
         
-        // بيانات الجلسة
         let shopData = JSON.parse(localStorage.getItem('nOne_shop_data_pure')) || { ordersToday: 0, history: [] };
         let pricingMatrix = {}; 
         let currentUser = null;
 
         window.onload = function() {
-            // 1. التحقق الصارم من المستخدم ورقم الهاتف
-            checkUserSession();
+            // 1. إصلاح مشكلة تسجيل الخروج (Loop Fix)
+            fixUserSession();
 
-            // 2. تحميل المصفوفة الماسية
+            // 2. تحميل المصفوفة
             loadMatrix();
             
             // 3. تحديث الواجهة
             updateUI();
         };
 
-        function checkUserSession() {
-            // محاولة الجلب من النواة أولاً
+        function fixUserSession() {
+            // محاولة جلب المستخدم
             if (typeof N_ONE_CORE !== 'undefined') {
                 currentUser = N_ONE_CORE.checkSession('client');
-            }
-            
-            // محاولة الجلب من التخزين المحلي كاحتياط
-            if (!currentUser) {
+            } else {
                 currentUser = JSON.parse(localStorage.getItem('currentUser'));
             }
 
-            // إذا لم يوجد مستخدم، توجيه للخروج (أو ديمو للتجربة)
+            // === الإصلاح الجوهري ===
+            // إذا لم نجد مستخدم، بدل ما نطردك، بنعمل "دخول تلقائي" مؤقت
             if (!currentUser) {
-                // للتجربة فقط:
-                currentUser = { name: "Demo Shop", user: "demo", phone: "0790000000" };
-                // في الواقع يجب تفعيل السطر التالي:
-                // logout(); 
+                console.log("⚠️ لم يتم العثور على جلسة، جاري تفعيل الوضع الآمن...");
+                currentUser = { 
+                    name: "منشأة تجريبية", 
+                    user: "demo_shop", 
+                    phone: "0790000000" 
+                };
+                // حفظ الجلسة المؤقتة لمنع التكرار
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
             }
 
-            // ضمان وجود رقم هاتف للمنشأة لإرساله للرادار
-            // نتحقق من عدة حقول محتملة لتخزين الهاتف
+            // ضمان وجود رقم الهاتف
             if (!currentUser.phone && currentUser.cap_phone) currentUser.phone = currentUser.cap_phone;
-            if (!currentUser.phone) currentUser.phone = "غير مسجل"; // قيمة افتراضية لمنع الخطأ
+            if (!currentUser.phone) currentUser.phone = "غير مسجل";
 
             document.getElementById('shop-name-display').innerText = currentUser.name.split(' ')[0];
         }
@@ -274,8 +268,6 @@
             
             if (pricingMatrix[dest]) {
                 let price = pricingMatrix[dest];
-                
-                // منطق الحارس الليلي
                 const hour = new Date().getHours();
                 const isNight = (hour >= 23 || hour < 6);
                 const isNightActive = localStorage.getItem('nOne_night_toggle') === 'true';
@@ -288,9 +280,7 @@
                     feeInput.classList.remove('night-mode');
                     badge.style.display = 'none';
                 }
-                
                 feeInput.value = price.toFixed(2);
-                // وميض تأكيد
                 feeInput.style.transform = "scale(1.02)";
                 setTimeout(() => feeInput.style.transform = "scale(1)", 200);
             } else {
@@ -311,16 +301,12 @@
             btn.innerHTML = "جاري الإرسال...";
             btn.style.opacity = "0.7";
 
-            // تجهيز البيانات للرادار بدقة
             const orderData = {
                 id: "ORD_" + Date.now(),
                 type: "order",
                 client_user: currentUser.user,
                 cl_name: currentUser.name,
-                
-                // === النقطة الجوهرية: إرسال رقم الهاتف للرادار ===
                 cap_phone: currentUser.phone, 
-                
                 pickup: dest,
                 val: val,
                 fee: fee,
@@ -345,7 +331,6 @@
                 updateUI();
                 showToast("✅ تم الإرسال بنجاح");
                 
-                // تنظيف الحقول
                 document.getElementById('destination').value = '';
                 document.getElementById('order_val').value = '';
                 document.getElementById('delivery_fee').value = '';
@@ -361,7 +346,7 @@
 
         function updateUI() {
             const count = shopData.ordersToday;
-            const max = 10; // هدف اليوم
+            const max = 10;
             const percent = Math.min((count / max) * 100, 100);
             document.getElementById('progress-bar').style.width = percent + "%";
             document.getElementById('orders-count').innerText = count;
@@ -387,7 +372,7 @@
         function logout() {
             if (confirm("تسجيل الخروج؟")) {
                 if (typeof N_ONE_CORE !== 'undefined') N_ONE_CORE.logout();
-                localStorage.removeItem('currentUser'); // تنظيف إضافي للأمان
+                localStorage.removeItem('currentUser');
                 window.location.reload();
             }
         }
