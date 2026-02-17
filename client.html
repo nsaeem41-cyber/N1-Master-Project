@@ -12,7 +12,7 @@
         :root {
             --primary: #00695c; --gold: #d4af37; --bg: #f4f7f6; --text: #333;
             --success: #2e7d32; --danger: #c62828; --warning: #f57f17; --money: #1b5e20;
-            --captain: #1565c0; /* لون جديد خاص بتبويب الكباتن */
+            --captain: #1565c0; /* لون الكباتن المميز */
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); user-select: none; }
@@ -31,12 +31,13 @@
         .tab-btn:hover { background: #e0e0e0; }
         .tab-btn.active { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 105, 92, 0.3); }
         
-        /* لون خاص لتبويب الكباتن عند التفعيل */
-        .tab-btn.cap-active { background: var(--captain) !important; box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3) !important; }
-
         /* تصميم الروابط الخارجية */
         .tab-link { background: #e3f2fd; color: #0277bd; border: 1px solid #b3e5fc; display: flex; align-items: center; gap: 5px; }
         .tab-link:hover { background: #b3e5fc; }
+
+        /* رابط الكباتن الخاص (لون مميز) */
+        .tab-link-cap { background: #e8eaf6; color: var(--captain); border: 1px solid #c5cae9; }
+        .tab-link-cap:hover { background: #c5cae9; }
 
         /* المحتوى */
         .tab-content { display: none; animation: fadeIn 0.4s; }
@@ -53,8 +54,6 @@
         
         .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
         .btn-add { background: var(--primary); } .btn-add:hover { background: #004d40; }
-        .btn-add-cap { background: var(--captain); } .btn-add-cap:hover { background: #0d47a1; } /* زر خاص للكابتن */
-
         .btn-check { background: var(--gold); color: white; width: auto; padding: 0 15px; margin-top: 5px; font-size: 12px; cursor: pointer; border:none; border-radius: 5px; height: 35px; }
 
         .table-wrapper { overflow-x: auto; max-height: 500px; }
@@ -103,7 +102,8 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 لوحة المعلومات</button>
             <button class="tab-btn" onclick="switchTab('shops', event)">🏪 إدارة المنشآت</button>
-            <button class="tab-btn" id="btn-cap-tab" onclick="switchTab('captains', event)">👮‍♂️ إدارة الكباتن</button>
+            
+            <button class="tab-btn tab-link tab-link-cap" onclick="window.open('captains-manager.html', '_blank')">👮‍♂️ إدارة الكباتن ↗️</button>
             
             <button class="tab-btn tab-link" onclick="window.open('ops-room.html', '_blank')">📡 غرفة العمليات (Live) ↗️</button>
             <button class="tab-btn tab-link" onclick="window.open('prices.html', '_blank')">📋 قائمة الأسعار ↗️</button>
@@ -112,15 +112,15 @@
         <div id="dashboard" class="tab-content active">
             <div class="form-grid">
                 <div class="card" style="text-align:center;">
-                    <h3 style="margin:0; color:#555;">إجمالي المنشآت</h3>
+                    <h3 style="margin:0; color:#555;">إجمالي المنشآت التابعة لي</h3>
                     <h1 id="total-shops" style="color:var(--primary); font-size:40px; margin:10px 0;">0</h1>
-                    <small style="color:#777;">منشأة نشطة</small>
+                    <small style="color:#777;">منشآت نشطة ومسجلة في النظام</small>
                 </div>
                 
                 <div class="card" style="text-align:center; border-top-color:var(--captain);">
-                    <h3 style="margin:0; color:#555;">إجمالي الكباتن</h3>
+                    <h3 style="margin:0; color:#555;">إجمالي الكباتن (الأسطول)</h3>
                     <h1 id="total-captains" style="color:var(--captain); font-size:40px; margin:10px 0;">0</h1>
-                    <small style="color:#777;">كابتن مسجل</small>
+                    <small style="color:#777;">كابتن مرتبط بالنظام</small>
                 </div>
 
                 <div class="card" style="text-align:center; border-top-color:var(--gold);">
@@ -142,14 +142,14 @@
         <div id="shops" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <span>✨ إضافة منشأة جديدة (نظام ذكي)</span>
+                    <span> إضافة منشأة جديدة (نظام ذكي)</span>
                 </div>
                 <div class="form-grid">
                     <input type="text" id="shop_name" placeholder="اسم المنشأة التجاري">
                     
                     <div style="display:flex; gap:5px;">
                         <input type="text" id="shop_user" placeholder="اسم المستخدم (English)" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
-                        <button class="btn-check" onclick="checkAvailability('shop_user')">فحص 🔍</button>
+                        <button class="btn-check" onclick="checkAvailability()">فحص 🔍</button>
                     </div>
 
                     <input type="password" id="shop_pass" placeholder="كلمة المرور">
@@ -204,65 +204,11 @@
             </div>
         </div>
 
-        <div id="captains" class="tab-content">
-            <div class="card" style="border-top-color: var(--captain);">
-                <div class="card-header" style="color: var(--captain);">
-                    <span>👮‍♂️ إضافة كابتن جديد (الأسطول)</span>
-                </div>
-                <div class="form-grid">
-                    <input type="text" id="cap_full_name" placeholder="اسم الكابتن الكامل">
-                    
-                    <div style="display:flex; gap:5px;">
-                        <input type="text" id="cap_user" placeholder="اسم مستخدم للكابتن (ID)" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
-                        <button class="btn-check" style="background:var(--captain);" onclick="checkAvailability('cap_user')">فحص</button>
-                    </div>
-
-                    <input type="password" id="cap_pass" placeholder="كلمة المرور">
-                    
-                    <div class="phone-wrapper" style="border-color: var(--captain);">
-                        <div class="phone-prefix">+962</div>
-                        <input type="tel" id="cap_phone_input" placeholder="7xxxxxxxx" maxlength="9">
-                    </div>
-
-                    <select id="cap_duration">
-                        <option value="365">عقد سنوي</option>
-                        <option value="180">6 أشهر</option>
-                        <option value="30">تجريبي (شهر)</option>
-                    </select>
-
-                    <button class="btn-action btn-add-cap" onclick="addCaptain()">+ ضم للأسطول 🏎️</button>
-                </div>
-            </div>
-
-            <div class="card" style="border-top-color: var(--captain);">
-                <div class="card-header" style="color: var(--captain);">
-                    <span>📋 سجل الكباتن النشطين</span>
-                    <span style="font-size:12px; color:#555;">يرتبط تلقائياً بغرفة العمليات Ops Room</span>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>الكابتن</th>
-                                <th>بيانات الدخول</th>
-                                <th>رقم الهاتف (واتساب)</th>
-                                <th>مدة العقد</th>
-                                <th>الحالة</th>
-                                <th>التحكم</th>
-                            </tr>
-                        </thead>
-                        <tbody id="captains-table-body">
-                            <tr><td colspan="6" style="text-align:center;">جاري تحميل الأسطول... 🏎️</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        </div>
+    </div>
 
     <script>
         // ========================================================
-        // المحرك الخارق v7.5 - إمبراطورية N One (تحديث الكباتن)
+        // المحرك الخارق v7.6 - إمبراطورية N One (Modular Edition)
         // ========================================================
         
         // الرابط الملكي المعتمد
@@ -284,24 +230,16 @@
             }
         };
 
-        // دالة التبديل بين التبويبات الداخلية فقط (محدثة لدعم الكباتن)
+        // دالة التبديل بين التبويبات الداخلية فقط
         function switchTab(tabId, event) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => {
-                if(!el.classList.contains('tab-link')) {
-                    el.classList.remove('active');
-                    el.classList.remove('cap-active'); // إزالة لون الكابتن
-                }
+                // إزالة التفعيل فقط عن الأزرار الداخلية (ليست روابط)
+                if(!el.classList.contains('tab-link')) el.classList.remove('active');
             });
             
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
-
-            // تلوين خاص عند اختيار تبويب الكباتن
-            if(tabId === 'captains') {
-                event.target.classList.remove('active');
-                event.target.classList.add('cap-active');
-            }
         }
 
         async function fetchData() {
@@ -309,11 +247,20 @@
                 // سحب البيانات من السيرفر
                 allData = await N_ONE_CORE.fetchData('read');
                 renderShops();
-                renderCaptains(); // تشغيل دالة عرض الكباتن الجديدة
+                
+                // خيط برمجي جديد لسحب عدد الكباتن فقط (بدون تفاصيل)
+                calculateCaptainsCount();
             } catch (e) { console.error(e); }
         }
 
-        // ================= ميزات إدارة المنشآت (كود أصلي) =================
+        // دالة جديدة وخفيفة لحساب عدد الكباتن
+        function calculateCaptainsCount() {
+            // نعد الكباتن التابعين لهذا العميل فقط
+            const myCapsCount = allData.filter(i => (i.type == 'captain' || i.role == 'captain') && String(i.client_user) === String(currentUser.user)).length;
+            document.getElementById('total-captains').innerText = myCapsCount;
+        }
+
+        // ================= ميزات إدارة المنشآت الذكية =================
 
         function toggleCommissionField() {
             const type = document.getElementById('sub_type').value;
@@ -322,15 +269,19 @@
             else field.style.display = 'none';
         }
 
-        async function checkAvailability(inputId) {
-            const user = document.getElementById(inputId).value.trim();
+        async function checkAvailability() {
+            const user = document.getElementById('shop_user').value.trim();
             if (!user) return;
+            const btn = document.querySelector('.btn-check');
+            btn.innerText = "فحص...";
             
             // فحص سريع من البيانات المحلية
             const exists = allData.some(u => String(u.user).toLowerCase() === user.toLowerCase());
             
             if (exists) alert("❌ هذا الاسم مستخدم، اختر غيره ☺️");
             else alert("✅ الاسم متاح ويمكن استخدامه");
+            
+            btn.innerText = "فحص 🔍";
         }
 
         async function addShop() {
@@ -350,6 +301,7 @@
 
             if (!name || !user || !pass || !phone) { alert("يرجى تعبئة الحقول الأساسية والهاتف ☺️"); return; }
 
+            // حساب تاريخ الانتهاء
             const expDate = new Date();
             expDate.setDate(expDate.getDate() + parseInt(days));
 
@@ -357,14 +309,25 @@
             
             const newShop = {
                 id: "SH_" + Date.now(),
-                user: user, pass: pass, name: name, role: "shop", type: "shop", 
-                client_user: currentUser.user, status: "active",
-                cap_phone: phone, pickup: locLink, company_share: commission, 
-                expiry: expDate.toISOString().split('T')[0], plan_days: days
+                user: user, 
+                pass: pass, 
+                name: name,
+                role: "shop", 
+                type: "shop", 
+                client_user: currentUser.user,
+                status: "active",
+                
+                // === تخزين البيانات في الأعمدة الصحيحة حسب الخارطة ===
+                cap_phone: phone, // تخزين الهاتف في العمود O
+                pickup: locLink,  // تخزين الموقع في العمود P
+                company_share: commission, // تخزين العمولة في العمود S
+                expiry: expDate.toISOString().split('T')[0], // العمود I
+                plan_days: days // العمود J
             };
 
             await N_ONE_CORE.postData('add', [newShop]);
             await fetchData();
+            
             document.getElementById('loader-overlay').style.display = 'none';
             alert("تم إضافة المنشأة وتفعيل النظام المالي ☺️✅");
             
@@ -376,94 +339,11 @@
             document.getElementById('shop_location_link').value = '';
         }
 
-        // ================= ميزات إدارة الكباتن (جديد - النقطة 2 و 3) =================
-
-        async function addCaptain() {
-            const name = document.getElementById('cap_full_name').value;
-            const user = document.getElementById('cap_user').value.trim();
-            const pass = document.getElementById('cap_pass').value;
-            const phone = document.getElementById('cap_phone_input').value;
-            const days = document.getElementById('cap_duration').value;
-
-            if (!name || !user || !pass || !phone) { alert("جميع حقول الكابتن مطلوبة 👮‍♂️"); return; }
-
-            const expDate = new Date();
-            expDate.setDate(expDate.getDate() + parseInt(days));
-
-            document.getElementById('loader-overlay').style.display = 'flex';
-
-            // بناء كائن الكابتن - يتم ربطه بالعميل الحالي لضمان الخصوصية
-            const newCap = {
-                id: "CAP_" + Date.now(),
-                user: user, pass: pass, name: name, 
-                role: "captain", type: "captain", // تمييز النوع
-                client_user: currentUser.user, // الربط بالشركة الأم
-                status: "active",
-                cap_phone: phone, // الرقم المعتمد للواتساب في غرفة العمليات
-                expiry: expDate.toISOString().split('T')[0], 
-                plan_days: days
-            };
-
-            await N_ONE_CORE.postData('add', [newCap]);
-            await fetchData();
-            document.getElementById('loader-overlay').style.display = 'none';
-            alert("تم ضم الكابتن للأسطول بنجاح 🏎️✅");
-
-            // تنظيف حقول الكابتن
-            document.getElementById('cap_full_name').value = '';
-            document.getElementById('cap_user').value = '';
-            document.getElementById('cap_pass').value = '';
-            document.getElementById('cap_phone_input').value = '';
-        }
-
-        function renderCaptains() {
-            const tbody = document.getElementById('captains-table-body');
-            // فلترة الكباتن التابعين لهذا العميل فقط
-            const myCaps = allData.filter(i => (i.type == 'captain' || i.role == 'captain') && String(i.client_user) === String(currentUser.user)).reverse();
-            
-            document.getElementById('total-captains').innerText = myCaps.length;
-
-            if (myCaps.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا يوجد كباتن مسجلين</td></tr>'; return; }
-            tbody.innerHTML = '';
-
-            myCaps.forEach(cap => {
-                const isPaused = cap.status === 'paused';
-                const statusBadge = isPaused 
-                    ? '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ❄️</span>' 
-                    : '<span class="badge" style="background:#e3f2fd; color:#1565c0;">نشط 🏎️</span>';
-                
-                const toggleBtn = isPaused 
-                    ? `<button class="btn-active" title="تفعيل الكابتن" onclick="toggleStatus('${cap.user}', 'paused')">▶️</button>` 
-                    : `<button class="btn-freeze" title="تجميد الكابتن" onclick="toggleStatus('${cap.user}', 'active')">❄️</button>`;
-                
-                let daysLeft = "غير محدد";
-                if (cap.expiry) {
-                    const diff = new Date(cap.expiry) - new Date();
-                    const d = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                    daysLeft = d > 0 ? d + " يوم" : "منتهي";
-                }
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold; color:#1565c0;">${cap.name}</td>
-                        <td style="font-size:12px;">${cap.user}<br>Pw: ${cap.pass}</td>
-                        <td style="font-size:12px; direction:ltr; font-family:monospace;">${cap.cap_phone || '-'}</td>
-                        <td style="font-size:12px;">${daysLeft}</td>
-                        <td>${statusBadge}</td>
-                        <td class="controls">
-                            <button class="btn-edit" onclick="editShop('${cap.user}', '${cap.name}', '${cap.pass}')">✏️</button>
-                            ${toggleBtn}
-                            <button class="btn-delete" onclick="deleteShop('${cap.user}')">❌</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
         function renderShops() {
             const tbody = document.getElementById('shops-table-body');
             const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user)).reverse();
             
+            // تحديث العدادات في لوحة المعلومات
             document.getElementById('total-shops').innerText = myShops.length;
             document.getElementById('count-paid').innerText = myShops.filter(s => Number(s.company_share) > 0).length;
             document.getElementById('count-free').innerText = myShops.filter(s => Number(s.company_share) <= 0).length;
@@ -472,11 +352,13 @@
             tbody.innerHTML = '';
             
             myShops.forEach(shop => {
+                // منطق الاشتراك والعمولة
                 const commVal = Number(shop.company_share || 0);
                 const subBadge = commVal > 0 
                     ? `<span class="badge" style="background:#e8f5e9; color:#1b5e20;">مدفوع (${commVal} د.أ)</span>` 
                     : `<span class="badge" style="background:#eee; color:#777;">مجاني</span>`;
 
+                // منطق التجميد الصحيح (عكس الحالة للزر)
                 const isPaused = shop.status === 'paused';
                 const statusBadge = isPaused 
                     ? '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ❄️</span>' 
@@ -486,6 +368,7 @@
                     ? `<button class="btn-active" title="إعادة تفعيل" onclick="toggleStatus('${shop.user}', 'paused')">▶️</button>` 
                     : `<button class="btn-freeze" title="تجميد مؤقت" onclick="toggleStatus('${shop.user}', 'active')">❄️</button>`;
                 
+                // حساب الأيام المتبقية
                 let daysLeft = "غير محدد";
                 if (shop.expiry) {
                     const diff = new Date(shop.expiry) - new Date();
@@ -493,6 +376,7 @@
                     daysLeft = d > 0 ? d + " يوم" : "منتهي";
                 }
                 
+                // عرض الموقع إن وجد
                 let locDisplay = shop.pickup ? `<br><a href="${shop.pickup}" target="_blank" style="font-size:11px; text-decoration:none;">📍 الموقع</a>` : '';
 
                 tbody.innerHTML += `
@@ -513,11 +397,13 @@
             });
         }
 
-        // ================= عمليات التحكم (مشتركة للكباتن والمنشآت) =================
+        // ================= عمليات التحكم =================
 
         async function toggleStatus(u, currentStatus) {
+            // نرسل عكس الحالة الحالية
             const nextStatus = (currentStatus === 'active') ? 'paused' : 'active';
-            const confirmMsg = nextStatus === 'paused' ? "تجميد الحساب؟" : "إعادة التفعيل؟";
+            const confirmMsg = nextStatus === 'paused' ? "تجميد الحساب؟ لن يتمكن من إرسال طلبات." : "إعادة التفعيل؟";
+            
             if(!confirm(confirmMsg)) return;
             
             document.getElementById('loader-overlay').style.display = 'flex';
@@ -527,7 +413,7 @@
         }
 
         async function editShop(u, n, p) {
-            const newN = prompt("تعديل الاسم:", n); if (!newN) return;
+            const newN = prompt("تعديل اسم المنشأة:", n); if (!newN) return;
             const newP = prompt("تعديل كلمة المرور:", p);
             
             document.getElementById('loader-overlay').style.display = 'flex';
