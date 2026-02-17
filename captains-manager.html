@@ -4,36 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N One | قيادة الأسطول والصندوق المركزي</title>
+    
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
+
     <style>
-        /* تصميم Royal Light الفخم */
-        :root { --primary: #0f172a; --bg: #f1f5f9; --card-bg: #ffffff; --gold: #d4af37; --text-main: #334155; --text-light: #64748b; --success: #10b981; --danger: #ef4444; --border: #e2e8f0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text-main); user-select: none; }
-        
+        /* ================= تصميم Royal Light (قمة الفخامة والوضوح) ================= */
+        :root {
+            --primary: #0f172a;      /* كحلي ملكي */
+            --bg: #f8fafc;           /* رمادي ثلجي للخلفية */
+            --card-bg: #ffffff;      /* أبيض ناصع للكروت */
+            --gold: #d4af37;         /* ذهبي للأيقونات والحدود */
+            --text-main: #334155;    /* رمادي غامق للنصوص */
+            --text-light: #64748b;   /* رمادي فاتح للعناوين */
+            --success: #10b981;      /* أخضر */
+            --danger: #ef4444;       /* أحمر */
+            --border: #e2e8f0;       /* حدود ناعمة */
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg); margin: 0; padding: 0; 
+            color: var(--text-main); user-select: none; 
+        }
+
         /* الهيدر */
-        .navbar { background: var(--card-bg); height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 25px rgba(148, 163, 184, 0.15); }
+        .navbar { 
+            background: var(--card-bg); height: 80px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 40px; border-bottom: 3px solid var(--gold); 
+            position: sticky; top: 0; z-index: 1000; 
+            box-shadow: 0 4px 25px rgba(148, 163, 184, 0.15);
+        }
         .brand { font-size: 26px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
-        .btn-close { background: #fff1f2; color: var(--danger); border: 1px solid #fda4af; padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        
+        /* زر إغلاق الصفحة */
+        .btn-close { 
+            background: #fff1f2; color: var(--danger); 
+            border: 1px solid #fda4af; padding: 10px 20px; 
+            border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold;
+        }
         .btn-close:hover { background: var(--danger); color: white; }
+
+        /* زر الصندوق المركزي */
+        .btn-treasury {
+            background: var(--primary); color: var(--gold); 
+            border: 2px solid var(--gold); padding: 10px 20px; 
+            border-radius: 12px; font-weight: bold; cursor: pointer; 
+            margin-left: 15px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+            transition: 0.3s;
+        }
+        .btn-treasury:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4); }
 
         .container { max-width: 1600px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
 
         /* الكروت */
-        .card { background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid var(--border); overflow: hidden; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-3px); }
+        .card { 
+            background: var(--card-bg); border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
+            border: 1px solid var(--border); overflow: hidden; 
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
         .card-full { grid-column: span 2; } 
-        .card-header { padding: 25px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+
+        .card-header { 
+            padding: 25px; background: #f1f5f9; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
         .card-title { font-size: 18px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .card-body { padding: 30px; }
 
-        /* أدوات التحكم */
+        /* الحقول والأزرار */
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 13px; color: var(--text-light); }
-        input, select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; outline: none; background: #fafafa; color: var(--primary); font-weight: 600; font-size: 15px; box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: var(--primary); background: white; }
         
-        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: white; font-size: 16px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        input { 
+            width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; 
+            outline: none; background: #fafafa; color: var(--primary); font-weight: 600;
+            font-size: 15px; box-sizing: border-box; transition: 0.3s; 
+        }
+        input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
+
+        .btn-main { 
+            width: 100%; padding: 16px; border: none; border-radius: 12px; 
+            font-weight: bold; cursor: pointer; color: white; font-size: 16px; 
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
         .btn-blue { background: var(--primary); } 
         .btn-green { background: var(--success); } 
         .btn-danger { background: var(--danger); }
@@ -42,8 +99,10 @@
         /* الجداول */
         .table-wrapper { overflow-x: auto; max-height: 500px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { padding: 18px; text-align: right; color: var(--text-light); border-bottom: 2px solid var(--border); background: #f8fafc; position: sticky; top: 0; z-index: 10; }
+        th { padding: 18px; text-align: right; color: var(--text-light); border-bottom: 2px solid var(--border); background: #f8fafc; position: sticky; top: 0; z-index: 10; font-weight: 700; }
         td { padding: 18px; border-bottom: 1px solid #f1f5f9; color: var(--primary); font-weight: 600; }
+        tr:hover { background: #f8fafc; }
+
         .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; display: inline-block; }
         .bg-active { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
         .bg-paused { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
@@ -52,16 +111,24 @@
         .action-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px; opacity: 0.6; transition: 0.2s; margin-left: 8px; }
         .action-btn:hover { opacity: 1; transform: scale(1.2); }
 
-        /* الصندوق المركزي (Treasury Modal) */
+        /* نافذة الصندوق المركزي (Treasury Modal) */
         #treasury-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .treasury-box { background: white; padding: 40px; border-radius: 20px; width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 4px solid var(--gold); position: relative; }
-        
-        /* التقرير */
+        .treasury-box { background: white; padding: 40px; border-radius: 20px; width: 450px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 4px solid var(--gold); position: relative; }
+
+        /* نافذة التقرير (Print) */
         #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 2100; justify-content: center; align-items: center; }
         .report-paper { background: white; color: black; width: 210mm; height: 90vh; padding: 50px; overflow-y: auto; position: relative; border-radius: 15px; }
-        @media print { body * { visibility: hidden; } #report-modal, #report-modal * { visibility: visible; } #report-modal { position: absolute; left: 0; top: 0; background: white; width: 100%; height: 100%; } .report-paper { width: 100%; height: auto; box-shadow: none; padding: 0; } .no-print { display: none !important; } }
         
-        #loading-bar { height: 4px; background: var(--gold); width: 0%; position: fixed; top: 75px; left: 0; z-index: 1001; transition: width 0.3s; }
+        @media print { 
+            body * { visibility: hidden; } 
+            #report-modal, #report-modal * { visibility: visible; } 
+            #report-modal { position: absolute; left: 0; top: 0; background: white; width: 100%; height: 100%; } 
+            .report-paper { width: 100%; height: auto; box-shadow: none; padding: 0; } 
+            .no-print { display: none !important; } 
+        }
+        
+        /* شريط التحميل */
+        #loading-bar { height: 4px; background: var(--gold); width: 0%; position: fixed; top: 80px; left: 0; z-index: 1001; transition: width 0.3s; }
     </style>
 </head>
 <body>
@@ -69,9 +136,9 @@
     <div id="loading-bar"></div>
 
     <nav class="navbar">
-        <div class="brand">N <span class="gold-text">One</span> Fleet & Treasury</div>
+        <div class="brand">N <span class="gold-text">One</span> Fleet Command 👮‍♂️</div>
         <div>
-            <button onclick="toggleTreasury()" style="background:var(--primary); color:var(--gold); border:2px solid var(--gold); padding:10px 20px; border-radius:12px; font-weight:bold; cursor:pointer; margin-left:15px; box-shadow:0 4px 10px rgba(212, 175, 55, 0.2);">🏦 الصندوق المركزي (إيداع)</button>
+            <button class="btn-treasury" onclick="toggleTreasury()">🏦 الصندوق المركزي (إيداع)</button>
             <button class="btn-close" onclick="window.close()">إغلاق ❌</button>
         </div>
     </nav>
@@ -79,50 +146,87 @@
     <div class="container">
 
         <div class="card">
-            <div class="card-header"><div class="card-title">📝 تسجيل كابتن جديد</div></div>
+            <div class="card-header">
+                <div class="card-title">📝 تسجيل كابتن جديد (تعيين)</div>
+            </div>
             <div class="card-body">
-                <div class="form-group"><label>الاسم</label><input type="text" id="new_cap_name"></div>
-                <div class="form-group"><label>الهاتف</label><input type="tel" id="new_cap_phone"></div>
-                <div class="form-group"><label>الترميز (Code)</label><input type="text" id="new_cap_code" placeholder="C-xxx"></div>
-                <div style="display:flex; gap:15px;">
-                    <div class="form-group" style="flex:1;"><label>السيارة</label><input type="text" id="new_cap_car"></div>
-                    <div class="form-group" style="flex:1;"><label>موديل</label><input type="number" id="new_cap_model"></div>
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="new_cap_name" placeholder="اسم الكابتن الرسمي">
                 </div>
-                <button class="btn-main btn-blue" onclick="registerCaptain()">+ اعتماد (فحص ذكي)</button>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="new_cap_phone" placeholder="07xxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>ترميز السيارة (User Code)</label>
+                    <input type="text" id="new_cap_code" placeholder="مثلاً: C-101" style="border-color:var(--gold);">
+                </div>
+                <div style="display:flex; gap:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>نوع السيارة</label>
+                        <input type="text" id="new_cap_car" placeholder="مثلاً: Kia">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>موديل</label>
+                        <input type="number" id="new_cap_model" placeholder="2022">
+                    </div>
+                </div>
+                <button class="btn-main btn-blue" onclick="registerCaptain()">+ اعتماد وتعيين (فحص ذكي)</button>
             </div>
         </div>
 
         <div class="card" style="border-top: 5px solid var(--gold);">
             <div class="card-header">
-                <div class="card-title">💰 محفظة الكباتن (Live)</div>
-                <label style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:13px; cursor:pointer;"><input type="checkbox" id="transfer-toggle" onchange="toggleTransfer()" checked> تفعيل التحويل</label>
+                <div class="card-title">💰 محفظة الكباتن (Live Wallet)</div>
+                <label style="display:flex; align-items:center; gap:8px; font-weight:bold; font-size:13px; cursor:pointer;">
+                    <input type="checkbox" id="transfer-toggle" onchange="toggleTransfer()" checked> تفعيل التحويل
+                </label>
             </div>
             <div class="card-body">
                 <div style="display:flex; gap:15px; margin-bottom:20px;">
                     <input type="text" id="wallet_search" placeholder="🔍 بحث (هاتف/كود)">
                     <button class="btn-main btn-blue" style="width:auto; padding:0 30px;" onclick="searchWallet()">بحث</button>
                 </div>
+
                 <div id="wallet-info" style="display:none; background:#fffbeb; padding:20px; border-radius:15px; margin-bottom:20px; border:1px solid #fde68a;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span id="w_name" style="font-weight:900; color:var(--primary); font-size:18px;">---</span>
                         <span id="w_balance" style="font-size:28px; font-weight:900; color:#b45309;">0.00 د.أ</span>
                     </div>
-                    <div style="font-size:13px; color:#92400e; margin-top:5px;">Code: <span id="w_code">--</span></div>
+                    <div style="font-size:13px; color:#92400e; margin-top:5px;">Code: <span id="w_code">--</span> | Tel: <span id="w_phone">--</span></div>
                 </div>
-                <div class="form-group"><input type="number" id="wallet_amount" placeholder="القيمة"></div>
+
+                <div class="form-group">
+                    <label>المبلغ (د.أ)</label>
+                    <input type="number" id="wallet_amount" placeholder="القيمة">
+                </div>
                 <div style="display:flex; gap:15px;">
-                    <button class="btn-main btn-green" onclick="updateBalance('add')">➕ شحن</button>
-                    <button class="btn-main btn-danger" onclick="updateBalance('deduct')">➖ خصم</button>
+                    <button class="btn-main btn-green" onclick="updateBalance('add')">➕ شحن فوري</button>
+                    <button class="btn-main btn-danger" onclick="updateBalance('deduct')">➖ خصم / غرامة</button>
                 </div>
             </div>
         </div>
 
         <div class="card card-full">
-            <div class="card-header"><div class="card-title">🌍 طلبات الانضمام الخارجية</div><button class="action-btn" onclick="refreshData()">🔄</button></div>
+            <div class="card-header">
+                <div class="card-title">🌍 طلبات الانضمام الخارجية</div>
+                <button class="action-btn" onclick="refreshData()" title="تحديث">🔄</button>
+            </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>الاسم</th><th>الهاتف</th><th>السيارة</th><th>الحالة</th><th>إجراء</th></tr></thead>
-                    <tbody id="requests-body"><tr><td colspan="5" style="text-align:center; padding:30px;">جاري البحث...</td></tr></tbody>
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الهاتف</th>
+                            <th>السيارة</th>
+                            <th>الحالة</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requests-body">
+                        <tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">جاري البحث عن طلبات...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -131,14 +235,25 @@
             <div class="card-header">
                 <div class="card-title">👮‍♂️ الأسطول النشط</div>
                 <div style="display:flex; gap:15px; align-items:center;">
-                    <span style="font-size:12px; font-weight:bold;">السيولة: <b style="color:var(--success); font-size:16px;" id="total-fleet-bal">0.00</b> د.أ</span>
-                    <input type="text" id="search-active" placeholder="بحث..." oninput="renderFleet()" style="width:250px;">
+                    <span style="color:var(--text-light); font-size:12px; font-weight:bold;">السيولة: <b style="color:var(--success); font-size:16px;" id="total-fleet-bal">0.00</b> د.أ</span>
+                    <input type="text" id="search-active" placeholder="بحث سريع..." oninput="renderFleet()" style="width:250px;">
                 </div>
             </div>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>الكابتن</th><th>البيانات</th><th>الرصيد</th><th>الحالة</th><th>تحكم</th></tr></thead>
-                    <tbody id="fleet-body"><tr><td colspan="5" style="text-align:center; padding:50px;">تحميل...</td></tr></tbody>
+                    <thead>
+                        <tr>
+                            <th>الكابتن</th>
+                            <th>البيانات (Code/Tel)</th>
+                            <th>الرصيد</th>
+                            <th>الطوارئ</th>
+                            <th>الحالة</th>
+                            <th>تحكم شامل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleet-body">
+                        <tr><td colspan="6" style="text-align:center; padding:50px; color:#94a3b8;">جاري استدعاء البيانات...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -147,13 +262,16 @@
 
     <div id="treasury-modal">
         <div class="treasury-box">
-            <h2 style="color:var(--primary); text-align:center; margin-top:0;">🏦 الصندوق المركزي</h2>
-            <p style="text-align:center; color:#64748b; margin-bottom:20px;">شحن رصيد للمنشآت التجارية (لتمكينها من شحن الكباتن) أو للكباتن مباشرة.</p>
+            <h2 style="color:var(--primary); text-align:center; margin-top:0; border-bottom:2px solid var(--gold); padding-bottom:15px;">🏦 الصندوق المركزي</h2>
+            <p style="text-align:center; color:#64748b; margin-bottom:20px;">
+                هنا يتم "ضخ الأموال" في النظام.<br>
+                اشحني للمنشأة التجارية لتتمكن هي من شحن الكباتن، أو اشحني للكابتن مباشرة.
+            </p>
             
             <label>المستفيد (كود المنشأة أو الكابتن)</label>
-            <input type="text" id="treasury-id" placeholder="مثلاً: SH_123 أو C-101" style="background:#f1f5f9; margin-bottom:15px;">
+            <input type="text" id="treasury-id" placeholder="مثلاً: SHOP_01 أو C-101" style="background:#f1f5f9; margin-bottom:15px;">
             
-            <label>المبلغ (د.أ)</label>
+            <label>المبلغ المراد إيداعه (د.أ)</label>
             <input type="number" id="treasury-amount" placeholder="0.00" style="background:#f1f5f9; margin-bottom:25px;">
             
             <button class="btn-main btn-gold" onclick="treasuryDeposit()">تأكيد الإيداع 💰</button>
@@ -164,101 +282,318 @@
     <div id="report-modal">
         <div class="report-paper">
             <div style="text-align:center; border-bottom:4px solid var(--primary); padding-bottom:30px; margin-bottom:40px;">
-                <h1 style="margin:0; font-size:36px; color:var(--primary);">N One Global</h1>
-                <h3>تقرير شامل للكابتن</h3>
-                <p>Date: <span id="rep-date"></span></p>
+                <h1 style="margin:0; font-size:36px; color:var(--primary);">N <span style="color:#d4af37">One</span> Global</h1>
+                <h3 style="margin:10px 0; color:#64748b;">تقرير شامل للكابتن</h3>
+                <p>تاريخ التقرير: <span id="rep-date" style="font-weight:bold;"></span></p>
             </div>
+            
             <div style="display:flex; justify-content:space-between; margin-bottom:40px; background:#f8fafc; padding:30px; border-radius:15px;">
-                <div><strong>الاسم:</strong> <span id="rep-name">---</span><br><strong>الكود:</strong> <span id="rep-code">---</span></div>
-                <div><strong>الرصيد:</strong> <span id="rep-balance" style="font-size:24px; font-weight:bold; color:var(--success);">0.00</span> د.أ</div>
+                <div>
+                    <strong>الاسم:</strong> <span id="rep-name">---</span><br>
+                    <strong>الترميز:</strong> <span id="rep-code">---</span><br>
+                    <strong>الهاتف:</strong> <span id="rep-phone">---</span>
+                </div>
+                <div>
+                    <strong>الرصيد الحالي:</strong> <span id="rep-balance" style="font-size:24px; font-weight:900; color:var(--success);">0.00</span> د.أ
+                </div>
             </div>
+
             <table style="width:100%; border:1px solid #e2e8f0; color:black;">
-                <thead style="background:#f1f5f9;"><tr><th style="padding:15px; border:1px solid #cbd5e1;">التاريخ</th><th style="padding:15px; border:1px solid #cbd5e1;">النوع</th><th style="padding:15px; border:1px solid #cbd5e1;">القيمة</th></tr></thead>
+                <thead style="background:#f1f5f9;">
+                    <tr>
+                        <th style="padding:15px; border:1px solid #cbd5e1;">التاريخ</th>
+                        <th style="padding:15px; border:1px solid #cbd5e1;">النوع</th>
+                        <th style="padding:15px; border:1px solid #cbd5e1;">القيمة</th>
+                    </tr>
+                </thead>
                 <tbody id="rep-body"></tbody>
             </table>
+
             <button class="no-print btn-main btn-blue" onclick="window.print()" style="position:absolute; top:30px; right:30px; width:auto;">🖨️ طباعة</button>
             <button class="no-print btn-main btn-danger" onclick="closeReport()" style="position:absolute; top:30px; right:150px; width:auto;">إغلاق</button>
         </div>
     </div>
 
     <script>
-        // === المنطق البرمجي للكباتن والصندوق المركزي ===
-        if (typeof N_ONE_CORE !== 'undefined') N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
+        // ========================================================
+        // Captains Manager Brain (v13.0) - Standalone
+        // ========================================================
         
-        let allData=[], captains=[], requests=[], orders=[], currentWalletCap=null;
-
-        window.onload = async function() { await refreshData(); setInterval(refreshDataSilent, 30000); };
-        async function refreshData() { showLoading(true); try{allData=await N_ONE_CORE.fetchData('read'); processData();}catch(e){} showLoading(false); }
-        async function refreshDataSilent() { try{allData=await N_ONE_CORE.fetchData('read'); processData();}catch(e){} }
-        
-        function processData() {
-            captains=allData.filter(i=>i.type==='captain'&&i.status!=='pending').reverse();
-            requests=allData.filter(i=>i.type==='captain'&&i.status==='pending');
-            orders=allData.filter(i=>i.type==='order');
-            renderRequests(); renderFleet(); updateTotalBalance();
+        if (typeof N_ONE_CORE !== 'undefined') {
+            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
         }
 
-        async function registerCaptain() {
-            const n=document.getElementById('new_cap_name').value, p=document.getElementById('new_cap_phone').value, c=document.getElementById('new_cap_code').value;
-            if(!n||!p||!c)return alert("بيانات ناقصة");
-            if(captains.some(x=>x.user===c||x.cap_phone===p))return alert("⛔ مسجل مسبقاً");
+        let allData = [];
+        let captains = [];
+        let requests = [];
+        let orders = [];
+        let currentWalletCap = null;
+
+        window.onload = async function() {
+            await refreshData();
+            // تحديث صامت كل 30 ثانية
+            setInterval(refreshDataSilent, 30000);
+        };
+
+        async function refreshData() {
             showLoading(true);
-            await N_ONE_CORE.postData('add', [{id:"CAP_"+Date.now(), user:c, pass:"123456", name:n, role:"captain", type:"captain", cap_phone:p, status:"active", pickup:document.getElementById('new_cap_car').value, balance:"0"}]);
-            alert("تم التعيين ✅"); await refreshData(); showLoading(false);
+            try {
+                allData = await N_ONE_CORE.fetchData('read');
+                processData();
+            } catch (e) { console.error(e); }
+            showLoading(false);
         }
 
+        async function refreshDataSilent() {
+            try {
+                allData = await N_ONE_CORE.fetchData('read');
+                processData();
+            } catch (e) { console.error(e); }
+        }
+
+        function processData() {
+            // فصل البيانات
+            captains = allData.filter(i => i.type === 'captain' && i.status !== 'pending').reverse();
+            requests = allData.filter(i => i.type === 'captain' && i.status === 'pending');
+            orders = allData.filter(i => i.type === 'order'); 
+            
+            renderRequests();
+            renderFleet();
+            updateTotalBalance();
+        }
+
+        // --- 1. تسجيل كابتن (مع فحص التكرار) ---
+        async function registerCaptain() {
+            const name = document.getElementById('new_cap_name').value;
+            const phone = document.getElementById('new_cap_phone').value;
+            const code = document.getElementById('new_cap_code').value;
+            const car = document.getElementById('new_cap_car').value;
+            const model = document.getElementById('new_cap_model').value;
+            
+            if(!name || !phone || !code) return alert("البيانات ناقصة!");
+
+            const exists = captains.some(c => c.user === code || c.cap_phone === phone);
+            if (exists) { return alert("⛔ تنبيه: هذا الكابتن (الهاتف أو الترميز) مسجل مسبقاً!"); }
+
+            showLoading(true);
+            const newCap = {
+                id: "CAP_" + Date.now(),
+                user: code, pass: "123456", name: name, role: "captain", type: "captain", 
+                cap_phone: phone, status: "active", pickup: `${car} ${model}`, balance: "0", emergency_used: "false"
+            };
+
+            await N_ONE_CORE.postData('add', [newCap]);
+            alert("تم التعيين بنجاح ✅");
+            await refreshData();
+            showLoading(false);
+        }
+
+        // --- 2. المحفظة الفورية ---
         function searchWallet() {
-            const q=document.getElementById('wallet_search').value.toLowerCase();
-            const c=captains.find(x=>x.user.toLowerCase()===q||x.cap_phone.includes(q));
-            if(c){currentWalletCap=c; document.getElementById('wallet-info').style.display='block'; document.getElementById('w_name').innerText=c.name; document.getElementById('w_balance').innerText=parseFloat(c.balance||0).toFixed(2)+" د.أ"; document.getElementById('w_code').innerText=c.user;}
-            else{alert("غير موجود"); document.getElementById('wallet-info').style.display='none';}
-        }
-
-        async function updateBalance(act) {
-            if(!currentWalletCap)return; const v=parseFloat(document.getElementById('wallet_amount').value); if(!v)return;
-            const nb = act==='add' ? parseFloat(currentWalletCap.balance||0)+v : parseFloat(currentWalletCap.balance||0)-v;
-            if(confirm(`الرصيد الجديد: ${nb.toFixed(2)} د.أ ؟`)){
-                showLoading(true); currentWalletCap.balance=nb; document.getElementById('w_balance').innerText=nb.toFixed(2)+" د.أ"; renderFleet();
-                await N_ONE_CORE.postData('update', {user:currentWalletCap.user, data:{balance:nb}});
-                alert("تم التحديث 💰"); showLoading(false);
+            const q = document.getElementById('wallet_search').value.toLowerCase();
+            const cap = captains.find(c => c.user.toLowerCase() === q || c.cap_phone.includes(q));
+            
+            if(cap) {
+                currentWalletCap = cap;
+                document.getElementById('wallet-info').style.display = 'block';
+                document.getElementById('w_name').innerText = cap.name;
+                document.getElementById('w_balance').innerText = parseFloat(cap.balance || 0).toFixed(2) + " د.أ";
+                document.getElementById('w_code').innerText = cap.user;
+                document.getElementById('w_phone').innerText = cap.cap_phone;
+            } else {
+                alert("كابتن غير موجود ❌");
+                document.getElementById('wallet-info').style.display = 'none';
             }
         }
 
-        // --- Treasury Logic (الصندوق المركزي) ---
-        function toggleTreasury() { const el=document.getElementById('treasury-modal'); el.style.display=el.style.display==='none'?'flex':'none'; }
-        
-        async function treasuryDeposit() {
-            const tid=document.getElementById('treasury-id').value.trim(), amt=parseFloat(document.getElementById('treasury-amount').value);
-            if(!tid||!amt) return alert("أدخل الكود والمبلغ");
-            
-            showLoading(true);
-            const target = allData.find(u => u.user === tid || u.cap_phone === tid); // يبحث في كل الداتا (شامل المحلات)
-            
-            if(!target) { alert("❌ المستفيد غير موجود (تأكد من الكود)"); showLoading(false); return; }
-            const typeName = target.type === 'shop' ? 'المنشأة' : 'الكابتن';
-            
-            if(!confirm(`إيداع ${amt} د.أ في حساب ${typeName}: ${target.name} ؟`)) { showLoading(false); return; }
+        async function updateBalance(action) {
+            if(!currentWalletCap) return;
+            const val = parseFloat(document.getElementById('wallet_amount').value);
+            if(!val) return;
 
-            const newBal = parseFloat(target.balance || 0) + amt;
-            await N_ONE_CORE.postData('update', { user: target.user, data: { balance: newBal } });
-            
-            alert(`✅ تم الإيداع بنجاح!\nالرصيد الجديد لـ ${target.name}: ${newBal.toFixed(2)} د.أ`);
-            document.getElementById('treasury-id').value = ''; document.getElementById('treasury-amount').value = '';
-            toggleTreasury(); showLoading(false);
-            if(target.type === 'captain') refreshData(); // تحديث الجدول اذا كان كابتن
+            const oldBal = parseFloat(currentWalletCap.balance || 0);
+            const newBal = action === 'add' ? oldBal + val : oldBal - val;
+
+            if(confirm(`تأكيد الرصيد الجديد: ${newBal.toFixed(2)} د.أ ؟`)) {
+                showLoading(true);
+                currentWalletCap.balance = newBal; // تحديث محلي
+                document.getElementById('w_balance').innerText = newBal.toFixed(2) + " د.أ";
+                renderFleet();
+                await N_ONE_CORE.postData('update', { user: currentWalletCap.user, data: { balance: newBal } });
+                alert("تم التحديث 💰");
+                showLoading(false);
+            }
         }
 
-        // Functions for Requests, Fleet, Report (Simplified for brevity but fully functional)
-        function renderRequests(){ const b=document.getElementById('requests-body'); b.innerHTML=''; if(requests.length===0)b.innerHTML='<tr><td colspan="5" style="text-align:center;">لا يوجد</td></tr>'; requests.forEach(r=>{b.innerHTML+=`<tr><td>${r.name}</td><td>${r.cap_phone}</td><td>${r.pickup}</td><td><span class="badge bg-pending">انتظار</span></td><td><button class="action-btn" style="color:green" onclick="approveReq('${r.user}')">✅</button><button class="action-btn" style="color:red" onclick="deleteCaptain('${r.user}')">❌</button></td></tr>`}); }
-        async function approveReq(u){ if(confirm("قبول؟")){showLoading(true); await N_ONE_CORE.postData('update',{user:u,data:{status:'active',balance:'0'}}); await refreshData(); showLoading(false);} }
-        function renderFleet(){ const b=document.getElementById('fleet-body'); b.innerHTML=''; const q=document.getElementById('search-active').value.toLowerCase(); captains.forEach(c=>{ if(q&&!c.name.toLowerCase().includes(q))return; b.innerHTML+=`<tr><td>${c.name}</td><td>${c.user}<br>${c.cap_phone}</td><td style="color:var(--success);font-weight:bold;">${parseFloat(c.balance||0).toFixed(2)}</td><td><span class="badge ${c.status==='active'?'bg-active':'bg-paused'}">${c.status==='active'?'نشط':'مجمد'}</span></td><td><button class="action-btn" onclick="openReport('${c.user}')">🖨️</button><button class="action-btn" onclick="freezeCap('${c.user}')">❄️</button><button class="action-btn" style="color:red" onclick="deleteCaptain('${c.user}')">🗑️</button></td></tr>`; }); }
-        function updateTotalBalance(){ document.getElementById('total-fleet-bal').innerText=captains.reduce((s,c)=>s+parseFloat(c.balance||0),0).toFixed(2); }
-        async function freezeCap(u){ const c=captains.find(i=>i.user===u); const ns=c.status==='active'?'paused':'active'; if(confirm("تغيير الحالة؟")){c.status=ns; renderFleet(); await N_ONE_CORE.postData('update',{user:u,data:{status:ns}});} }
-        async function deleteCaptain(u){ if(confirm("حذف؟")){showLoading(true); captains=captains.filter(c=>c.user!==u); renderFleet(); await N_ONE_CORE.fetchData('delete',{user:u}); showLoading(false);} }
-        function openReport(u){ const c=captains.find(i=>i.user===u); if(!c)return; document.getElementById('rep-name').innerText=c.name; document.getElementById('rep-code').innerText=c.user; document.getElementById('rep-balance').innerText=c.balance||"0"; document.getElementById('rep-date').innerText=new Date().toLocaleDateString(); document.getElementById('report-modal').style.display='flex'; }
-        function closeReport(){ document.getElementById('report-modal').style.display='none'; }
-        function showLoading(s){ document.getElementById('loading-bar').style.width=s?'100%':'0%'; }
-        function toggleTransfer(){ alert(document.getElementById('transfer-toggle').checked?"تم التفعيل":"تم الإيقاف"); }
+        // --- 3. طلبات خارجية ---
+        function renderRequests() {
+            const tbody = document.getElementById('requests-body');
+            tbody.innerHTML = '';
+            if(requests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">لا توجد طلبات معلقة</td></tr>';
+                return;
+            }
+            requests.forEach(req => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${req.name}</strong></td>
+                        <td>${req.cap_phone}</td>
+                        <td>${req.pickup || '-'}</td>
+                        <td><span class="badge bg-pending">انتظار</span></td>
+                        <td>
+                            <button class="action-btn" style="color:var(--success);" onclick="approveReq('${req.user}')">✅</button>
+                            <button class="action-btn" style="color:var(--danger);" onclick="deleteCaptain('${req.user}')">❌</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function approveReq(user) {
+            if(confirm("قبول الكابتن؟")) {
+                showLoading(true);
+                await N_ONE_CORE.postData('update', { user: user, data: { status: 'active', balance: '0' } }); 
+                await refreshData();
+                showLoading(false);
+            }
+        }
+
+        // --- 4. الأسطول النشط ---
+        function renderFleet() {
+            const tbody = document.getElementById('fleet-body');
+            const q = document.getElementById('search-active').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            captains.forEach(cap => {
+                if(q && !cap.name.toLowerCase().includes(q) && !cap.user.toLowerCase().includes(q)) return;
+
+                const statusBadge = cap.status === 'active' 
+                    ? '<span class="badge bg-active">نشط</span>' 
+                    : '<span class="badge bg-paused">مجمد</span>';
+                
+                const freezeIcon = cap.status === 'active' ? '❄️' : '▶️';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${cap.name}</strong></td>
+                        <td>${cap.user}<br>${cap.cap_phone}</td>
+                        <td style="font-weight:bold; color:var(--success); font-size:16px;">${parseFloat(cap.balance||0).toFixed(2)}</td>
+                        <td>${cap.emergency_used === 'true' ? '⚠️' : '✅'}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="action-btn" onclick="openReport('${cap.user}')">🖨️</button>
+                            <button class="action-btn" onclick="freezeCap('${cap.user}')">${freezeIcon}</button>
+                            <button class="action-btn" onclick="deleteCaptain('${cap.user}')" style="color:var(--danger);">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateTotalBalance() {
+            const total = captains.reduce((sum, c) => sum + parseFloat(c.balance || 0), 0);
+            document.getElementById('total-fleet-bal').innerText = total.toFixed(2);
+        }
+
+        async function freezeCap(user) {
+            const cap = captains.find(c => c.user === user);
+            const newStatus = cap.status === 'active' ? 'paused' : 'active';
+            if(confirm(`تغيير حالة الكابتن؟`)) {
+                showLoading(true);
+                cap.status = newStatus;
+                renderFleet();
+                await N_ONE_CORE.postData('update', { user: user, data: { status: newStatus } });
+                showLoading(false);
+            }
+        }
+
+        async function deleteCaptain(user) {
+            if(confirm("⚠️ حذف نهائي؟")) {
+                showLoading(true);
+                captains = captains.filter(c => c.user !== user);
+                renderFleet();
+                await N_ONE_CORE.fetchData('delete', { user: user });
+                showLoading(false);
+            }
+        }
+
+        // --- 5. الصندوق المركزي (The Treasury) ---
+        function toggleTreasury() {
+            const el = document.getElementById('treasury-modal');
+            el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        async function treasuryDeposit() {
+            const targetId = document.getElementById('treasury-id').value.trim();
+            const amount = parseFloat(document.getElementById('treasury-amount').value);
+
+            if(!targetId || !amount) return alert("البيانات ناقصة");
+
+            showLoading(true);
+            
+            // البحث في كل البيانات (كباتن + محلات)
+            // ملاحظة: allData تحتوي على كل شيء من السيرفر
+            const target = allData.find(u => u.user === targetId || u.cap_phone === targetId);
+
+            if(!target) {
+                alert("❌ المستفيد غير موجود! تأكد من الكود.");
+                showLoading(false);
+                return;
+            }
+
+            const typeName = target.type === 'shop' ? 'المنشأة التجارية' : 'الكابتن';
+
+            if(!confirm(`هل تريد إيداع مبلغ ${amount} د.أ في حساب ${typeName}: ${target.name} ؟`)) {
+                showLoading(false); return;
+            }
+
+            // تحديث الرصيد
+            const newBal = parseFloat(target.balance || 0) + amount;
+            await N_ONE_CORE.postData('update', { user: target.user, data: { balance: newBal } });
+            
+            alert(`✅ تم الإيداع بنجاح!\nالرصيد الجديد لـ ${target.name} هو: ${newBal.toFixed(2)} د.أ`);
+            
+            // تنظيف
+            document.getElementById('treasury-id').value = '';
+            document.getElementById('treasury-amount').value = '';
+            toggleTreasury();
+            
+            // إذا كان المستفيد كابتن، نحدث الجدول
+            if (target.type === 'captain') {
+                await refreshData();
+            } else {
+                showLoading(false);
+            }
+        }
+
+        // --- 6. التقرير ---
+        function openReport(user) {
+            const cap = captains.find(c => c.user === user);
+            if(!cap) return;
+            document.getElementById('rep-name').innerText = cap.name;
+            document.getElementById('rep-code').innerText = cap.user;
+            document.getElementById('rep-phone').innerText = cap.cap_phone;
+            document.getElementById('rep-balance').innerText = parseFloat(cap.balance || 0).toFixed(2);
+            document.getElementById('rep-date').innerText = new Date().toLocaleDateString();
+            
+            const tbody = document.getElementById('rep-body');
+            tbody.innerHTML = '';
+            const myOrders = orders.filter(o => o.cap_name === cap.name || o.cap_phone === cap.cap_phone);
+            
+            if(myOrders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد حركات</td></tr>';
+            } else {
+                myOrders.forEach(o => {
+                    tbody.innerHTML += `<tr><td style="border:1px solid #e2e8f0; padding:10px;">${o.date.split('T')[0]}</td><td style="border:1px solid #e2e8f0; padding:10px;">توصيل</td><td style="border:1px solid #e2e8f0; padding:10px;">${o.fee} د.أ</td></tr>`;
+                });
+            }
+            document.getElementById('report-modal').style.display = 'flex';
+        }
+        function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
+        
+        function toggleTransfer() { alert(document.getElementById('transfer-toggle').checked ? "تم تفعيل التحويل" : "تم الإيقاف"); }
+        function showLoading(show) { document.getElementById('loading-bar').style.width = show ? '100%' : '0%'; }
+
     </script>
 </body>
 </html>
