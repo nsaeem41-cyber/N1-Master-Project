@@ -3,180 +3,607 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>N One | Business Portal</title>
+    <title>N One | Business Portal (Royal Edition)</title>
+    
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
+
     <style>
-        /* تصميم المتجر الأنيق */
-        :root { --primary: #0f172a; --gold: #d4af37; --bg: #f8fafc; --card-bg: #ffffff; --text: #334155; --success: #10b981; --danger: #ef4444; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); padding-bottom: 80px; }
-        
-        .header { background: var(--primary); padding: 20px 25px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2); text-align: center; }
+        /* ============================================================
+           تصميم ROYAL LIGHT - قمة الفخامة للمنشآت (Unified Theme)
+           ============================================================ */
+        :root {
+            --primary: #0f172a;      /* كحلي ملكي عميق */
+            --bg: #f8fafc;           /* خلفية رمادية ثلجية */
+            --card-bg: #ffffff;      /* أبيض ناصع للكروت */
+            --gold: #d4af37;         /* ذهبي للأيقونات والحدود */
+            --text-main: #334155;    /* رمادي غامق للنصوص */
+            --text-light: #64748b;   /* رمادي فاتح للعناوين */
+            --success: #10b981;      /* أخضر للعمليات الناجحة */
+            --danger: #ef4444;       /* أحمر للخروج والتنبيه */
+            --border: #e2e8f0;       /* حدود ناعمة */
+            --input-bg: #f1f5f9;     /* خلفية الحقول */
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg); margin: 0; padding: 0; 
+            color: var(--text-main); user-select: none; padding-bottom: 80px;
+        }
+
+        /* --- الهيدر الملكي --- */
+        .header {
+            background: var(--primary);
+            padding: 25px 20px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+            text-align: center; position: relative; z-index: 10;
+            border-bottom: 3px solid var(--gold);
+        }
+
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .brand { font-size: 22px; font-weight: 900; color: white; letter-spacing: 1px; }
+        .brand { font-size: 24px; font-weight: 900; color: white; letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
-        .btn-logout { background: rgba(239, 68, 68, 0.2); color: #fecaca; border: 1px solid rgba(239, 68, 68, 0.5); padding: 6px 15px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; }
         
-        .shop-info { color: var(--gold); font-size: 14px; font-weight: bold; margin-bottom: 10px; }
-        
-        /* التبويبات */
-        .nav-tabs { display: flex; justify-content: center; gap: 10px; margin-top: 15px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 20px; }
-        .nav-tab { flex: 1; padding: 10px; border: none; border-radius: 15px; font-weight: bold; font-size: 13px; cursor: pointer; background: transparent; color: #94a3b8; transition: 0.3s; }
-        .nav-tab.active { background: var(--gold); color: var(--primary); }
-        
+        /* زر الخروج الآمن */
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15); color: #fecaca; 
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            padding: 8px 16px; border-radius: 12px; 
+            font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-logout:active { transform: scale(0.95); background: var(--danger); color: white; }
+
+        /* عرض اسم المطعم */
+        .shop-info-badge { 
+            background: rgba(255, 255, 255, 0.1); color: var(--gold);
+            padding: 8px 20px; border-radius: 20px; display: inline-block;
+            font-size: 14px; font-weight: bold; border: 1px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* --- التبويبات (Tabs) --- */
+        .nav-tabs {
+            display: flex; justify-content: center; gap: 12px; margin-top: 10px;
+            background: rgba(255,255,255,0.05); padding: 6px; border-radius: 20px;
+        }
+        .nav-tab {
+            flex: 1; padding: 12px; border: none; border-radius: 15px;
+            font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.3s;
+            background: transparent; color: #94a3b8;
+        }
+        .nav-tab.active { 
+            background: var(--gold); color: var(--primary); 
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); transform: translateY(-2px);
+        }
+
+        /* --- الحاوية الرئيسية --- */
         .container { max-width: 500px; margin: 20px auto; padding: 0 20px; }
-        .section { display: none; animation: fadeIn 0.3s ease-out; } .section.active { display: block; } @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* الأقسام (Fade In Animation) */
+        .section { display: none; animation: slideUp 0.4s ease-out; }
+        .section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- الكروت --- */
+        .card {
+            background: var(--card-bg); padding: 25px; border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border);
+            margin-bottom: 20px; position: relative; overflow: hidden;
+        }
+
+        /* --- العدادات (Daily & Total) --- */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box {
+            background: white; padding: 20px; border-radius: 20px; text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid var(--border);
+            position: relative; overflow: hidden;
+        }
+        .stat-box::before { content:''; position: absolute; top:0; left:0; width:100%; height:4px; background:var(--primary); }
+        .stat-box.gold-top::before { background:var(--gold); }
         
-        .card { background: var(--card-bg); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 15px; background: #f8fafc; outline: none; margin-bottom: 15px; font-weight: 600; color: var(--primary); }
-        input:focus { border-color: var(--primary); background: white; }
-        
-        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn-send { background: var(--primary); } .btn-charge { background: var(--success); }
-        
-        .history-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f1f5f9; }
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 12px 25px; border-radius: 30px; font-size: 13px; font-weight: bold; display: none; z-index: 100; }
-        #loader { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: var(--gold); z-index: 2000; transition: width 0.3s; }
+        .stat-label { font-size: 12px; font-weight:bold; color: var(--text-light); display:block; margin-bottom:5px; }
+        .stat-val { font-size: 24px; font-weight: 900; color: var(--primary); }
+        .stat-val.gold { color: var(--gold); }
+
+        /* --- حقول الإدخال --- */
+        .input-group { margin-bottom: 18px; position: relative; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 800; color: var(--text-light); }
+        input {
+            width: 100%; padding: 16px; border: 2px solid var(--border); border-radius: 16px;
+            font-size: 15px; background: var(--input-bg); outline: none; transition: 0.3s;
+            color: var(--primary); font-weight: 700;
+        }
+        input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
+        input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; }
+
+        /* --- الأزرار --- */
+        .btn-main {
+            width: 100%; padding: 18px; border: none; border-radius: 16px;
+            font-size: 16px; font-weight: 800; cursor: pointer; color: white;
+            transition: 0.2s; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-main:active { transform: scale(0.98); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-send { background: var(--primary); }
+        .btn-check { background: var(--text-light); margin-bottom: 10px; }
+        .btn-confirm { background: var(--success); display: none; } /* مخفي حتى التحقق */
+
+        /* --- تفاصيل التحقق من الكابتن --- */
+        #cap-check-result {
+            display: none; background: #ecfdf5; padding: 15px; border-radius: 15px;
+            border: 1px solid #a7f3d0; margin-bottom: 15px; text-align: center;
+            animation: slideUp 0.3s;
+        }
+        .check-info { font-size: 14px; color: #064e3b; margin-bottom: 5px; }
+        .check-balance { font-size: 18px; font-weight: 900; color: var(--success); }
+
+        /* --- السجل --- */
+        .history-list { margin-top: 10px; }
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; border-bottom: 1px solid #f1f5f9;
+        }
+        .history-item:last-child { border-bottom: none; }
+        .h-dest { font-weight: bold; color: var(--primary); font-size: 14px; }
+        .h-time { font-size: 11px; color: #94a3b8; }
+        .h-price { font-weight: 900; color: var(--gold); }
+
+        /* --- إشعارات وشريط تحميل --- */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white; padding: 12px 30px; border-radius: 30px;
+            font-size: 14px; font-weight: bold; display: none; z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        #loader { 
+            position: fixed; top: 0; left: 0; width: 0%; height: 5px; 
+            background: var(--gold); z-index: 3000; transition: width 0.3s; 
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
+        }
     </style>
 </head>
 <body>
+
     <div id="loader"></div>
+
     <header class="header">
-        <div class="header-top"><div class="brand">N <span class="gold-text">One</span></div><button class="btn-logout" onclick="logout()">خروج</button></div>
-        <div class="shop-info" id="shop-name-display">جاري التحميل...</div>
+        <div class="header-top">
+            <div class="brand">N <span class="gold-text">One</span></div>
+            <button class="btn-logout" onclick="logout()">
+                <span>🔒</span> خروج
+            </button>
+        </div>
+        
+        <div class="shop-info-badge">
+            🏪 <span id="shop-name-display">جاري التحميل...</span>
+        </div>
+
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="switchTab('orders')">📦 إرسال طلب</button>
             <button class="nav-tab" onclick="switchTab('charging')">⚡ شحن كابتن</button>
         </div>
     </header>
+
     <div class="container">
+        
         <div id="orders" class="section active">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
-                <div style="background:white; padding:15px; border-radius:15px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.03);"><div style="font-size:11px; color:#94a3b8;">اليوم</div><div style="font-size:20px; font-weight:900; color:var(--gold);" id="orders-today">0</div></div>
-                <div style="background:white; padding:15px; border-radius:15px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.03);"><div style="font-size:11px; color:#94a3b8;">الكلي</div><div style="font-size:20px; font-weight:900; color:var(--primary);" id="orders-total">0</div></div>
+            
+            <div class="stats-grid">
+                <div class="stat-box gold-top">
+                    <span class="stat-label">إنجاز اليوم 📅</span>
+                    <span class="stat-val gold" id="orders-today">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">الإجمالي العام 🚀</span>
+                    <span class="stat-val" id="orders-total">0</span>
+                </div>
             </div>
+
             <div class="card">
-                <input type="text" id="destination" list="areas-list" placeholder="الوجهة..." onchange="calculateFee()">
-                <datalist id="areas-list"></datalist>
-                <input type="number" id="order_val" placeholder="قيمة التحصيل (د.أ)">
-                <input type="text" id="delivery_fee" placeholder="سعر التوصيل" readonly style="background:#f1f5f9;">
-                <button class="btn-main btn-send" id="btn-send" onclick="sendOrder()">إرسال الطلب 🚀</button>
+                <div class="input-group">
+                    <label>📍 وجهة الطلب (المنطقة)</label>
+                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." onchange="calculateFee()">
+                    <datalist id="areas-list"></datalist>
+                </div>
+
+                <div class="input-group">
+                    <label>💰 قيمة التحصيل (دينار)</label>
+                    <input type="number" id="order_val" placeholder="0.00">
+                </div>
+
+                <div class="input-group">
+                    <label>🛵 سعر التوصيل (تلقائي)</label>
+                    <input type="text" id="delivery_fee" placeholder="---" readonly>
+                </div>
+
+                <button class="btn-main btn-send" id="btn-send" onclick="sendOrder()">
+                    🚀 إرسال الطلب فوراً
+                </button>
             </div>
-            <div class="card" style="padding:15px;"><div style="font-size:13px; font-weight:bold; color:#64748b; margin-bottom:10px;">آخر الطلبات</div><div id="history-list"></div></div>
+
+            <div class="card" style="padding: 20px;">
+                <div style="font-size:13px; font-weight:800; color:var(--text-light); margin-bottom:10px;">🕒 آخر الطلبات المرسلة</div>
+                <div id="history-list" class="history-list">
+                    </div>
+            </div>
         </div>
+
         <div id="charging" class="section">
             <div class="card" style="border-top: 4px solid var(--success);">
-                <div style="text-align:center; margin-bottom:20px;">
-                    <h3 style="margin:0; color:var(--primary);">شحن كابتن ⚡</h3>
-                    <p style="font-size:12px; color:#64748b;">رصيدك الحالي: <b style="color:var(--success); font-size:16px;" id="my-shop-balance">...</b> د.أ</p>
+                <div style="text-align:center; margin-bottom:25px;">
+                    <h3 style="margin:0; color:var(--primary); font-size:18px;">نقطة شحن معتمدة ⚡</h3>
+                    <p style="font-size:13px; color:var(--text-light); margin-top:5px;">
+                        رصيدك الحالي: <b style="color:var(--success); font-size:18px;" id="my-shop-balance">...</b> د.أ
+                    </p>
                 </div>
-                <input type="text" id="cap_id" placeholder="كود الكابتن (C-xxx)">
-                <input type="number" id="charge_amount" placeholder="المبلغ (د.أ)">
-                <button class="btn-main btn-charge" id="btn-charge" onclick="chargeCaptainClosedLoop()">تأكيد الشحن ✅</button>
+
+                <div class="input-group">
+                    <label>🔍 كود الكابتن أو رقم الهاتف</label>
+                    <input type="text" id="cap_id" placeholder="مثلاً: C-101 أو 07xxxxxxxx">
+                </div>
+
+                <div class="input-group">
+                    <label>💵 المبلغ المراد شحنه</label>
+                    <input type="number" id="charge_amount" placeholder="0.00">
+                </div>
+
+                <button class="btn-main btn-check" id="btn-check" onclick="verifyCaptain()">
+                    🔍 فحص الكابتن أولاً
+                </button>
+
+                <div id="cap-check-result">
+                    <div class="check-info">تم العثور على الكابتن: <b id="found-cap-name">---</b></div>
+                    <div class="check-info">رصيده الحالي: <b id="found-cap-balance">---</b> د.أ</div>
+                    <hr style="border:0; border-top:1px dashed #a7f3d0; margin:10px 0;">
+                    <div style="font-size:12px; font-weight:bold; color:var(--primary);">
+                        سيصبح رصيده: <span id="future-cap-balance" style="color:var(--success);">---</span>
+                    </div>
+                </div>
+
+                <button class="btn-main btn-confirm" id="btn-charge" onclick="executeTransfer()">
+                    ✅ تأكيد وتحويل الرصيد
+                </button>
             </div>
         </div>
+
     </div>
-    <div id="toast" class="toast">تم بنجاح</div>
+
+    <div id="toast" class="toast">تمت العملية بنجاح!</div>
 
     <script>
+        // ========================================================
+        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v15.0) 💎
+        // ========================================================
+
+        // رابط الاتصال بالخادم
         const API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
-        let shopData = JSON.parse(localStorage.getItem('nOne_shop_data_v12')) || { ordersToday: 0, ordersTotal: 0, lastActiveDate: new Date().toDateString(), history: [] };
-        let pricingMatrix = {}, currentUser = null, myBalance = 0;
+        
+        // إدارة البيانات المحلية (مع العدادات)
+        let shopData = JSON.parse(localStorage.getItem('nOne_shop_legacy_v1')) || { 
+            ordersToday: 0, 
+            ordersTotal: 0, 
+            lastActiveDate: new Date().toDateString(), 
+            history: [] 
+        };
+        
+        let pricingMatrix = {}; 
+        let currentUser = null;
+        let myBalance = 0;
+        let verifiedCaptain = null; // لتخزين بيانات الكابتن بعد الفحص
 
-        if (typeof N_ONE_CORE !== 'undefined') currentUser = N_ONE_CORE.checkSession('shop');
-        else currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        // التحقق من الجلسة
+        if (typeof N_ONE_CORE !== 'undefined') {
+            currentUser = N_ONE_CORE.checkSession('shop');
+        } else {
+            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        }
 
+        // --- عند تحميل الصفحة ---
         window.onload = async function() {
             if (!currentUser) { window.location.href = 'index.html'; return; }
+            
+            // 1. عرض الاسم الكامل للمنشأة
             document.getElementById('shop-name-display').innerText = currentUser.name;
-            loadMatrix(); checkDailyReset(); updateUI();
+            
+            // 2. تحميل البيانات
+            loadMatrix();
+            checkDailyReset(); // فحص العداد اليومي
+            updateUI();
+            
+            // 3. جلب رصيد المنشأة الفعلي من السيرفر
             await fetchMyBalance(); 
         };
 
-        // --- جلب رصيد المنشأة الفعلي من السيرفر ---
+        // --- نظام العداد اليومي (Daily Reset) ---
+        function checkDailyReset() {
+            const todayStr = new Date().toDateString(); // التاريخ كنص (اليوم فقط)
+            
+            if (shopData.lastActiveDate !== todayStr) {
+                // دخلنا يوم جديد -> تصفير عداد اليوم فقط
+                shopData.ordersToday = 0;
+                shopData.lastActiveDate = todayStr;
+                localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
+            }
+        }
+
+        // --- جلب رصيد المنشأة (لضمان الدقة المالية) ---
         async function fetchMyBalance() {
             try {
+                // طلب قراءة فقط
                 const response = await fetch(API_URL + "?action=read");
                 const data = await response.json();
+                
+                // البحث عن نفسي (المنشأة)
                 const me = data.find(u => u.user === currentUser.user);
                 if (me) {
                     myBalance = parseFloat(me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 }
-            } catch (e) { console.error("Balance Error"); }
+            } catch (e) {
+                console.error("Balance Fetch Error", e);
+            }
         }
 
-        // --- شحن الكابتن (الدورة المغلقة) ---
-        async function chargeCaptainClosedLoop() {
+        // --- منطق إرسال الطلبات (المنشأة) ---
+        function loadMatrix() {
+            const rawData = localStorage.getItem('nOne_global_prices');
+            if (rawData) {
+                const allData = JSON.parse(rawData);
+                const datalist = document.getElementById('areas-list');
+                datalist.innerHTML = '';
+                
+                Object.keys(allData).forEach(source => {
+                    allData[source].forEach(item => {
+                        pricingMatrix[item.area] = parseFloat(item.price);
+                        const opt = document.createElement('option');
+                        opt.value = item.area;
+                        datalist.appendChild(opt);
+                    });
+                });
+            }
+        }
+
+        function calculateFee() {
+            const dest = document.getElementById('destination').value;
+            if (pricingMatrix[dest]) {
+                document.getElementById('delivery_fee').value = pricingMatrix[dest].toFixed(2);
+            }
+        }
+
+        async function sendOrder() {
+            checkDailyReset(); // تأكد أن العداد مصفر إذا كان يوم جديد
+            
+            const dest = document.getElementById('destination').value;
+            const val = document.getElementById('order_val').value;
+            const fee = document.getElementById('delivery_fee').value;
+
+            if (!dest || !val || !fee) { showToast("⚠️ يرجى تعبئة جميع الحقول"); return; }
+            
+            setLoading('btn-send', true);
+
+            const orderData = {
+                id: "ORD_" + Date.now(),
+                type: "order",
+                client_user: currentUser.user,
+                cl_name: currentUser.name, // الاسم الكامل للمطعم
+                pickup: dest,
+                val: val,
+                fee: fee,
+                date: new Date().toISOString(),
+                is_emergency: false, // تم إلغاء الميزة رسمياً
+                status: "new"
+            };
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'add', data: orderData })
+                });
+
+                // تحديث العدادات محلياً
+                shopData.ordersToday++;
+                shopData.ordersTotal++; // العداد الكلي لا يصفر
+                
+                // إضافة للسجل
+                shopData.history.unshift({
+                    dest: dest, val: val, 
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+                if (shopData.history.length > 5) shopData.history.pop(); // الاحتفاظ بآخر 5 فقط
+
+                localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
+                
+                updateUI();
+                showToast("✅ تم إرسال الطلب بنجاح!");
+                
+                // تنظيف
+                document.getElementById('destination').value = '';
+                document.getElementById('order_val').value = '';
+                document.getElementById('delivery_fee').value = '';
+
+            } catch (e) {
+                showToast("❌ خطأ في الاتصال");
+            } finally {
+                setLoading('btn-send', false, "🚀 إرسال الطلب فوراً");
+            }
+        }
+
+        // --- منطق الشحن الذكي (Smart Charge Logic) ---
+        
+        // خطوة 1: فحص الكابتن
+        async function verifyCaptain() {
             const capId = document.getElementById('cap_id').value.trim();
             const amount = parseFloat(document.getElementById('charge_amount').value);
 
-            if (!capId || !amount) { showToast("⚠️ البيانات ناقصة"); return; }
+            if (!capId || !amount) { showToast("⚠️ أدخل الكود والمبلغ"); return; }
             if (amount <= 0) { showToast("⚠️ المبلغ غير صحيح"); return; }
             
-            // 1. فحص محلي
-            if (myBalance < amount) { alert("⛔ رصيدك الحالي غير كافٍ!"); return; }
+            // فحص رصيدي أولاً
+            if (myBalance < amount) { 
+                alert(`⛔ رصيدك الحالي (${myBalance}) غير كافٍ لإتمام العملية!`); 
+                return; 
+            }
 
-            if (!confirm(`خصم ${amount} د.أ من رصيدك وشحنها للكابتن ${capId}؟`)) return;
-            setLoading('btn-charge', true);
+            setLoading('btn-check', true);
 
             try {
-                // 2. التحقق النهائي من السيرفر
                 const response = await fetch(API_URL + "?action=read");
                 const data = await response.json();
                 
+                // البحث عن الكابتن
                 const cap = data.find(c => c.user === capId || c.cap_phone === capId);
-                if (!cap) { alert("❌ الكابتن غير موجود"); setLoading('btn-charge', false); return; }
+                
+                if (!cap) {
+                    alert("❌ الكابتن غير موجود! تأكد من الكود أو الهاتف.");
+                    verifiedCaptain = null;
+                    document.getElementById('cap-check-result').style.display = 'none';
+                    document.getElementById('btn-charge').style.display = 'none';
+                } else {
+                    // تم العثور عليه!
+                    verifiedCaptain = cap; // تخزين بياناته
+                    
+                    document.getElementById('found-cap-name').innerText = cap.name;
+                    document.getElementById('found-cap-balance').innerText = parseFloat(cap.balance||0).toFixed(2);
+                    document.getElementById('future-cap-balance').innerText = (parseFloat(cap.balance||0) + amount).toFixed(2);
+                    
+                    document.getElementById('cap-check-result').style.display = 'block';
+                    document.getElementById('btn-charge').style.display = 'block'; // إظهار زر التأكيد
+                }
 
+                // تحديث رصيدي أنا أيضاً (من السيرفر) للحيطة
                 const me = data.find(u => u.user === currentUser.user);
-                const currentShopBal = parseFloat(me.balance || 0);
+                if(me) myBalance = parseFloat(me.balance || 0);
+                document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
+
+            } catch (e) {
+                showToast("❌ خطأ في الاتصال");
+            } finally {
+                setLoading('btn-check', false, "🔍 فحص الكابتن أولاً");
+            }
+        }
+
+        // خطوة 2: تنفيذ التحويل
+        async function executeTransfer() {
+            if (!verifiedCaptain) return;
+            
+            const amount = parseFloat(document.getElementById('charge_amount').value);
+            
+            // فحص نهائي
+            if (myBalance < amount) { alert("⛔ رصيدك نفذ!"); return; }
+
+            if (!confirm(`تأكيد نهائي:\nخصم ${amount} د.أ من رصيدك\nوشحنها للكابتن ${verifiedCaptain.name}؟`)) return;
+
+            setLoading('btn-charge', true);
+
+            try {
+                // حساب الأرصدة الجديدة
+                const newCapBal = parseFloat(verifiedCaptain.balance || 0) + amount;
+                const newShopBal = myBalance - amount;
+
+                // 1. تحديث الكابتن (+ Amount)
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'update', user: verifiedCaptain.user, data: { balance: newCapBal } }) 
+                });
                 
-                if (currentShopBal < amount) { alert("⛔ رصيدك في السيرفر غير كافٍ!"); setLoading('btn-charge', false); return; }
+                // 2. تحديث المنشأة (- Amount)
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'update', user: currentUser.user, data: { balance: newShopBal } }) 
+                });
 
-                // 3. التنفيذ المزدوج
-                const newCapBal = parseFloat(cap.balance || 0) + amount;
-                const newShopBal = currentShopBal - amount;
-
-                // تحديث الكابتن (+Amount)
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'update', user: cap.user, data: { balance: newCapBal } }) });
-                
-                // تحديث المنشأة (-Amount)
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'update', user: currentUser.user, data: { balance: newShopBal } }) });
-
+                // نجاح!
                 myBalance = newShopBal;
                 document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
+                
+                alert(`✅ تمت العملية بنجاح!\nالرصيد وصل للكابتن ${verifiedCaptain.name}`);
+                
+                // إعادة تعيين الواجهة
                 document.getElementById('cap_id').value = '';
                 document.getElementById('charge_amount').value = '';
-                
-                alert(`✅ تم الشحن بنجاح!\n- رصيد الكابتن زاد: +${amount}\n- رصيدك المتبقي: ${newShopBal}`);
+                document.getElementById('cap-check-result').style.display = 'none';
+                document.getElementById('btn-charge').style.display = 'none';
+                verifiedCaptain = null;
 
-            } catch (e) { alert("خطأ في الاتصال"); }
-            finally { setLoading('btn-charge', false, "تأكيد الشحن ✅"); }
+            } catch (e) {
+                showToast("❌ حدث خطأ أثناء التحويل");
+            } finally {
+                setLoading('btn-charge', false, "✅ تأكيد وتحويل الرصيد");
+            }
         }
 
-        // --- باقي الوظائف ---
-        function switchTab(id) { document.querySelectorAll('.section').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); event.target.classList.add('active'); }
-        function checkDailyReset() { const t = new Date().toDateString(); if(shopData.lastActiveDate!==t){shopData.ordersToday=0;shopData.lastActiveDate=t;localStorage.setItem('nOne_shop_data_v12', JSON.stringify(shopData));} }
-        function loadMatrix() { const d = localStorage.getItem('nOne_global_prices'); if(d){ const j=JSON.parse(d); const l=document.getElementById('areas-list'); l.innerHTML=''; Object.keys(j).forEach(k=>j[k].forEach(i=>{pricingMatrix[i.area]=parseFloat(i.price);const o=document.createElement('option');o.value=i.area;l.appendChild(o);})); } }
-        function calculateFee() { const d=document.getElementById('destination').value; if(pricingMatrix[d]) document.getElementById('delivery_fee').value=pricingMatrix[d].toFixed(2); }
-        async function sendOrder() {
-            checkDailyReset(); const d=document.getElementById('destination').value, v=document.getElementById('order_val').value, f=document.getElementById('delivery_fee').value;
-            if(!d||!v||!f){showToast("بيانات ناقصة");return;}
-            setLoading('btn-send', true);
-            const ord={id:"ORD_"+Date.now(), type:"order", client_user:currentUser.user, cl_name:currentUser.name, pickup:d, val:v, fee:f, date:new Date().toISOString(), status:"new"};
-            try{ await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'add', data:ord})});
-            shopData.ordersToday++; shopData.ordersTotal++; shopData.history.unshift({dest:d, val:v, time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}); if(shopData.history.length>5)shopData.history.pop();
-            localStorage.setItem('nOne_shop_data_v12', JSON.stringify(shopData)); updateUI(); showToast("تم الإرسال ✅");
-            document.getElementById('destination').value=''; document.getElementById('order_val').value=''; document.getElementById('delivery_fee').value='';
-            } catch(e){showToast("خطأ");} finally{setLoading('btn-send',false,"إرسال الطلب 🚀");}
+        // --- وظائف الواجهة المساعدة ---
+        function switchTab(tabId) {
+            // إخفاء الكل
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            
+            // إظهار المطلوب
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
         }
+
         function updateUI() {
-            document.getElementById('orders-today').innerText=shopData.ordersToday; document.getElementById('orders-total').innerText=shopData.ordersTotal;
-            const l=document.getElementById('history-list'); l.innerHTML='';
-            shopData.history.forEach(i=>{l.innerHTML+=`<div class="history-item"><div><div style="font-weight:bold;color:var(--primary);">${i.dest}</div><div style="font-size:11px;color:#94a3b8;">${i.time}</div></div><div style="font-weight:bold;color:var(--gold);">${i.val} د.أ</div></div>`;});
+            // تحديث العدادات
+            document.getElementById('orders-today').innerText = shopData.ordersToday;
+            document.getElementById('orders-total').innerText = shopData.ordersTotal;
+
+            // تحديث السجل
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            if (shopData.history.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color:#cbd5e1; padding:10px;">لا توجد طلبات حديثة</div>';
+            } else {
+                shopData.history.forEach(item => {
+                    list.innerHTML += `
+                        <div class="history-item">
+                            <div>
+                                <div class="h-dest">📍 ${item.dest}</div>
+                                <div class="h-time">🕐 ${item.time}</div>
+                            </div>
+                            <div class="h-price">${item.val} د.أ</div>
+                        </div>
+                    `;
+                });
+            }
         }
-        function logout(){ if(confirm("خروج؟")){localStorage.removeItem('currentUser'); window.location.href='index.html';} }
-        function showToast(m){ const t=document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
-        function setLoading(id,s,txt){ const b=document.getElementById(id); const l=document.getElementById('loader'); if(s){b.dataset.txt=b.innerText;b.innerText="...";b.disabled=true;b.style.opacity=0.7;l.style.width="100%";}else{b.innerText=txt||b.dataset.txt;b.disabled=false;b.style.opacity=1;l.style.width="0%";} }
+
+        function logout() {
+            if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        function setLoading(btnId, isLoading, originalText) {
+            const btn = document.getElementById(btnId);
+            const loader = document.getElementById('loader');
+            if (isLoading) {
+                btn.dataset.text = btn.innerText; // حفظ النص الأصلي
+                btn.innerText = "جاري التنفيذ...";
+                btn.style.opacity = 0.7;
+                btn.disabled = true;
+                loader.style.width = "100%";
+            } else {
+                btn.innerText = originalText || btn.dataset.text;
+                btn.style.opacity = 1;
+                btn.disabled = false;
+                loader.style.width = "0%";
+            }
+        }
+
     </script>
 </body>
 </html>
