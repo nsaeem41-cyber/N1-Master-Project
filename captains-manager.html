@@ -3,23 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N One | قيادة الأسطول والصندوق المركزي</title>
+    <title>N One | Fleet Command & Treasury (Legacy Edition)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
     <style>
-        /* ================= تصميم Royal Light (قمة الفخامة والوضوح) ================= */
+        /* ============================================================
+           تصميم ROYAL LIGHT - قمة الفخامة والوضوح (Legacy Theme)
+           ============================================================ */
         :root {
-            --primary: #0f172a;      /* كحلي ملكي */
-            --bg: #f8fafc;           /* رمادي ثلجي للخلفية */
+            --primary: #0f172a;      /* كحلي ملكي عميق */
+            --bg: #f8fafc;           /* خلفية رمادية ثلجية */
             --card-bg: #ffffff;      /* أبيض ناصع للكروت */
             --gold: #d4af37;         /* ذهبي للأيقونات والحدود */
+            --gold-hover: #b4932a;   /* ذهبي غامق عند التحويم */
             --text-main: #334155;    /* رمادي غامق للنصوص */
             --text-light: #64748b;   /* رمادي فاتح للعناوين */
-            --success: #10b981;      /* أخضر */
-            --danger: #ef4444;       /* أحمر */
+            --success: #10b981;      /* أخضر للعمليات الناجحة */
+            --danger: #ef4444;       /* أحمر للحذف والتنبيه */
             --border: #e2e8f0;       /* حدود ناعمة */
+            --shadow: 0 10px 30px rgba(0,0,0,0.04);
         }
+
+        * { box-sizing: border-box; }
 
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -27,7 +33,7 @@
             color: var(--text-main); user-select: none; 
         }
 
-        /* الهيدر */
+        /* --- الهيدر (Navbar) --- */
         .navbar { 
             background: var(--card-bg); height: 80px; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -38,44 +44,48 @@
         .brand { font-size: 26px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
         
-        /* زر إغلاق الصفحة */
+        /* أزرار الهيدر */
         .btn-close { 
             background: #fff1f2; color: var(--danger); 
             border: 1px solid #fda4af; padding: 10px 20px; 
-            border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold;
+            border-radius: 12px; cursor: pointer; transition: 0.3s; font-weight: bold;
         }
-        .btn-close:hover { background: var(--danger); color: white; }
+        .btn-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        /* زر الصندوق المركزي */
         .btn-treasury {
             background: var(--primary); color: var(--gold); 
             border: 2px solid var(--gold); padding: 10px 20px; 
             border-radius: 12px; font-weight: bold; cursor: pointer; 
             margin-left: 15px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
-            transition: 0.3s;
+            transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
         }
-        .btn-treasury:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4); }
+        .btn-treasury:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.4); background: #1e293b; }
 
-        .container { max-width: 1600px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        /* --- الحاوية الرئيسية --- */
+        .container { 
+            max-width: 1600px; margin: 30px auto; padding: 0 20px; 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; 
+        }
 
-        /* الكروت */
+        /* --- الكروت (Cards) --- */
         .card { 
             background: var(--card-bg); border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); 
+            box-shadow: var(--shadow); 
             border: 1px solid var(--border); overflow: hidden; 
-            transition: transform 0.2s;
+            transition: transform 0.2s; position: relative;
         }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
         .card-full { grid-column: span 2; } 
 
         .card-header { 
-            padding: 25px; background: #f1f5f9; border-bottom: 1px solid var(--border);
+            padding: 25px; background: #f8fafc; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
         }
         .card-title { font-size: 18px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
         .card-body { padding: 30px; }
 
-        /* الحقول والأزرار */
+        /* --- النماذج والحقول --- */
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 13px; color: var(--text-light); }
         
@@ -86,48 +96,57 @@
         }
         input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
 
+        /* --- الأزرار --- */
         .btn-main { 
             width: 100%; padding: 16px; border: none; border-radius: 12px; 
             font-weight: bold; cursor: pointer; color: white; font-size: 16px; 
             transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .btn-blue { background: var(--primary); } 
-        .btn-green { background: var(--success); } 
-        .btn-danger { background: var(--danger); }
-        .btn-gold { background: var(--gold); color: white; }
+        .btn-blue { background: var(--primary); } .btn-blue:hover { background: #334155; }
+        .btn-green { background: var(--success); } .btn-green:hover { background: #059669; }
+        .btn-danger { background: var(--danger); } .btn-danger:hover { background: #b91c1c; }
+        .btn-gold { background: var(--gold); color: white; } .btn-gold:hover { background: var(--gold-hover); }
 
-        /* الجداول */
-        .table-wrapper { overflow-x: auto; max-height: 500px; }
+        /* --- الجداول --- */
+        .table-wrapper { overflow-x: auto; max-height: 500px; border-radius: 0 0 15px 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th { padding: 18px; text-align: right; color: var(--text-light); border-bottom: 2px solid var(--border); background: #f8fafc; position: sticky; top: 0; z-index: 10; font-weight: 700; }
         td { padding: 18px; border-bottom: 1px solid #f1f5f9; color: var(--primary); font-weight: 600; }
-        tr:hover { background: #f8fafc; }
+        tr:hover { background: #f1f5f9; }
 
+        /* --- الشارات (Badges) --- */
         .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; display: inline-block; }
         .bg-active { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
         .bg-paused { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
         .bg-pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
 
+        /* --- أزرار التحكم الصغيرة --- */
         .action-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px; opacity: 0.6; transition: 0.2s; margin-left: 8px; }
         .action-btn:hover { opacity: 1; transform: scale(1.2); }
 
-        /* نافذة الصندوق المركزي (Treasury Modal) */
+        /* --- نافذة الصندوق المركزي (Treasury Modal) --- */
         #treasury-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .treasury-box { background: white; padding: 40px; border-radius: 20px; width: 450px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 4px solid var(--gold); position: relative; }
+        .treasury-box { 
+            background: white; padding: 40px; border-radius: 20px; width: 450px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 4px solid var(--gold); position: relative; 
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* نافذة التقرير (Print) */
+        /* --- نافذة التقرير (Print Report) --- */
         #report-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 2100; justify-content: center; align-items: center; }
-        .report-paper { background: white; color: black; width: 210mm; height: 90vh; padding: 50px; overflow-y: auto; position: relative; border-radius: 15px; }
+        .report-paper { background: white; color: black; width: 210mm; height: 90vh; padding: 50px; overflow-y: auto; position: relative; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         
         @media print { 
             body * { visibility: hidden; } 
             #report-modal, #report-modal * { visibility: visible; } 
             #report-modal { position: absolute; left: 0; top: 0; background: white; width: 100%; height: 100%; } 
-            .report-paper { width: 100%; height: auto; box-shadow: none; padding: 0; } 
+            .report-paper { width: 100%; height: auto; box-shadow: none; padding: 0; border-radius: 0; } 
             .no-print { display: none !important; } 
         }
         
-        /* شريط التحميل */
+        /* --- شريط التحميل --- */
         #loading-bar { height: 4px; background: var(--gold); width: 0%; position: fixed; top: 80px; left: 0; z-index: 1001; transition: width 0.3s; }
     </style>
 </head>
@@ -138,8 +157,10 @@
     <nav class="navbar">
         <div class="brand">N <span class="gold-text">One</span> Fleet Command 👮‍♂️</div>
         <div>
-            <button class="btn-treasury" onclick="toggleTreasury()">🏦 الصندوق المركزي (إيداع)</button>
-            <button class="btn-close" onclick="window.close()">إغلاق ❌</button>
+            <button class="btn-treasury" onclick="toggleTreasury()">
+                <span>💰</span> الصندوق المركزي (Treasury)
+            </button>
+            <button class="btn-close" onclick="window.close()" style="margin-left: 10px;">إغلاق البوابة ❌</button>
         </div>
     </nav>
 
@@ -148,6 +169,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="card-title">📝 تسجيل كابتن جديد (تعيين)</div>
+                <span style="font-size:12px; color:var(--text-light);">* يشمل فحص التكرار</span>
             </div>
             <div class="card-body">
                 <div class="form-group">
@@ -155,7 +177,7 @@
                     <input type="text" id="new_cap_name" placeholder="اسم الكابتن الرسمي">
                 </div>
                 <div class="form-group">
-                    <label>رقم الهاتف</label>
+                    <label>رقم الهاتف (الواتساب)</label>
                     <input type="tel" id="new_cap_phone" placeholder="07xxxxxxxx">
                 </div>
                 <div class="form-group">
@@ -172,7 +194,7 @@
                         <input type="number" id="new_cap_model" placeholder="2022">
                     </div>
                 </div>
-                <button class="btn-main btn-blue" onclick="registerCaptain()">+ اعتماد وتعيين (فحص ذكي)</button>
+                <button class="btn-main btn-blue" onclick="registerCaptain()">+ اعتماد وتعيين (System Check)</button>
             </div>
         </div>
 
@@ -185,7 +207,7 @@
             </div>
             <div class="card-body">
                 <div style="display:flex; gap:15px; margin-bottom:20px;">
-                    <input type="text" id="wallet_search" placeholder="🔍 بحث (هاتف/كود)">
+                    <input type="text" id="wallet_search" placeholder="🔍 ابحث بـ رقم الهاتف أو الكود">
                     <button class="btn-main btn-blue" style="width:auto; padding:0 30px;" onclick="searchWallet()">بحث</button>
                 </div>
 
@@ -194,12 +216,14 @@
                         <span id="w_name" style="font-weight:900; color:var(--primary); font-size:18px;">---</span>
                         <span id="w_balance" style="font-size:28px; font-weight:900; color:#b45309;">0.00 د.أ</span>
                     </div>
-                    <div style="font-size:13px; color:#92400e; margin-top:5px;">Code: <span id="w_code">--</span> | Tel: <span id="w_phone">--</span></div>
+                    <div style="font-size:13px; color:#92400e; margin-top:5px;">
+                        Code: <span id="w_code" style="font-weight:bold;">--</span> | Tel: <span id="w_phone" style="font-weight:bold;">--</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>المبلغ (د.أ)</label>
-                    <input type="number" id="wallet_amount" placeholder="القيمة">
+                    <input type="number" id="wallet_amount" placeholder="القيمة المراد إضافتها أو خصمها">
                 </div>
                 <div style="display:flex; gap:15px;">
                     <button class="btn-main btn-green" onclick="updateBalance('add')">➕ شحن فوري</button>
@@ -211,7 +235,7 @@
         <div class="card card-full">
             <div class="card-header">
                 <div class="card-title">🌍 طلبات الانضمام الخارجية</div>
-                <button class="action-btn" onclick="refreshData()" title="تحديث">🔄</button>
+                <button class="action-btn" onclick="refreshData()" title="تحديث البيانات" style="background:#f1f5f9; padding:8px; border-radius:50%;">🔄</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -225,7 +249,7 @@
                         </tr>
                     </thead>
                     <tbody id="requests-body">
-                        <tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">جاري البحث عن طلبات...</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">جاري البحث عن طلبات جديدة...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -235,7 +259,10 @@
             <div class="card-header">
                 <div class="card-title">👮‍♂️ الأسطول النشط</div>
                 <div style="display:flex; gap:15px; align-items:center;">
-                    <span style="color:var(--text-light); font-size:12px; font-weight:bold;">السيولة: <b style="color:var(--success); font-size:16px;" id="total-fleet-bal">0.00</b> د.أ</span>
+                    <div style="background:#ecfdf5; padding:8px 15px; border-radius:10px; border:1px solid #a7f3d0;">
+                        <span style="color:var(--text-light); font-size:12px; font-weight:bold;">إجمالي السيولة: </span>
+                        <b style="color:var(--success); font-size:16px;" id="total-fleet-bal">0.00</b> <small>د.أ</small>
+                    </div>
                     <input type="text" id="search-active" placeholder="بحث سريع..." oninput="renderFleet()" style="width:250px;">
                 </div>
             </div>
@@ -252,7 +279,7 @@
                         </tr>
                     </thead>
                     <tbody id="fleet-body">
-                        <tr><td colspan="6" style="text-align:center; padding:50px; color:#94a3b8;">جاري استدعاء البيانات...</td></tr>
+                        <tr><td colspan="6" style="text-align:center; padding:50px; color:#94a3b8;">جاري استدعاء البيانات من غرفة العمليات...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -263,9 +290,9 @@
     <div id="treasury-modal">
         <div class="treasury-box">
             <h2 style="color:var(--primary); text-align:center; margin-top:0; border-bottom:2px solid var(--gold); padding-bottom:15px;">🏦 الصندوق المركزي</h2>
-            <p style="text-align:center; color:#64748b; margin-bottom:20px;">
+            <p style="text-align:center; color:#64748b; margin-bottom:20px; line-height:1.6;">
                 هنا يتم "ضخ الأموال" في النظام.<br>
-                اشحني للمنشأة التجارية لتتمكن هي من شحن الكباتن، أو اشحني للكابتن مباشرة.
+                يمكنك شحن رصيد <strong>للمنشأة التجارية</strong> (لتتمكن هي من شحن الكباتن)، أو شحن رصيد <strong>للكابتن</strong> مباشرة.
             </p>
             
             <label>المستفيد (كود المنشأة أو الكابتن)</label>
@@ -275,29 +302,32 @@
             <input type="number" id="treasury-amount" placeholder="0.00" style="background:#f1f5f9; margin-bottom:25px;">
             
             <button class="btn-main btn-gold" onclick="treasuryDeposit()">تأكيد الإيداع 💰</button>
-            <button class="btn-main" onclick="toggleTreasury()" style="background:transparent; color:var(--danger); margin-top:10px;">إلغاء</button>
+            <button class="btn-main" onclick="toggleTreasury()" style="background:transparent; color:var(--danger); margin-top:10px;">إلغاء العملية</button>
         </div>
     </div>
 
     <div id="report-modal">
         <div class="report-paper">
             <div style="text-align:center; border-bottom:4px solid var(--primary); padding-bottom:30px; margin-bottom:40px;">
-                <h1 style="margin:0; font-size:36px; color:var(--primary);">N <span style="color:#d4af37">One</span> Global</h1>
-                <h3 style="margin:10px 0; color:#64748b;">تقرير شامل للكابتن</h3>
+                <h1 style="margin:0; font-size:36px; color:var(--primary); font-weight:900;">N <span style="color:#d4af37">One</span> Global</h1>
+                <h3 style="margin:10px 0; color:#64748b;">تقرير شامل للكابتن (Captain Full Dossier)</h3>
                 <p>تاريخ التقرير: <span id="rep-date" style="font-weight:bold;"></span></p>
             </div>
             
-            <div style="display:flex; justify-content:space-between; margin-bottom:40px; background:#f8fafc; padding:30px; border-radius:15px;">
-                <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:40px; background:#f8fafc; padding:30px; border-radius:15px; border:1px solid #e2e8f0;">
+                <div style="line-height:1.8;">
                     <strong>الاسم:</strong> <span id="rep-name">---</span><br>
                     <strong>الترميز:</strong> <span id="rep-code">---</span><br>
                     <strong>الهاتف:</strong> <span id="rep-phone">---</span>
                 </div>
-                <div>
+                <div style="text-align:left;">
                     <strong>الرصيد الحالي:</strong> <span id="rep-balance" style="font-size:24px; font-weight:900; color:var(--success);">0.00</span> د.أ
+                    <br>
+                    <strong>التقييم:</strong> ⭐⭐⭐⭐⭐
                 </div>
             </div>
 
+            <h4 style="border-bottom:2px solid #e2e8f0; padding-bottom:15px; color:var(--primary);">سجل الحركات والطلبات:</h4>
             <table style="width:100%; border:1px solid #e2e8f0; color:black;">
                 <thead style="background:#f1f5f9;">
                     <tr>
@@ -309,14 +339,24 @@
                 <tbody id="rep-body"></tbody>
             </table>
 
-            <button class="no-print btn-main btn-blue" onclick="window.print()" style="position:absolute; top:30px; right:30px; width:auto;">🖨️ طباعة</button>
-            <button class="no-print btn-main btn-danger" onclick="closeReport()" style="position:absolute; top:30px; right:150px; width:auto;">إغلاق</button>
+            <div style="margin-top:60px; display:flex; justify-content:space-between; align-items:end;">
+                <div>
+                    <hr style="width:200px; margin-bottom:10px; border-color:#000;">
+                    <small>توقيع الإدارة المالية</small>
+                </div>
+                <div style="text-align:center; border:4px solid #d4af37; padding:10px 30px; color:#d4af37; font-weight:900; transform:rotate(-5deg); opacity:0.8; border-radius:10px;">
+                    N One Approved<br>✅ OFFICIAL
+                </div>
+            </div>
+
+            <button class="no-print btn-main btn-blue" onclick="window.print()" style="position:absolute; top:30px; right:30px; width:auto;">🖨️ طباعة التقرير</button>
+            <button class="no-print btn-main btn-danger" onclick="closeReport()" style="position:absolute; top:30px; right:180px; width:auto;">إغلاق</button>
         </div>
     </div>
 
     <script>
         // ========================================================
-        // Captains Manager Brain (v13.0) - Standalone
+        // Captains Manager & Treasury Brain (v13.0 - Legacy)
         // ========================================================
         
         if (typeof N_ONE_CORE !== 'undefined') {
@@ -331,7 +371,7 @@
 
         window.onload = async function() {
             await refreshData();
-            // تحديث صامت كل 30 ثانية
+            // تحديث تلقائي كل 30 ثانية لضمان تزامن البيانات
             setInterval(refreshDataSilent, 30000);
         };
 
@@ -352,7 +392,7 @@
         }
 
         function processData() {
-            // فصل البيانات
+            // فصل البيانات وتصنيفها
             captains = allData.filter(i => i.type === 'captain' && i.status !== 'pending').reverse();
             requests = allData.filter(i => i.type === 'captain' && i.status === 'pending');
             orders = allData.filter(i => i.type === 'order'); 
@@ -385,10 +425,17 @@
             await N_ONE_CORE.postData('add', [newCap]);
             alert("تم التعيين بنجاح ✅");
             await refreshData();
+            
+            // تنظيف الحقول
+            document.getElementById('new_cap_name').value = '';
+            document.getElementById('new_cap_code').value = '';
+            document.getElementById('new_cap_phone').value = '';
+            document.getElementById('new_cap_car').value = '';
+            document.getElementById('new_cap_model').value = '';
             showLoading(false);
         }
 
-        // --- 2. المحفظة الفورية ---
+        // --- 2. المحفظة الفورية للكباتن ---
         function searchWallet() {
             const q = document.getElementById('wallet_search').value.toLowerCase();
             const cap = captains.find(c => c.user.toLowerCase() === q || c.cap_phone.includes(q));
@@ -450,7 +497,7 @@
         }
 
         async function approveReq(user) {
-            if(confirm("قبول الكابتن؟")) {
+            if(confirm("قبول الكابتن في الأسطول؟")) {
                 showLoading(true);
                 await N_ONE_CORE.postData('update', { user: user, data: { status: 'active', balance: '0' } }); 
                 await refreshData();
@@ -481,9 +528,9 @@
                         <td>${cap.emergency_used === 'true' ? '⚠️' : '✅'}</td>
                         <td>${statusBadge}</td>
                         <td>
-                            <button class="action-btn" onclick="openReport('${cap.user}')">🖨️</button>
-                            <button class="action-btn" onclick="freezeCap('${cap.user}')">${freezeIcon}</button>
-                            <button class="action-btn" onclick="deleteCaptain('${cap.user}')" style="color:var(--danger);">🗑️</button>
+                            <button class="action-btn" onclick="openReport('${cap.user}')" title="طباعة تقرير">🖨️</button>
+                            <button class="action-btn" onclick="freezeCap('${cap.user}')" title="تجميد/تفعيل">${freezeIcon}</button>
+                            <button class="action-btn" onclick="deleteCaptain('${cap.user}')" style="color:var(--danger);" title="حذف نهائي">🗑️</button>
                         </td>
                     </tr>
                 `;
@@ -508,7 +555,7 @@
         }
 
         async function deleteCaptain(user) {
-            if(confirm("⚠️ حذف نهائي؟")) {
+            if(confirm("⚠️ تحذير: هل أنت متأكد من حذف الكابتن نهائياً؟")) {
                 showLoading(true);
                 captains = captains.filter(c => c.user !== user);
                 renderFleet();
@@ -517,7 +564,7 @@
             }
         }
 
-        // --- 5. الصندوق المركزي (The Treasury) ---
+        // --- 5. الصندوق المركزي (Treasury) - الميزة الكبرى ---
         function toggleTreasury() {
             const el = document.getElementById('treasury-modal');
             el.style.display = el.style.display === 'none' ? 'flex' : 'none';
@@ -531,12 +578,11 @@
 
             showLoading(true);
             
-            // البحث في كل البيانات (كباتن + محلات)
-            // ملاحظة: allData تحتوي على كل شيء من السيرفر
+            // البحث الشامل في allData (يشمل كباتن ومحلات)
             const target = allData.find(u => u.user === targetId || u.cap_phone === targetId);
 
             if(!target) {
-                alert("❌ المستفيد غير موجود! تأكد من الكود.");
+                alert("❌ المستفيد غير موجود! تأكد من الكود أو رقم الهاتف.");
                 showLoading(false);
                 return;
             }
@@ -558,7 +604,7 @@
             document.getElementById('treasury-amount').value = '';
             toggleTreasury();
             
-            // إذا كان المستفيد كابتن، نحدث الجدول
+            // إذا كان كابتن نحدث الجدول، إذا محل ما بيلزم نحدث الجدول
             if (target.type === 'captain') {
                 await refreshData();
             } else {
@@ -581,17 +627,17 @@
             const myOrders = orders.filter(o => o.cap_name === cap.name || o.cap_phone === cap.cap_phone);
             
             if(myOrders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد حركات</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">لا توجد حركات مسجلة</td></tr>';
             } else {
                 myOrders.forEach(o => {
-                    tbody.innerHTML += `<tr><td style="border:1px solid #e2e8f0; padding:10px;">${o.date.split('T')[0]}</td><td style="border:1px solid #e2e8f0; padding:10px;">توصيل</td><td style="border:1px solid #e2e8f0; padding:10px;">${o.fee} د.أ</td></tr>`;
+                    tbody.innerHTML += `<tr><td style="border:1px solid #e2e8f0; padding:10px;">${o.date.split('T')[0]}</td><td style="border:1px solid #e2e8f0; padding:10px;">توصيل طلب</td><td style="border:1px solid #e2e8f0; padding:10px;">${o.fee} د.أ</td></tr>`;
                 });
             }
             document.getElementById('report-modal').style.display = 'flex';
         }
         function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
         
-        function toggleTransfer() { alert(document.getElementById('transfer-toggle').checked ? "تم تفعيل التحويل" : "تم الإيقاف"); }
+        function toggleTransfer() { alert(document.getElementById('transfer-toggle').checked ? "تم تفعيل التحويل" : "تم إيقاف التحويل"); }
         function showLoading(show) { document.getElementById('loading-bar').style.width = show ? '100%' : '0%'; }
 
     </script>
