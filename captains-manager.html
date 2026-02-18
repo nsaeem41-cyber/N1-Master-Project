@@ -10,7 +10,7 @@
 
     <style>
         /* ============================================================
-           تصميم N ONE ROYAL (Classic & Functional)
+           تصميم N ONE ROYAL (Lightspeed Edition) - سريع وخفيف
            ============================================================ */
         :root {
             --primary: #0f172a; --primary-dark: #020617; --bg: #f1f5f9;
@@ -77,15 +77,6 @@
         #wallet-result { display: none; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fcd34d; margin-bottom: 15px; text-align: center; }
         
         #loading-line { height: 3px; background: var(--gold); width: 0%; position: fixed; top: 60px; left: 0; z-index: 2001; transition: width 0.3s; }
-
-        /* شاشة الطباعة */
-        @media print {
-            .navbar, .controls, .workspace > div:first-child, .btn-main, .action-btn { display: none !important; }
-            .workspace { display: block; padding: 0; }
-            .card { border: none; box-shadow: none; }
-            table { border: 1px solid #000; width: 100%; }
-            th, td { border: 1px solid #000; color: black; }
-        }
     </style>
 </head>
 <body>
@@ -196,8 +187,7 @@
                 <div class="card-header">
                     <div class="card-title">👮‍♂️ الأسطول النشط</div>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="fleet-search" placeholder="بحث سريع..." oninput="renderFleet()" style="width:150px;">
-                        <button class="btn-main btn-gold" style="width:auto; padding:5px 15px;" onclick="window.print()">🖨️ طباعة</button>
+                        <input type="text" id="fleet-search" placeholder="بحث سريع..." oninput="renderFleet()" style="width:200px;">
                     </div>
                 </div>
                 <div class="table-container">
@@ -225,7 +215,7 @@
 
     <script>
         // ========================================================
-        // العقل المدبر لغرفة العمليات (Fixed Wallet Edition) 🧠
+        // العقل المدبر لغرفة العمليات (Lightspeed Edition) 🧠
         // ========================================================
         
         if (typeof N_ONE_CORE !== 'undefined') {
@@ -236,7 +226,6 @@
         let captains = [];
         let shops = [];
         let requests = [];
-        // متغير عالمي لتخزين المستخدم الذي تم البحث عنه في المحفظة
         let currentWalletTarget = null; 
 
         window.onload = async function() {
@@ -274,25 +263,24 @@
         // --- 1. تسجيل كابتن (الهوية الجديدة: الهاتف هو المفتاح) ---
         async function registerCaptain() {
             const name = document.getElementById('reg_name').value;
-            const phone = document.getElementById('reg_phone').value.trim(); // المفتاح الرئيسي
-            const coding = document.getElementById('reg_coding').value; // الترميز
+            const phone = document.getElementById('reg_phone').value.trim();
+            const coding = document.getElementById('reg_coding').value;
             const type = document.getElementById('reg_type').value;
             const model = document.getElementById('reg_model').value;
 
             if(!name || !phone || !coding) return alert("يرجى تعبئة الاسم، الهاتف، والترميز ☺️");
 
-            // منع التكرار بناءً على الهاتف
             const exists = captains.some(c => c.cap_phone === phone) || shops.some(s => s.cap_phone === phone);
             if(exists) return alert("⛔ رقم الهاتف مسجل مسبقاً!");
 
             showLoader(true);
             const newCap = {
                 id: "CAP_" + Date.now(),
-                user: coding,         // الترميز هو اليوزر الظاهري
+                user: coding,
                 name: name,
                 pass: "123456",
                 role: "captain", type: "captain",
-                cap_phone: phone,     // المفتاح الحقيقي للبحث
+                cap_phone: phone,
                 status: "active",
                 pickup: `${type} - ${model}`,
                 balance: "0",
@@ -311,33 +299,27 @@
             showLoader(false);
         }
 
-        // --- 2. المحفظة السريعة (تصليح البحث) ---
+        // --- 2. المحفظة السريعة (بحث ذكي + ربط المنشآت) ---
         function searchWallet() {
-            // تنظيف الرقم من المسافات
             const q = document.getElementById('wallet_q').value.replace(/\s/g, '').trim();
             if(!q) return;
 
-            // إعادة تعيين الهدف
             currentWalletTarget = null;
             document.getElementById('wallet-result').style.display = 'none';
 
-            // 1. البحث في الكباتن
+            // بحث في الكباتن والمنشآت
             let target = captains.find(c => c.cap_phone && c.cap_phone.replace(/\s/g, '') === q);
             let typeLabel = "كابتن 👮‍♂️";
             let detailLabel = "";
 
-            // 2. إذا لم نجد، نبحث في المنشآت
             if(!target) {
                 target = shops.find(s => s.cap_phone && s.cap_phone.replace(/\s/g, '') === q);
                 typeLabel = "منشأة تجارية 🏪";
             }
 
-            // عرض النتائج
             const resDiv = document.getElementById('wallet-result');
             if(target) {
-                // حفظ الهدف في المتغير العالمي لاستخدامه عند الضغط على زر التحويل
                 currentWalletTarget = target;
-                
                 resDiv.style.display = 'block';
                 document.getElementById('wr_type').innerText = typeLabel;
                 document.getElementById('wr_name').innerText = target.name;
@@ -356,9 +338,8 @@
         }
 
         async function updateBalance(action) {
-            // التحقق من أننا قمنا بالبحث ووجدنا شخصاً
             if(!currentWalletTarget) {
-                alert("الرجاء البحث عن الرقم أولاً والتأكد من ظهور البيانات!");
+                alert("الرجاء البحث عن الرقم أولاً!");
                 return;
             }
 
@@ -370,25 +351,19 @@
 
             if(confirm(`تأكيد العملية المالية؟\nالاسم: ${currentWalletTarget.name}\nالمبلغ: ${amt}\nالرصيد الجديد: ${newBal}`)) {
                 showLoader(true);
-                
-                // تحديث محلي للمظهر
                 currentWalletTarget.balance = newBal; 
                 document.getElementById('wr_bal').innerText = newBal.toFixed(2);
                 
-                // إرسال للسيرفر باستخدام user ID الخاص بالهدف
                 await N_ONE_CORE.postData('update', { user: currentWalletTarget.user, data: { balance: newBal } });
                 
-                // تحديث الجداول إذا كان كابتن
                 if(currentWalletTarget.type === 'captain') renderFleet();
                 
                 alert("تم التحويل بنجاح 💰");
                 
-                // تنظيف الخانات
                 document.getElementById('wallet_amt').value = '';
                 document.getElementById('wallet-result').style.display = 'none';
                 document.getElementById('wallet_q').value = '';
                 currentWalletTarget = null;
-                
                 showLoader(false);
             }
         }
