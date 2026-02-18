@@ -10,96 +10,47 @@
 
     <style>
         /* ============================================================
-           تصميم N ONE ROYAL (The Original Dark Theme) - النسخة الماسية
+           تصميم N ONE ROYAL (Classic & Functional)
            ============================================================ */
         :root {
-            --primary: #0f172a;      /* كحلي العمليات */
-            --primary-dark: #020617; /* خلفية داكنة */
-            --bg: #f1f5f9;           /* رمادي عملي */
-            --card-bg: #ffffff;      /* أبيض */
-            --gold: #d4af37;         /* ذهبي ملكي */
-            --text-main: #1e293b;    /* نص داكن */
-            --text-muted: #64748b;   /* نص فرعي */
-            --success: #10b981;      /* أخضر */
-            --danger: #ef4444;       /* أحمر */
-            --border: #cbd5e1;       
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --primary: #0f172a; --primary-dark: #020617; --bg: #f1f5f9;
+            --card-bg: #ffffff; --gold: #d4af37; --text-main: #1e293b;
+            --success: #10b981; --danger: #ef4444; --border: #cbd5e1;       
         }
 
         * { box-sizing: border-box; outline: none; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text-main); font-size: 13px; min-height: 100vh; display: flex; flex-direction: column; }
 
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--bg); margin: 0; padding: 0; 
-            color: var(--text-main); font-size: 13px;
-            min-height: 100vh; display: flex; flex-direction: column;
-        }
-
-        /* --- الهيدر الفخم --- */
-        .navbar { 
-            background: var(--primary-dark); height: 60px; flex-shrink: 0;
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 25px; border-bottom: 2px solid var(--gold); 
-            box-shadow: 0 2px 15px rgba(0,0,0,0.3); z-index: 1000;
-        }
-        .brand { font-size: 20px; font-weight: 900; color: white; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px; }
+        /* الهيدر */
+        .navbar { background: var(--primary-dark); height: 60px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; border-bottom: 2px solid var(--gold); box-shadow: 0 2px 15px rgba(0,0,0,0.3); z-index: 1000; }
+        .brand { font-size: 20px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; }
         .gold-text { color: var(--gold); }
         
-        /* العدادات الحية */
-        .live-stat { 
-            background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 6px; 
-            color: #cbd5e1; font-size: 12px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; gap: 8px; align-items: center; font-weight: bold;
-        }
+        .live-stat { background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 6px; color: #cbd5e1; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; align-items: center; font-weight: bold; }
         .live-stat b { color: var(--gold); font-size: 14px; }
 
-        .btn-header {
-            background: #334155; color: white; border: 1px solid #475569;
-            padding: 6px 15px; border-radius: 6px; font-size: 11px; cursor: pointer;
-            transition: 0.2s; display: flex; align-items: center; gap: 5px; font-weight: bold;
-        }
+        .btn-header { background: #334155; color: white; border: 1px solid #475569; padding: 6px 15px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: 0.2s; font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .btn-header:hover { background: var(--gold); color: var(--primary-dark); border-color: var(--gold); }
-        
-        /* زر المسح النووي */
-        .btn-wipe { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
-        .btn-wipe:hover { background: var(--danger); color: white; }
+        .btn-wipe { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; } .btn-wipe:hover { background: var(--danger); color: white; }
 
-        /* --- الشبكة --- */
-        .workspace { 
-            flex-grow: 1; padding: 20px; 
-            display: grid; grid-template-columns: 380px 1fr; gap: 20px; 
-            align-items: start;
-        }
+        /* الشبكة */
+        .workspace { flex-grow: 1; padding: 20px; display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
 
         /* الكروت */
-        .card { 
-            background: var(--card-bg); border-radius: 10px; 
-            box-shadow: var(--shadow); border: 1px solid var(--border); 
-            display: flex; flex-direction: column; overflow: hidden; margin-bottom: 20px;
-        }
-        .card-header { 
-            padding: 12px 15px; background: #f8fafc; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .card-title { font-size: 14px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .card { background: var(--card-bg); border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; margin-bottom: 20px; }
+        .card-header { padding: 12px 15px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-size: 14px; font-weight: 800; color: var(--primary); }
         .card-body { padding: 15px; }
 
         /* الحقول */
         .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .form-group { flex: 1; margin-bottom: 10px; }
-        label { display: block; margin-bottom: 5px; font-weight: 700; font-size: 11px; color: var(--text-muted); }
-        input, select { 
-            width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; 
-            font-size: 12px; background: white; color: var(--primary); font-weight: 600;
-        }
-        input:focus { border-color: var(--gold); background: #fffbeb; box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1); }
+        label { display: block; margin-bottom: 5px; font-weight: 700; font-size: 11px; color: #64748b; }
+        input, select { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-weight: 600; }
+        input:focus { border-color: var(--gold); background: #fffbeb; }
 
         /* الأزرار */
-        .btn-main { 
-            width: 100%; padding: 10px; border: none; border-radius: 6px; 
-            font-weight: 700; cursor: pointer; color: white; font-size: 12px; 
-            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;
-        }
+        .btn-main { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; color: white; font-size: 12px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-blue { background: var(--primary); } .btn-blue:hover { background: #1e293b; }
         .btn-green { background: var(--success); } .btn-green:hover { background: #059669; }
         .btn-red { background: var(--danger); } .btn-red:hover { background: #b91c1c; }
@@ -108,44 +59,23 @@
         /* الجداول */
         .table-container { overflow-x: auto; background: white; border-radius: 8px; min-height: 300px; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 900px; }
-        th { 
-            padding: 10px; text-align: right; color: var(--text-muted); 
-            border-bottom: 2px solid var(--border); background: #f1f5f9; 
-            font-weight: 800; font-size: 11px;
-        }
+        th { padding: 10px; text-align: right; color: #64748b; border-bottom: 2px solid var(--border); background: #f1f5f9; font-weight: 800; font-size: 11px; }
         td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
         tr:hover { background: #f8fafc; }
 
-        /* حالة الكابتن */
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
         .dot-active { background: var(--success); box-shadow: 0 0 6px var(--success); }
         .dot-paused { background: var(--danger); }
-        .dot-pending { background: #f59e0b; }
 
         /* أزرار الجدول */
-        .action-btn { 
-            padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; 
-            font-size: 11px; font-weight: bold; color: white; margin-left: 2px;
-        }
-        .btn-freeze { background: #64748b; } .btn-freeze:hover { background: #475569; }
-        .btn-print { background: var(--primary); }
+        .action-btn { padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 11px; font-weight: bold; color: white; margin-left: 2px; }
+        .btn-freeze { background: #64748b; } 
         .btn-del { background: var(--danger); }
+        .btn-edit { background: #f59e0b; }
 
         /* نتيجة المحفظة */
-        #wallet-result { 
-            display: none; background: #fffbeb; padding: 15px; border-radius: 8px; 
-            border: 1px solid #fcd34d; margin-bottom: 15px; text-align: center;
-        }
-        #wallet-result h3 { margin: 5px 0; color: var(--primary); }
-
-        /* مفتاح التحويل */
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(16px); }
-
+        #wallet-result { display: none; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fcd34d; margin-bottom: 15px; text-align: center; }
+        
         #loading-line { height: 3px; background: var(--gold); width: 0%; position: fixed; top: 60px; left: 0; z-index: 2001; transition: width 0.3s; }
 
         /* شاشة الطباعة */
@@ -163,35 +93,14 @@
     <div id="loading-line"></div>
 
     <nav class="navbar">
-        <div class="brand">
-            <span>🛡️ N One</span> <span class="gold-text">Pro</span>
-        </div>
-        
+        <div class="brand"><span>🛡️ N One</span> <span class="gold-text">Pro</span></div>
         <div style="display:flex; gap:15px; align-items:center;">
-            <div class="live-stat">👮‍♂️ كباتن نشطة: <b id="stat-caps-count">0</b></div>
-            <div class="live-stat">🏪 منشآت مربوطة: <b id="stat-shops-count">0</b></div>
-            
+            <div class="live-stat">👮‍♂️ كباتن: <b id="stat-caps-count">0</b></div>
+            <div class="live-stat">🏪 منشآت: <b id="stat-shops-count">0</b></div>
             <div style="width:1px; height:20px; background:rgba(255,255,255,0.2);"></div>
-
-            <div style="display:flex; align-items:center; gap:8px; color:#cbd5e1; font-size:11px;">
-                <span>التحويل البيني</span>
-                <label class="switch">
-                    <input type="checkbox" id="global-transfer-toggle" onchange="toggleGlobalTransfer()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div style="width:1px; height:20px; background:rgba(255,255,255,0.2);"></div>
-
-            <button class="btn-header" onclick="refreshData()">
-                <span>🔄</span> تحديث
-            </button>
-            <button class="btn-header btn-wipe" onclick="secureWipe()">
-                <span>☢️</span> مسح السجلات
-            </button>
-            <button class="btn-header btn-close" onclick="window.close()">
-                <span>✕</span> إغلاق
-            </button>
+            <button class="btn-header" onclick="refreshData()"><span>🔄</span> تحديث</button>
+            <button class="btn-header btn-wipe" onclick="secureWipe()"><span>☢️</span> مسح السجلات</button>
+            <button class="btn-header" onclick="window.close()"><span>✕</span> إغلاق</button>
         </div>
     </nav>
 
@@ -206,15 +115,13 @@
                         <label>الاسم الكامل</label>
                         <input type="text" id="reg_name" placeholder="الاسم الرباعي">
                     </div>
-                    
                     <div class="form-group">
                         <label style="color:var(--gold);">رقم الهاتف (المفتاح الرئيسي)</label>
                         <input type="tel" id="reg_phone" placeholder="07xxxxxxxx" maxlength="10">
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
-                            <label>ترميز السيارة</label>
+                            <label>ترميز السيارة (الكود)</label>
                             <input type="text" id="reg_coding" placeholder="K-50" style="border-color:var(--gold);">
                         </div>
                         <div class="form-group">
@@ -222,21 +129,19 @@
                             <input type="text" id="reg_type" placeholder="Kia Sephia">
                         </div>
                     </div>
-                    
                     <div class="form-group">
                         <label>الموديل</label>
                         <input type="number" id="reg_model" placeholder="2024">
                     </div>
-
-                    <button class="btn-main btn-blue" onclick="registerCaptain()">+ إصدار تصريح واعتماد</button>
+                    <button class="btn-main btn-blue" onclick="registerCaptain()">+ اعتماد الكابتن</button>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-header"><div class="card-title">💸 الصندوق المركزي (Smart Wallet)</div></div>
+                <div class="card-header"><div class="card-title">💸 المحفظة السريعة (بحث ذكي)</div></div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label>بحث (رقم الهاتف فقط)</label>
+                        <label>بحث (رقم الهاتف)</label>
                         <div style="display:flex; gap:5px;">
                             <input type="tel" id="wallet_q" placeholder="أدخل رقم الهاتف...">
                             <button class="btn-main btn-gold" style="width:auto;" onclick="searchWallet()">🔎</button>
@@ -244,8 +149,8 @@
                     </div>
                     
                     <div id="wallet-result">
-                        <small id="wr_type" style="color:#666; font-weight:bold;">--</small>
-                        <h3 id="wr_name">---</h3>
+                        <input type="hidden" id="target_user_id"> <small id="wr_type" style="color:#666; font-weight:bold;">--</small>
+                        <h3 id="wr_name" style="margin:5px 0;">---</h3>
                         <div style="font-size:20px; color:var(--success); font-weight:900; margin:10px 0;">
                             <span id="wr_bal">0.00</span> د.أ
                         </div>
@@ -269,7 +174,6 @@
                     <canvas id="fleetChart"></canvas>
                 </div>
             </div>
-
         </div>
 
         <div style="display:flex; flex-direction:column; gap:15px; overflow:hidden;">
@@ -280,9 +184,7 @@
                 </div>
                 <div class="table-container">
                     <table>
-                        <thead>
-                            <tr><th>الاسم</th><th>الهاتف</th><th>السيارة</th><th>القرار</th></tr>
-                        </thead>
+                        <thead><tr><th>الاسم</th><th>الهاتف</th><th>السيارة</th><th>القرار</th></tr></thead>
                         <tbody id="req-body">
                             <tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">لا توجد طلبات معلقة</td></tr>
                         </tbody>
@@ -292,10 +194,10 @@
 
             <div class="card" style="flex-grow:1;">
                 <div class="card-header">
-                    <div class="card-title">👮‍♂️ الأسطول النشط (Active Fleet)</div>
+                    <div class="card-title">👮‍♂️ الأسطول النشط</div>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="fleet-search" placeholder="بحث سريع..." oninput="renderFleet()" style="width:150px;">
-                        <button class="btn-main btn-gold" style="width:auto; padding:5px 15px;" onclick="window.print()">🖨️ طباعة السجل</button>
+                        <button class="btn-main btn-gold" style="width:auto; padding:5px 15px;" onclick="window.print()">🖨️ طباعة</button>
                     </div>
                 </div>
                 <div class="table-container">
@@ -318,13 +220,12 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
         // ========================================================
-        // العقل المدبر لغرفة العمليات (Diamond Engine v100.0) 🧠
+        // العقل المدبر لغرفة العمليات (Fixed Wallet Edition) 🧠
         // ========================================================
         
         if (typeof N_ONE_CORE !== 'undefined') {
@@ -333,18 +234,13 @@
 
         let allData = [];
         let captains = [];
-        let shops = [];     // المنشآت المربوطة
+        let shops = [];
         let requests = [];
-        let orders = [];
-        let currentWalletUser = null;
+        // متغير عالمي لتخزين المستخدم الذي تم البحث عنه في المحفظة
+        let currentWalletTarget = null; 
 
-        // --- عند الإقلاع ---
         window.onload = async function() {
-            // استرجاع حالة التحويل
-            const transferState = localStorage.getItem('nOne_global_transfer') !== 'false';
-            document.getElementById('global-transfer-toggle').checked = transferState;
-
-            initChart(); // تجهيز الرسم البياني
+            initChart(); 
             await refreshData();
             setInterval(refreshDataSilent, 30000); 
         };
@@ -359,24 +255,14 @@
         }
 
         async function refreshDataSilent() {
-            try {
-                allData = await N_ONE_CORE.fetchData('read');
-                processData();
-            } catch (e) {}
+            try { allData = await N_ONE_CORE.fetchData('read'); processData(); } catch (e) {}
         }
 
         function processData() {
-            // فرز البيانات
-            // الكباتن: نستبعد المعلقين
             captains = allData.filter(i => i.type === 'captain' && i.status !== 'pending').reverse();
-            // الطلبات الخارجية
             requests = allData.filter(i => i.type === 'captain' && i.status === 'pending');
-            // المنشآت: سحب الخيوط (كل من لديه دور Shop)
             shops = allData.filter(i => i.type === 'shop' || i.role === 'shop');
-            // الأوردرات
-            orders = allData.filter(i => i.type === 'order');
-
-            // 5. العدادات الحية (التناغم)
+            
             document.getElementById('stat-caps-count').innerText = captains.length;
             document.getElementById('stat-shops-count').innerText = shops.length;
             
@@ -385,41 +271,38 @@
             renderFleet();
         }
 
-        // --- 1. تسجيل كابتن (الهوية الجديدة + الاعتماد على الهاتف) ---
+        // --- 1. تسجيل كابتن (الهوية الجديدة: الهاتف هو المفتاح) ---
         async function registerCaptain() {
             const name = document.getElementById('reg_name').value;
-            const phone = document.getElementById('reg_phone').value; // المفتاح الرئيسي
-            const coding = document.getElementById('reg_coding').value; // الترميز (بديل الكود)
+            const phone = document.getElementById('reg_phone').value.trim(); // المفتاح الرئيسي
+            const coding = document.getElementById('reg_coding').value; // الترميز
             const type = document.getElementById('reg_type').value;
             const model = document.getElementById('reg_model').value;
 
-            if(!name || !phone || !coding) return alert("يرجى تعبئة البيانات الأساسية (الاسم، الهاتف، الترميز) ☺️");
+            if(!name || !phone || !coding) return alert("يرجى تعبئة الاسم، الهاتف، والترميز ☺️");
 
-            // فحص التكرار (عبر الهاتف حصراً)
+            // منع التكرار بناءً على الهاتف
             const exists = captains.some(c => c.cap_phone === phone) || shops.some(s => s.cap_phone === phone);
-            if(exists) {
-                return alert("⛔ رقم الهاتف هذا مسجل مسبقاً في النظام!");
-            }
+            if(exists) return alert("⛔ رقم الهاتف مسجل مسبقاً!");
 
             showLoader(true);
             const newCap = {
                 id: "CAP_" + Date.now(),
-                user: coding,         // حفظ الترميز في خانة user
+                user: coding,         // الترميز هو اليوزر الظاهري
                 name: name,
                 pass: "123456",
                 role: "captain", type: "captain",
-                cap_phone: phone,     // المفتاح الحقيقي
+                cap_phone: phone,     // المفتاح الحقيقي للبحث
                 status: "active",
-                pickup: `${type} - ${model}`, // دمج النوع والموديل
+                pickup: `${type} - ${model}`,
                 balance: "0",
                 emergency_used: "false",
                 orders_count: 0
             };
 
             await N_ONE_CORE.postData('add', [newCap]);
-            alert("تم إصدار التصريح واعتماد الكابتن ✅");
+            alert("تم اعتماد الكابتن بنجاح ✅");
             
-            // تنظيف الحقول
             document.getElementById('reg_name').value = '';
             document.getElementById('reg_phone').value = '';
             document.getElementById('reg_coding').value = '';
@@ -428,87 +311,98 @@
             showLoader(false);
         }
 
-        // --- 2. المحفظة السريعة (بحث بالهاتف + ربط المنشآت) ---
+        // --- 2. المحفظة السريعة (تصليح البحث) ---
         function searchWallet() {
-            const q = document.getElementById('wallet_q').value.trim();
+            // تنظيف الرقم من المسافات
+            const q = document.getElementById('wallet_q').value.replace(/\s/g, '').trim();
             if(!q) return;
 
-            // البحث: هل هو كابتن؟
-            let target = captains.find(c => c.cap_phone === q);
+            // إعادة تعيين الهدف
+            currentWalletTarget = null;
+            document.getElementById('wallet-result').style.display = 'none';
+
+            // 1. البحث في الكباتن
+            let target = captains.find(c => c.cap_phone && c.cap_phone.replace(/\s/g, '') === q);
             let typeLabel = "كابتن 👮‍♂️";
             let detailLabel = "";
 
-            // إذا لم يكن كابتن، ابحث في المنشآت (سحب الخيط)
+            // 2. إذا لم نجد، نبحث في المنشآت
             if(!target) {
-                target = shops.find(s => s.cap_phone === q);
+                target = shops.find(s => s.cap_phone && s.cap_phone.replace(/\s/g, '') === q);
                 typeLabel = "منشأة تجارية 🏪";
             }
 
+            // عرض النتائج
             const resDiv = document.getElementById('wallet-result');
-
             if(target) {
-                currentWalletUser = target;
+                // حفظ الهدف في المتغير العالمي لاستخدامه عند الضغط على زر التحويل
+                currentWalletTarget = target;
+                
                 resDiv.style.display = 'block';
                 document.getElementById('wr_type').innerText = typeLabel;
                 document.getElementById('wr_name').innerText = target.name;
                 document.getElementById('wr_bal').innerText = parseFloat(target.balance||0).toFixed(2);
                 
-                // تفاصيل حسب النوع
                 if(typeLabel.includes("كابتن")) {
                     detailLabel = `الترميز: ${target.user} | المركبة: ${target.pickup}`;
                 } else {
                     detailLabel = `الموقع: ${target.pickup || 'غير محدد'}`;
                 }
                 document.getElementById('wr_detail').innerText = detailLabel;
-
             } else {
-                alert("❌ الرقم غير موجود في سجلات الإمبراطورية");
+                alert("❌ الرقم غير موجود! تأكد من صحة الرقم.");
                 resDiv.style.display = 'none';
-                currentWalletUser = null;
             }
         }
 
         async function updateBalance(action) {
-            if(!currentWalletUser) return alert("الرجاء تحديد الحساب أولاً");
-            const amt = parseFloat(document.getElementById('wallet_amt').value);
-            if(!amt || amt <= 0) return alert("أدخل مبلغاً صحيحاً");
+            // التحقق من أننا قمنا بالبحث ووجدنا شخصاً
+            if(!currentWalletTarget) {
+                alert("الرجاء البحث عن الرقم أولاً والتأكد من ظهور البيانات!");
+                return;
+            }
 
-            const oldBal = parseFloat(currentWalletUser.balance || 0);
+            const amt = parseFloat(document.getElementById('wallet_amt').value);
+            if(!amt || amt <= 0) return alert("أدخل مبلغاً صحيحاً!");
+
+            const oldBal = parseFloat(currentWalletTarget.balance || 0);
             const newBal = action === 'add' ? oldBal + amt : oldBal - amt;
 
-            if(confirm(`تأكيد العملية المالية؟\nالاسم: ${currentWalletUser.name}\nالمبلغ: ${amt}\nالرصيد الجديد: ${newBal}`)) {
+            if(confirm(`تأكيد العملية المالية؟\nالاسم: ${currentWalletTarget.name}\nالمبلغ: ${amt}\nالرصيد الجديد: ${newBal}`)) {
                 showLoader(true);
-                currentWalletUser.balance = newBal; // تحديث محلي سريع
+                
+                // تحديث محلي للمظهر
+                currentWalletTarget.balance = newBal; 
                 document.getElementById('wr_bal').innerText = newBal.toFixed(2);
                 
-                // إرسال للسيرفر
-                await N_ONE_CORE.postData('update', { user: currentWalletUser.user, data: { balance: newBal } });
+                // إرسال للسيرفر باستخدام user ID الخاص بالهدف
+                await N_ONE_CORE.postData('update', { user: currentWalletTarget.user, data: { balance: newBal } });
                 
-                if(currentWalletUser.type === 'captain') renderFleet();
+                // تحديث الجداول إذا كان كابتن
+                if(currentWalletTarget.type === 'captain') renderFleet();
                 
-                alert("تم التنفيذ بنجاح 💰");
+                alert("تم التحويل بنجاح 💰");
+                
+                // تنظيف الخانات
+                document.getElementById('wallet_amt').value = '';
+                document.getElementById('wallet-result').style.display = 'none';
+                document.getElementById('wallet_q').value = '';
+                currentWalletTarget = null;
+                
                 showLoader(false);
             }
         }
 
-        // --- 4. تأمين المسح (Security) ---
+        // --- 4. تأمين المسح ---
         async function secureWipe() {
-            const code = prompt("🔒 النظام الأمني:\nأدخل شفرة التصريح لمسح السجلات:");
+            const code = prompt("🔒 أدخل شفرة الحماية:");
             if (code === "N1-2026-Security") {
-                if(confirm("تحذير نووي ☢️: هل أنت متأكد من مسح جميع سجلات السيولة؟")) {
-                    alert("تم استلام الأمر. جاري تنظيف السجلات (محاكاة).");
-                    // هنا يمكن إضافة كود backend حقيقي للمسح
+                if(confirm("تحذير: هل أنت متأكد من مسح جميع السجلات؟")) {
+                    alert("تم تنظيف السجلات (محاكاة).");
                 }
             } else {
                 alert("⛔ شفرة خاطئة!");
             }
-        }
-
-        // --- 4. التحكم بالتحويل البيني ---
-        function toggleGlobalTransfer() {
-            const allowed = document.getElementById('global-transfer-toggle').checked;
-            localStorage.setItem('nOne_global_transfer', allowed);
-            alert(allowed ? "✅ تم تفعيل التحويل البيني" : "⛔ تم إيقاف التحويل البيني");
         }
 
         // --- 5. غرفة الانتظار والأسطول ---
@@ -516,17 +410,15 @@
             const tbody = document.getElementById('req-body');
             tbody.innerHTML = '';
             if(requests.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:20px;">لا توجد طلبات معلقة</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#999;">لا توجد طلبات معلقة</td></tr>';
                 return;
             }
             requests.forEach(r => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${r.name}</td>
-                        <td>${r.cap_phone}</td>
-                        <td>${r.pickup || '-'}</td>
+                        <td>${r.name}</td><td>${r.cap_phone}</td><td>${r.pickup || '-'}</td>
                         <td>
-                            <button class="action-btn btn-print" style="background:var(--success);" onclick="approveReq('${r.user}')">✔</button>
+                            <button class="action-btn" style="background:var(--success);" onclick="approveReq('${r.user}')">✔</button>
                             <button class="action-btn btn-del" onclick="deleteUser('${r.user}')">✖</button>
                         </td>
                     </tr>
@@ -535,16 +427,12 @@
         }
 
         async function approveReq(u) {
-            const newCoding = prompt("أدخل ترميز السيارة لهذا الكابتن (مثلاً K-20):");
+            const newCoding = prompt("أدخل ترميز السيارة (مثلاً K-20):");
             if(!newCoding) return;
-
-            if(confirm("قبول الكابتن واعتماد الترميز؟")) {
-                showLoader(true);
-                // تحديث الحالة + وضع الترميز الجديد مكان الـ user
-                await N_ONE_CORE.postData('update', { user: u, data: { status: 'active', balance: '0', user: newCoding } });
-                await refreshData();
-                showLoader(false);
-            }
+            showLoader(true);
+            await N_ONE_CORE.postData('update', { user: u, data: { status: 'active', user: newCoding } });
+            await refreshData();
+            showLoader(false);
         }
 
         function renderFleet() {
@@ -553,25 +441,24 @@
             tbody.innerHTML = '';
 
             captains.forEach(c => {
-                // البحث يشمل الاسم، الترميز، والهاتف
                 if(q && !c.name.toLowerCase().includes(q) && !c.user.toLowerCase().includes(q) && !c.cap_phone.includes(q)) return;
 
                 const statusClass = c.status === 'active' ? 'dot-active' : 'dot-paused';
                 const emergIcon = c.emergency_used === 'true' ? '⚠️' : '✅';
                 const freezeBtnText = c.status === 'active' ? 'تجميد' : 'تفعيل';
-                const freezeBtnColor = c.status === 'active' ? '#64748b' : '#10b981';
-
+                
                 tbody.innerHTML += `
                     <tr>
                         <td style="text-align:center;"><span class="status-dot ${statusClass}"></span></td>
                         <td style="font-weight:bold; color:var(--gold);">${c.user}</td>
                         <td>${c.name}</td>
-                        <td style="font-family:monospace; color:var(--text-muted); direction:ltr;">${c.cap_phone}</td>
+                        <td style="font-family:monospace; direction:ltr;">${c.cap_phone}</td>
                         <td style="font-weight:700; color:var(--success);">${parseFloat(c.balance||0).toFixed(2)}</td>
                         <td style="text-align:center;">${emergIcon}</td>
                         <td style="text-align:center;">${c.orders_count || 0}</td>
                         <td>
-                            <button class="action-btn btn-freeze" style="background:${freezeBtnColor}" onclick="freezeUser('${c.user}')">${freezeBtnText}</button>
+                            <button class="action-btn btn-freeze" onclick="freezeUser('${c.user}')">${freezeBtnText}</button>
+                            <button class="action-btn btn-edit" onclick="editUser('${c.user}', '${c.name}', '${c.cap_phone}')">✏️</button>
                             <button class="action-btn btn-del" onclick="deleteUser('${c.user}')">🗑</button>
                         </td>
                     </tr>
@@ -591,12 +478,23 @@
         }
 
         async function deleteUser(u) {
-            if(confirm("⚠️ تحذير: حذف نهائي من قاعدة البيانات؟")) {
+            if(confirm("⚠️ حذف نهائي؟")) {
                 showLoader(true);
                 await N_ONE_CORE.fetchData('delete', { user: u });
                 await refreshData();
                 showLoader(false);
             }
+        }
+
+        async function editUser(u, oldName, oldPhone) {
+            const newName = prompt("تعديل الاسم:", oldName);
+            if (!newName) return;
+            const newPhone = prompt("تعديل الهاتف:", oldPhone);
+            
+            showLoader(true);
+            await N_ONE_CORE.postData('update', { user: u, data: { name: newName, cap_phone: newPhone } });
+            await refreshData();
+            showLoader(false);
         }
 
         // --- الرسوم البيانية ---
@@ -621,8 +519,7 @@
             if(!myChart) return;
             const active = captains.filter(c => c.emergency_used !== 'true').length;
             const emergency = captains.filter(c => c.emergency_used === 'true').length;
-            const pending = requests.length;
-            myChart.data.datasets[0].data = [active, emergency, pending];
+            myChart.data.datasets[0].data = [active, emergency, requests.length];
             myChart.update();
         }
 
