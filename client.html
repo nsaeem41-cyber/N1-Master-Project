@@ -12,7 +12,6 @@
         :root {
             --primary: #00695c; --gold: #d4af37; --bg: #f4f7f6; --text: #333;
             --success: #2e7d32; --danger: #c62828; --warning: #f57f17; --money: #1b5e20;
-            --captain: #1565c0; /* لون الكباتن المميز */
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: var(--text); user-select: none; }
@@ -30,14 +29,9 @@
         .tab-btn { padding: 10px 20px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; color: #555; transition: 0.3s; white-space: nowrap; }
         .tab-btn:hover { background: #e0e0e0; }
         .tab-btn.active { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 105, 92, 0.3); }
-        
         /* تصميم الروابط الخارجية */
         .tab-link { background: #e3f2fd; color: #0277bd; border: 1px solid #b3e5fc; display: flex; align-items: center; gap: 5px; }
         .tab-link:hover { background: #b3e5fc; }
-
-        /* رابط الكباتن الخاص (لون مميز) */
-        .tab-link-cap { background: #e8eaf6; color: var(--captain); border: 1px solid #c5cae9; }
-        .tab-link-cap:hover { background: #c5cae9; }
 
         /* المحتوى */
         .tab-content { display: none; animation: fadeIn 0.4s; }
@@ -103,8 +97,6 @@
             <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 لوحة المعلومات</button>
             <button class="tab-btn" onclick="switchTab('shops', event)">🏪 إدارة المنشآت</button>
             
-            <button class="tab-btn tab-link tab-link-cap" onclick="window.open('captains-manager.html', '_blank')">👮‍♂️ إدارة الكباتن ↗️</button>
-            
             <button class="tab-btn tab-link" onclick="window.open('ops-room.html', '_blank')">📡 غرفة العمليات (Live) ↗️</button>
             <button class="tab-btn tab-link" onclick="window.open('prices.html', '_blank')">📋 قائمة الأسعار ↗️</button>
         </div>
@@ -117,12 +109,6 @@
                     <small style="color:#777;">منشآت نشطة ومسجلة في النظام</small>
                 </div>
                 
-                <div class="card" style="text-align:center; border-top-color:var(--captain);">
-                    <h3 style="margin:0; color:#555;">إجمالي الكباتن (الأسطول)</h3>
-                    <h1 id="total-captains" style="color:var(--captain); font-size:40px; margin:10px 0;">0</h1>
-                    <small style="color:#777;">كابتن مرتبط بالنظام</small>
-                </div>
-
                 <div class="card" style="text-align:center; border-top-color:var(--gold);">
                     <h3 style="margin:0; color:#555;">نوع الاشتراكات</h3>
                     <div style="margin-top:15px; display:flex; justify-content:space-around;">
@@ -208,12 +194,12 @@
 
     <script>
         // ========================================================
-        // المحرك الخارق v7.6 - إمبراطورية N One (Modular Edition)
+        // المحرك الخارق v7.1 - إمبراطورية N One
         // ========================================================
         
         // الرابط الملكي المعتمد
         if (typeof N_ONE_CORE !== 'undefined') {
-            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
+            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
         }
 
         let currentUser = null;
@@ -247,17 +233,7 @@
                 // سحب البيانات من السيرفر
                 allData = await N_ONE_CORE.fetchData('read');
                 renderShops();
-                
-                // خيط برمجي جديد لسحب عدد الكباتن فقط (بدون تفاصيل)
-                calculateCaptainsCount();
             } catch (e) { console.error(e); }
-        }
-
-        // دالة جديدة وخفيفة لحساب عدد الكباتن
-        function calculateCaptainsCount() {
-            // نعد الكباتن التابعين لهذا العميل فقط
-            const myCapsCount = allData.filter(i => (i.type == 'captain' || i.role == 'captain') && String(i.client_user) === String(currentUser.user)).length;
-            document.getElementById('total-captains').innerText = myCapsCount;
         }
 
         // ================= ميزات إدارة المنشآت الذكية =================
@@ -317,7 +293,7 @@
                 client_user: currentUser.user,
                 status: "active",
                 
-                // === تخزين البيانات في الأعمدة الصحيحة حسب الخارطة ===
+                // === تخزين البيانات في الأعمدة الصحيحة (خيوط المصدر) ===
                 cap_phone: phone, // تخزين الهاتف في العمود O
                 pickup: locLink,  // تخزين الموقع في العمود P
                 company_share: commission, // تخزين العمولة في العمود S
@@ -343,7 +319,7 @@
             const tbody = document.getElementById('shops-table-body');
             const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user)).reverse();
             
-            // تحديث العدادات في لوحة المعلومات
+            // تحديث العدادات في لوحة المعلومات (بدون كباتن)
             document.getElementById('total-shops').innerText = myShops.length;
             document.getElementById('count-paid').innerText = myShops.filter(s => Number(s.company_share) > 0).length;
             document.getElementById('count-free').innerText = myShops.filter(s => Number(s.company_share) <= 0).length;
