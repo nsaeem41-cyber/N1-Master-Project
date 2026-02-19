@@ -73,7 +73,7 @@
         .btn-clean { background: #2e7d32; }
         .btn-clean:hover { background: #388e3c; }
 
-        #Maint_LoaderOverlay {
+        #loader-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center;
             flex-direction: column;
@@ -85,9 +85,9 @@
 </head>
 <body>
 
-    <div id="Maint_LoaderOverlay">
+    <div id="loader-overlay">
         <div style="font-size: 50px;">⚙️</div>
-        <div class="loader-text" id="Maint_LoaderMsg">جاري فحص السيرفر...</div>
+        <div class="loader-text" id="loader-msg">جاري فحص السيرفر...</div>
     </div>
 
     <div class="header">
@@ -100,11 +100,11 @@
         <div class="health-dashboard">
             <div class="health-title">📊 مؤشر صحة السيرفر المركزي</div>
             <div class="progress-wrapper">
-                <div class="progress-bar" id="Maint_ServerLoadBar"></div>
+                <div class="progress-bar" id="server-load-bar"></div>
             </div>
             <div class="health-stats">
-                <span id="Maint_LoadText">استهلاك قاعدة البيانات 0%</span>
-                <span id="Maint_RowsCount">الأسطر المستخدمة 0 / 10000</span>
+                <span id="load-text">استهلاك قاعدة البيانات 0%</span>
+                <span id="rows-count">الأسطر المستخدمة 0 / 10000</span>
             </div>
             <div style="margin-top:15px; font-size:12px; color:#666;">
                 النظام يعمل بكفاءة عالية طالما المؤشر باللون الأخضر ☺️
@@ -117,24 +117,24 @@
                 <div class="tool-icon">💾</div>
                 <div class="tool-title">النسخ الاحتياطي الشامل</div>
                 <div class="tool-desc">تنزيل نسخة آمنة ومفرغة من جميع بيانات الإمبراطورية والشركات والطلبات كملف JSON مشفر</div>
-                <button class="btn-action btn-backup" onclick="Maint_BackupData()">سحب نسخة احتياطية 🚀</button>
-                <div id="Maint_BackupMsg" class="status-msg" style="color:#64b5f6;"></div>
+                <button class="btn-action btn-backup" onclick="backupData()">سحب نسخة احتياطية 🚀</button>
+                <div id="backup-msg" class="status-msg" style="color:#64b5f6;"></div>
             </div>
 
             <div class="tool-card">
                 <div class="tool-icon">📦</div>
                 <div class="tool-title">الأرشفة التلقائية الذكية</div>
                 <div class="tool-desc">تنزيل الطلبات المكتملة وحذفها من السيرفر المركزي لتخفيف الضغط وتسريع استجابة النظام</div>
-                <button class="btn-action btn-archive" onclick="Maint_AutoArchive()">بدء الأرشفة والتفريغ 🚀</button>
-                <div id="Maint_ArchiveMsg" class="status-msg" style="color:#ffb74d;"></div>
+                <button class="btn-action btn-archive" onclick="autoArchive()">بدء الأرشفة والتفريغ 🚀</button>
+                <div id="archive-msg" class="status-msg" style="color:#ffb74d;"></div>
             </div>
 
             <div class="tool-card">
                 <div class="tool-icon">🧹</div>
                 <div class="tool-title">تنظيف الذاكرة الميتة</div>
                 <div class="tool-desc">مسح الجلسات المنتهية والشوائب البرمجية من الذاكرة المحلية لضمان عمل المتصفح بأقصى سرعة</div>
-                <button class="btn-action btn-clean" onclick="Maint_CleanMemory()">تنظيف الذاكرة الآن 🚀</button>
-                <div id="Maint_CleanMsg" class="status-msg" style="color:#81c784;"></div>
+                <button class="btn-action btn-clean" onclick="cleanMemory()">تنظيف الذاكرة الآن 🚀</button>
+                <div id="clean-msg" class="status-msg" style="color:#81c784;"></div>
             </div>
 
         </div>
@@ -142,9 +142,9 @@
 
     <script>
         // 💎 الرابط الملكي 💎
-        const Maint_API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
         
-        let Maint_SystemData = [];
+        let systemData = [];
 
         window.onload = async function() {
             // حماية الجلسة والزر الخلفي
@@ -154,128 +154,128 @@
             };
 
             // التحقق المعمق من التشفير
-            const Maint_User = JSON.parse(localStorage.getItem('Auth_CurrentUser'));
-            if (!Maint_User || Maint_User.Auth_Role !== 'admin' || !Maint_User.Auth_SessionToken || !Maint_User.Auth_SessionToken.includes('N1_SECURE')) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'admin' || !user.sessionToken || !user.sessionToken.includes('N1_SECURE')) {
                 window.location.replace('index.html');
                 return;
             }
             
-            await Maint_FetchHealthStatus();
+            await fetchHealthStatus();
         };
 
         // دالة قراءة صحة السيرفر
-        async function Maint_FetchHealthStatus() {
-            Maint_ShowLoader("جاري فحص نبض السيرفر ⏳");
+        async function fetchHealthStatus() {
+            showLoader("جاري فحص نبض السيرفر ⏳");
             try {
-                const Maint_Res = await fetch(Maint_API_URL + "?action=read");
-                Maint_SystemData = await Maint_Res.json();
+                const res = await fetch(API_URL + "?action=read");
+                systemData = await res.json();
                 
-                const Maint_TotalRows = Maint_SystemData.length;
-                const Maint_MaxRows = 10000; // الحد الآمن الموصى به لسرعة الأداء
-                let Maint_Percentage = (Maint_TotalRows / Maint_MaxRows) * 100;
-                if(Maint_Percentage > 100) Maint_Percentage = 100;
+                const totalRows = systemData.length;
+                const maxRows = 10000; // الحد الآمن الموصى به لسرعة الأداء
+                let percentage = (totalRows / maxRows) * 100;
+                if(percentage > 100) percentage = 100;
 
-                const Maint_Bar = document.getElementById('Maint_ServerLoadBar');
-                Maint_Bar.style.width = Maint_Percentage + '%';
+                const bar = document.getElementById('server-load-bar');
+                bar.style.width = percentage + '%';
                 
                 // تغيير لون المؤشر حسب الضغط
-                if(Maint_Percentage < 50) Maint_Bar.style.background = "#2e7d32"; 
-                else if(Maint_Percentage < 80) Maint_Bar.style.background = "#f57f17"; 
-                else Maint_Bar.style.background = "#c62828"; 
+                if(percentage < 50) bar.style.background = "#2e7d32"; 
+                else if(percentage < 80) bar.style.background = "#f57f17"; 
+                else bar.style.background = "#c62828"; 
 
-                document.getElementById('Maint_LoadText').innerText = `استهلاك قاعدة البيانات ${Maint_Percentage.toFixed(1)}%`;
-                document.getElementById('Maint_RowsCount').innerText = `الأسطر المستخدمة ${Maint_TotalRows} / ${Maint_MaxRows}`;
+                document.getElementById('load-text').innerText = `استهلاك قاعدة البيانات ${percentage.toFixed(1)}%`;
+                document.getElementById('rows-count').innerText = `الأسطر المستخدمة ${totalRows} / ${maxRows}`;
                 
-            } catch (Maint_Error) {
-                console.error(Maint_Error);
+            } catch (e) {
+                console.error(e);
             } finally {
-                Maint_HideLoader();
+                hideLoader();
             }
         }
 
         // 1. ميزة النسخ الاحتياطي
-        function Maint_BackupData() {
-            if(Maint_SystemData.length === 0) return alert("لا توجد بيانات للسحب ☺️");
+        function backupData() {
+            if(systemData.length === 0) return alert("لا توجد بيانات للسحب ☺️");
             
-            const Maint_DataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(Maint_SystemData, null, 2));
-            const Maint_DownloadAnchorNode = document.createElement('a');
-            Maint_DownloadAnchorNode.setAttribute("href", Maint_DataStr);
-            Maint_DownloadAnchorNode.setAttribute("download", "N_One_Backup_" + new Date().toISOString().split('T')[0] + ".json");
-            document.body.appendChild(Maint_DownloadAnchorNode);
-            Maint_DownloadAnchorNode.click();
-            Maint_DownloadAnchorNode.remove();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(systemData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "N_One_Backup_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
 
-            const Maint_Msg = document.getElementById('Maint_BackupMsg');
-            Maint_Msg.innerText = "تم حفظ النسخة الاحتياطية بنجاح ☺️✅";
-            Maint_Msg.style.display = "block";
-            setTimeout(() => Maint_Msg.style.display = "none", 4000);
+            const msg = document.getElementById('backup-msg');
+            msg.innerText = "تم حفظ النسخة الاحتياطية بنجاح ☺️✅";
+            msg.style.display = "block";
+            setTimeout(() => msg.style.display = "none", 4000);
         }
 
         // 2. خوارزمية الأرشفة الذكية (تعتمد على حذف الطلبات القديمة بعد حفظها)
-        async function Maint_AutoArchive() {
+        async function autoArchive() {
             if(!confirm("هل أنت متأكد من بدء عملية الأرشفة سيتم تفريغ الطلبات لتخفيف السيرفر ☺️")) return;
             
-            // فلترة الطلبات فقط للحفاظ على بيانات الشركات والكباتن باستخدام التشفير الجديد والقديم
-            const Maint_OrdersToArchive = Maint_SystemData.filter(item => item.type === 'order' || item.Auth_Type === 'order');
+            // فلترة الطلبات فقط للحفاظ على بيانات الشركات والكباتن
+            const ordersToArchive = systemData.filter(item => item.type === 'order');
             
-            if(Maint_OrdersToArchive.length === 0) {
+            if(ordersToArchive.length === 0) {
                 alert("السيرفر نظيف ولا يوجد طلبات للأرشفة ☺️");
                 return;
             }
 
             // أولا تحميل نسخة من الطلبات قبل الحذف لضمان عدم ضياعها
-            const Maint_DataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(Maint_OrdersToArchive, null, 2));
-            const Maint_DlNode = document.createElement('a');
-            Maint_DlNode.setAttribute("href", Maint_DataStr);
-            Maint_DlNode.setAttribute("download", "Archive_Orders_" + new Date().toISOString().split('T')[0] + ".json");
-            document.body.appendChild(Maint_DlNode);
-            Maint_DlNode.click();
-            Maint_DlNode.remove();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ordersToArchive, null, 2));
+            const dlNode = document.createElement('a');
+            dlNode.setAttribute("href", dataStr);
+            dlNode.setAttribute("download", "Archive_Orders_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(dlNode);
+            dlNode.click();
+            dlNode.remove();
 
-            Maint_ShowLoader("جاري تنظيف السيرفر من الطلبات المؤرشفة الرجاء عدم إغلاق الصفحة ⏳");
+            showLoader("جاري تنظيف السيرفر من الطلبات المؤرشفة الرجاء عدم إغلاق الصفحة ⏳");
 
             try {
                 // إرسال أوامر الحذف للسيرفر بشكل متتالي ومدروس
-                for(let i = 0; i < Maint_OrdersToArchive.length; i++) {
-                    const Maint_OrderId = Maint_OrdersToArchive[i].id || Maint_OrdersToArchive[i].Auth_ID;
-                    await fetch(Maint_API_URL + "?action=delete&user=" + Maint_OrderId, { method: 'POST', mode: 'no-cors' });
+                for(let i = 0; i < ordersToArchive.length; i++) {
+                    const orderId = ordersToArchive[i].id;
+                    await fetch(API_URL + "?action=delete&user=" + orderId, { method: 'POST', mode: 'no-cors' });
                 }
                 
-                const Maint_Msg = document.getElementById('Maint_ArchiveMsg');
-                Maint_Msg.innerText = "تمت الأرشفة وتفريغ السيرفر بنجاح ☺️✅";
-                Maint_Msg.style.display = "block";
-                setTimeout(() => Maint_Msg.style.display = "none", 4000);
+                const msg = document.getElementById('archive-msg');
+                msg.innerText = "تمت الأرشفة وتفريغ السيرفر بنجاح ☺️✅";
+                msg.style.display = "block";
+                setTimeout(() => msg.style.display = "none", 4000);
                 
-                await Maint_FetchHealthStatus(); // تحديث العدادات
+                await fetchHealthStatus(); // تحديث العدادات
 
-            } catch (Maint_Error) {
+            } catch (error) {
                 alert("حدث خطأ أثناء التفريغ ☺️");
             } finally {
-                Maint_HideLoader();
+                hideLoader();
             }
         }
 
         // 3. تنظيف الذاكرة الميتة
-        function Maint_CleanMemory() {
-            // مسح كل شيء عدا الجلسة الحالية للمدير المشفرة
-            const Maint_Current = localStorage.getItem('Auth_CurrentUser');
+        function cleanMemory() {
+            // مسح كل شيء عدا الجلسة الحالية للمدير
+            const current = localStorage.getItem('currentUser');
             localStorage.clear();
             sessionStorage.clear();
-            if(Maint_Current) localStorage.setItem('Auth_CurrentUser', Maint_Current);
+            if(current) localStorage.setItem('currentUser', current);
 
-            const Maint_Msg = document.getElementById('Maint_CleanMsg');
-            Maint_Msg.innerText = "تم تنظيف الشوائب والذاكرة الميتة ☺️✅";
-            Maint_Msg.style.display = "block";
-            setTimeout(() => Maint_Msg.style.display = "none", 4000);
+            const msg = document.getElementById('clean-msg');
+            msg.innerText = "تم تنظيف الشوائب والذاكرة الميتة ☺️✅";
+            msg.style.display = "block";
+            setTimeout(() => msg.style.display = "none", 4000);
         }
 
-        function Maint_ShowLoader(Maint_Text) {
-            document.getElementById('Maint_LoaderMsg').innerText = Maint_Text;
-            document.getElementById('Maint_LoaderOverlay').style.display = 'flex';
+        function showLoader(text) {
+            document.getElementById('loader-msg').innerText = text;
+            document.getElementById('loader-overlay').style.display = 'flex';
         }
 
-        function Maint_HideLoader() {
-            document.getElementById('Maint_LoaderOverlay').style.display = 'none';
+        function hideLoader() {
+            document.getElementById('loader-overlay').style.display = 'none';
         }
     </script>
 
