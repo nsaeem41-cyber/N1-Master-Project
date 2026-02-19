@@ -60,19 +60,19 @@
         .act-renew { background: var(--info); }
         .act-edit { background: var(--primary); }
 
-        #Admin_LoaderOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; color: var(--primary); flex-direction: column; }
+        #loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; color: var(--primary); flex-direction: column; }
     </style>
 </head>
 <body>
 
-    <div id="Admin_LoaderOverlay">
+    <div id="loader-overlay">
         <div style="font-size:30px; margin-bottom:10px;">📡</div>
-        <div>جاري الاتصال بالنواة المركزية</div>
+        <div>جاري الاتصال بالنواة المركزية...</div>
     </div>
 
     <nav class="navbar">
         <div class="brand">N <span class="gold-text">One</span> Admin</div>
-        <button class="btn-logout" onclick="Admin_Logout()">خروج 🔒</button>
+        <button class="btn-logout" onclick="logout()">خروج 🔒</button>
     </nav>
 
     <div class="container">
@@ -80,15 +80,15 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">شركات النقل (العملاء)</div>
-                <div class="stat-number" id="Admin_CountClients">0</div>
+                <div class="stat-number" id="count-clients">0</div>
             </div>
             <div class="stat-card" style="border-top-color: var(--success);">
                 <div class="stat-label">شركات نشطة</div>
-                <div class="stat-number" id="Admin_CountActive" style="color: var(--success);">0</div>
+                <div class="stat-number" id="count-active" style="color: var(--success);">0</div>
             </div>
             <div class="stat-card" style="border-top-color: var(--gold);">
                 <div class="stat-label">المردود المالي</div>
-                <div class="stat-number" id="Admin_RevCount" style="color: var(--gold);">0</div>
+                <div class="stat-number" id="revenue-count" style="color: var(--gold);">0</div>
             </div>
         </div>
 
@@ -97,17 +97,17 @@
                 <span>✨ إضافة شركة نقل جديدة (System Isolation)</span>
             </div>
             <div class="form-grid">
-                <input type="text" id="Admin_NewName" placeholder="الاسم التجاري للشركة">
-                <input type="text" id="Admin_NewUser" placeholder="اسم المستخدم (User ID) - يجب أن يكون فريدا">
-                <input type="password" id="Admin_NewPass" placeholder="كلمة المرور">
-                <select id="Admin_SubDuration">
+                <input type="text" id="new_name" placeholder="الاسم التجاري للشركة">
+                <input type="text" id="new_user" placeholder="اسم المستخدم (User ID) - يجب أن يكون فريداً">
+                <input type="password" id="new_pass" placeholder="كلمة المرور">
+                <select id="sub_duration">
                     <option value="30">30 يوم</option>
                     <option value="90">3 أشهر</option>
                     <option value="180">6 أشهر</option>
                     <option value="365">سنة كاملة</option>
                 </select>
-                <input type="number" id="Admin_SubPrice" placeholder="قيمة الاشتراك (د.أ)">
-                <button class="btn-add" id="Admin_BtnAddUser" onclick="Admin_AddUser()">+ إضافة بقاعدة بيانات مستقلة 🚀</button>
+                <input type="number" id="sub_price" placeholder="قيمة الاشتراك (د.أ)">
+                <button class="btn-add" id="btnAddUser" onclick="addUser()">+ إضافة بقاعدة بيانات مستقلة 🚀</button>
             </div>
         </div>
 
@@ -128,8 +128,8 @@
                             <th>التحكم الشامل</th>
                         </tr>
                     </thead>
-                    <tbody id="Admin_ClientsTable">
-                        <tr><td colspan="6" style="text-align:center;">جاري التحميل</td></tr>
+                    <tbody id="clients-table">
+                        <tr><td colspan="6" style="text-align:center;">جاري التحميل...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -139,200 +139,196 @@
 
     <script>
         // رابط السيرفر المحدث
-        if (typeof Core_N_ONE_CORE !== 'undefined') {
-            Core_N_ONE_CORE.Core_API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
+        if (typeof N_ONE_CORE !== 'undefined') {
+            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
         }
 
-        let Admin_AllData = [];
-        let Admin_GlobalServerTime = new Date(); 
+        let allData = [];
+        let globalServerTime = new Date(); 
 
         window.onload = async function() {
-            if (typeof Core_N_ONE_CORE === 'undefined') { alert("خطأ المصلح المركزي غير متصل"); return; }
-            if (Core_N_ONE_CORE.Core_checkSession('admin')) {
-                await Admin_FetchServerTime();
-                await Admin_FetchData();
+            if (typeof N_ONE_CORE === 'undefined') { alert("خطأ: المصلح المركزي غير متصل!"); return; }
+            if (N_ONE_CORE.checkSession('admin')) {
+                await fetchServerTime();
+                await fetchData();
             }
         };
 
-        async function Admin_FetchServerTime() {
+        async function fetchServerTime() {
             try {
-                const Admin_Res = await fetch("http://worldtimeapi.org/api/timezone/Asia/Amman");
-                const Admin_TimeData = await Admin_Res.json();
-                Admin_GlobalServerTime = new Date(Admin_TimeData.datetime);
-            } catch (e) { Admin_GlobalServerTime = new Date(); }
+                const res = await fetch("http://worldtimeapi.org/api/timezone/Asia/Amman");
+                const timeData = await res.json();
+                globalServerTime = new Date(timeData.datetime);
+            } catch (e) { globalServerTime = new Date(); }
         }
 
-        async function Admin_FetchData() {
+        async function fetchData() {
             try {
-                Admin_AllData = await Core_N_ONE_CORE.Core_fetchData('read');
-                Admin_RenderTables();
+                allData = await N_ONE_CORE.fetchData('read');
+                renderTables();
             } catch (e) { console.error(e); }
         }
 
-        function Admin_RenderTables() {
-            const Admin_ClientTbody = document.getElementById('Admin_ClientsTable');
+        function renderTables() {
+            const clientTbody = document.getElementById('clients-table');
             
             // عرض الشركات فقط
-            const Admin_Clients = Admin_AllData.filter(u => u.Auth_Role === 'client' || u.Auth_Type === 'client').reverse();
+            const clients = allData.filter(u => u.role === 'client' || u.type === 'client').reverse();
 
-            document.getElementById('Admin_CountClients').innerText = Admin_Clients.length;
-            document.getElementById('Admin_CountActive').innerText = Admin_Clients.filter(c => c.Auth_Status === 'active').length;
+            document.getElementById('count-clients').innerText = clients.length;
+            document.getElementById('count-active').innerText = clients.filter(c => c.status === 'active').length;
             
-            let Admin_TotalRev = 0;
-            Admin_Clients.forEach(c => Admin_TotalRev += Number(c.Admin_Price || 0));
-            document.getElementById('Admin_RevCount').innerText = Admin_TotalRev.toFixed(0);
+            let totalRev = 0;
+            clients.forEach(c => totalRev += Number(c.price || 0));
+            document.getElementById('revenue-count').innerText = totalRev.toFixed(0);
 
-            Admin_RenderRows(Admin_ClientTbody, Admin_Clients);
+            renderRows(clientTbody, clients);
         }
 
-        function Admin_RenderRows(Admin_Tbody, Admin_Data) {
-            if (Admin_Data.length === 0) { Admin_Tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد شركات مسجلة</td></tr>'; return; }
-            Admin_Tbody.innerHTML = '';
+        function renderRows(tbody, data) {
+            if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد شركات مسجلة</td></tr>'; return; }
+            tbody.innerHTML = '';
             
-            Admin_Data.forEach(Admin_Item => {
-                const Admin_ExpiryDate = new Date(Admin_Item.Auth_Expiry);
-                const Admin_DiffTime = Admin_ExpiryDate - Admin_GlobalServerTime;
-                const Admin_DiffDays = Math.ceil(Admin_DiffTime / (1000 * 60 * 60 * 24));
+            data.forEach(item => {
+                const expiryDate = new Date(item.expiry);
+                const diffTime = expiryDate - globalServerTime;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                let Admin_StatusBadge = '';
-                let Admin_DaysText = '';
+                let statusBadge = '';
+                let daysText = '';
 
-                let Admin_CurrentStatus = String(Admin_Item.Auth_Status || 'active').trim().toLowerCase();
+                let currentStatus = String(item.status || 'active').trim().toLowerCase();
 
-                if (Admin_CurrentStatus === 'paused') {
-                    Admin_StatusBadge = `<span class="status-badge status-paused">مجمد ❄️</span>`;
-                    Admin_DaysText = `<span style="color:#f57f17;">موقف</span>`;
-                } else if (Admin_DiffDays <= 0) {
-                    Admin_StatusBadge = `<span class="status-badge status-expired">منتهي ⛔</span>`;
-                    Admin_DaysText = `<span style="color:#c62828; font-weight:bold;">انتهى</span>`;
-                    if(Admin_CurrentStatus === 'active') Admin_SetStatusSilent(Admin_Item.Auth_User, 'paused');
+                if (currentStatus === 'paused') {
+                    statusBadge = `<span class="status-badge status-paused">مجمد ❄️</span>`;
+                    daysText = `<span style="color:#f57f17;">موقف</span>`;
+                } else if (diffDays <= 0) {
+                    statusBadge = `<span class="status-badge status-expired">منتهي ⛔</span>`;
+                    daysText = `<span style="color:#c62828; font-weight:bold;">انتهى</span>`;
+                    if(currentStatus === 'active') setStatusSilent(item.user, 'paused');
                 } else {
-                    Admin_StatusBadge = `<span class="status-badge status-active">نشط ✅</span>`;
-                    Admin_DaysText = Admin_DiffDays <= 3 ? `<span style="color:#c62828;">${Admin_DiffDays} يوم ⚠️</span>` : `<span style="color:#2e7d32;">${Admin_DiffDays} يوم</span>`;
+                    statusBadge = `<span class="status-badge status-active">نشط ✅</span>`;
+                    daysText = diffDays <= 3 ? `<span style="color:#c62828;">${diffDays} يوم ⚠️</span>` : `<span style="color:#2e7d32;">${diffDays} يوم</span>`;
                 }
                 
-                const Admin_ToggleBtn = Admin_CurrentStatus === 'active'
-                    ? `<button class="action-btn act-freeze" title="تجميد" onclick="Admin_SetStatus('${Admin_Item.Auth_User}', 'active')">❄️</button>`
-                    : `<button class="action-btn act-active" title="تفعيل" onclick="Admin_SetStatus('${Admin_Item.Auth_User}', 'paused')">▶️</button>`;
+                const toggleBtn = currentStatus === 'active'
+                    ? `<button class="action-btn act-freeze" title="تجميد" onclick="setStatus('${item.user}', 'active')">❄️</button>`
+                    : `<button class="action-btn act-active" title="تفعيل" onclick="setStatus('${item.user}', 'paused')">▶️</button>`;
 
-                const Admin_Row = `
+                const row = `
                     <tr>
-                        <td><b>${Admin_Item.Auth_Name}</b></td>
-                        <td style="font-size:12px; color:#555;">${Admin_Item.Auth_User}<br>Pwd: ${Admin_Item.Auth_Pass}</td>
-                        <td style="font-size:12px;">${Admin_Item.Admin_Price || 0} د.أ</td>
-                        <td>${Admin_DaysText}</td>
-                        <td>${Admin_StatusBadge}</td>
+                        <td><b>${item.name}</b></td>
+                        <td style="font-size:12px; color:#555;">${item.user}<br>Pwd: ${item.pass}</td>
+                        <td style="font-size:12px;">${item.price || 0} د.أ</td>
+                        <td>${daysText}</td>
+                        <td>${statusBadge}</td>
                         <td>
                             <div class="action-group">
-                                <button class="action-btn act-edit" title="تعديل البيانات" onclick="Admin_EditUser('${Admin_Item.Auth_User}', '${Admin_Item.Auth_Name}', '${Admin_Item.Auth_Pass}')">✏️</button>
-                                ${Admin_ToggleBtn}
-                                <button class="action-btn act-renew" title="تجديد" onclick="Admin_RenewUser('${Admin_Item.Auth_User}')">🔄</button>
-                                <button class="action-btn act-delete" title="حذف" onclick="Admin_DeleteUser('${Admin_Item.Auth_User}')">❌</button>
+                                <button class="action-btn act-edit" title="تعديل البيانات" onclick="editUser('${item.user}', '${item.name}', '${item.pass}')">✏️</button>
+                                ${toggleBtn}
+                                <button class="action-btn act-renew" title="تجديد" onclick="renewUser('${item.user}')">🔄</button>
+                                <button class="action-btn act-delete" title="حذف" onclick="deleteUser('${item.user}')">❌</button>
                             </div>
                         </td>
                     </tr>
                 `;
-                Admin_Tbody.innerHTML += Admin_Row;
+                tbody.innerHTML += row;
             });
         }
 
-        async function Admin_AddUser() {
-            const Admin_Role = 'client';
-            const Admin_Name = document.getElementById('Admin_NewName').value;
-            const Admin_User = document.getElementById('Admin_NewUser').value.trim(); 
-            const Admin_Pass = document.getElementById('Admin_NewPass').value;
-            const Admin_Days = document.getElementById('Admin_SubDuration').value;
-            const Admin_Price = document.getElementById('Admin_SubPrice').value;
+        // ================= العمليات =================
 
-            if (!Admin_Name || !Admin_User || !Admin_Pass || !Admin_Price) { alert("يرجى تعبئة كافة الحقول ☺️"); return; }
+        async function addUser() {
+            const role = 'client';
+            const name = document.getElementById('new_name').value;
+            const user = document.getElementById('new_user').value.trim(); // تنظيف المسافات
+            const pass = document.getElementById('new_pass').value;
+            const days = document.getElementById('sub_duration').value;
+            const price = document.getElementById('sub_price').value;
 
-            const Admin_Exists = Admin_AllData.some(u => String(u.Auth_User).toLowerCase() === Admin_User.toLowerCase());
-            if (Admin_Exists) {
-                alert("تنبيه اسم المستخدم هذا موجود بالفعل يرجى اختيار اسم آخر لضمان عزل البيانات");
+            if (!name || !user || !pass || !price) { alert("يرجى تعبئة كافة الحقول ☺️"); return; }
+
+            // ⛔ ميزة العزل: التحقق من عدم تكرار اسم المستخدم ⛔
+            const exists = allData.some(u => String(u.user).toLowerCase() === user.toLowerCase());
+            if (exists) {
+                alert("⛔ تنبيه: اسم المستخدم هذا موجود بالفعل! يرجى اختيار اسم آخر لضمان عزل البيانات.");
                 return;
             }
 
-            const Admin_ExpDate = new Date(Admin_GlobalServerTime);
-            Admin_ExpDate.setDate(Admin_ExpDate.getDate() + parseInt(Admin_Days));
+            const expDate = new Date(globalServerTime);
+            expDate.setDate(expDate.getDate() + parseInt(days));
             
-            document.getElementById('Admin_LoaderOverlay').style.display = 'flex';
-            const Admin_NewItem = {
-                Auth_ID: "CL_" + Date.now(),
-                Auth_User: Admin_User, 
-                Auth_Pass: Admin_Pass, 
-                Auth_Name: Admin_Name, 
-                Auth_Role: Admin_Role, 
-                Auth_Type: Admin_Role, 
-                Auth_Status: "active",
-                Auth_Expiry: Admin_ExpDate.toISOString().split('T')[0], 
-                Admin_Price: Admin_Price, 
-                Admin_PlanDays: Admin_Days
+            document.getElementById('loader-overlay').style.display = 'flex';
+            const newItem = {
+                id: "CL_" + Date.now(),
+                user: user, pass: pass, name: name, role: role, type: role, status: "active",
+                expiry: expDate.toISOString().split('T')[0], price: price, plan_days: days
             };
 
-            await Core_N_ONE_CORE.Core_postData('add', [Admin_NewItem]);
-            await Admin_FetchData();
-            document.getElementById('Admin_LoaderOverlay').style.display = 'none';
+            await N_ONE_CORE.postData('add', [newItem]);
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
             alert("تم إضافة الشركة بنجاح مع قاعدة بيانات معزولة ☺️✅");
             
-            document.getElementById('Admin_NewName').value = '';
-            document.getElementById('Admin_NewUser').value = '';
-            document.getElementById('Admin_NewPass').value = '';
+            document.getElementById('new_name').value = '';
+            document.getElementById('new_user').value = '';
+            document.getElementById('new_pass').value = '';
         }
 
-        async function Admin_EditUser(Admin_Username, Admin_OldName, Admin_OldPass) {
-            const Admin_NewName = prompt("تعديل الاسم التجاري", Admin_OldName);
-            if (Admin_NewName === null) return;
-            const Admin_NewPass = prompt("تعديل كلمة المرور", Admin_OldPass);
-            if (Admin_NewPass === null) return;
+        async function editUser(username, oldName, oldPass) {
+            const newName = prompt("تعديل الاسم التجاري:", oldName);
+            if (newName === null) return;
+            const newPass = prompt("تعديل كلمة المرور:", oldPass);
+            if (newPass === null) return;
 
-            if (Admin_NewName === Admin_OldName && Admin_NewPass === Admin_OldPass) return;
+            if (newName === oldName && newPass === oldPass) return;
 
-            document.getElementById('Admin_LoaderOverlay').style.display = 'flex';
-            await Core_N_ONE_CORE.Core_postData('update', { Auth_User: Admin_Username, data: { Auth_Name: Admin_NewName, Auth_Pass: Admin_NewPass } });
-            await Admin_FetchData();
-            document.getElementById('Admin_LoaderOverlay').style.display = 'none';
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.postData('update', { user: username, data: { name: newName, pass: newPass } });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
             alert("تم تحديث البيانات ☺️");
         }
 
-        async function Admin_SetStatus(Admin_Username, Admin_CurrentStatus) {
-            const Admin_NextStatus = (Admin_CurrentStatus === 'active') ? 'paused' : 'active';
-            if (!confirm(Admin_NextStatus === 'paused' ? "تجميد الحساب" : "إعادة التفعيل")) return;
+        async function setStatus(username, currentStatus) {
+            const nextStatus = (currentStatus === 'active') ? 'paused' : 'active';
+            if (!confirm(nextStatus === 'paused' ? "تجميد الحساب؟" : "إعادة التفعيل؟")) return;
             
-            document.getElementById('Admin_LoaderOverlay').style.display = 'flex';
-            await Core_N_ONE_CORE.Core_postData('update', { Auth_User: Admin_Username, data: { Auth_Status: Admin_NextStatus } });
-            await Admin_FetchData();
-            document.getElementById('Admin_LoaderOverlay').style.display = 'none';
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.postData('update', { user: username, data: { status: nextStatus } });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
         }
 
-        async function Admin_SetStatusSilent(Admin_Username, Admin_NewStatus) {
-            await Core_N_ONE_CORE.Core_postData('update', { Auth_User: Admin_Username, data: { Auth_Status: Admin_NewStatus } });
+        async function setStatusSilent(username, newStatus) {
+            await N_ONE_CORE.postData('update', { user: username, data: { status: newStatus } });
         }
 
-        async function Admin_RenewUser(Admin_Username) {
-            const Admin_Days = prompt("عدد أيام التجديد الإضافية", "30");
-            if (!Admin_Days) return;
-            const Admin_NewPrice = prompt("قيمة التجديد للجرد المالي 0 إذا مجاني", "0");
+        async function renewUser(username) {
+            const days = prompt("عدد أيام التجديد الإضافية:", "30");
+            if (!days) return;
+            const newPrice = prompt("قيمة التجديد للجرد المالي (0 إذا مجاني):", "0");
 
-            const Admin_NewDate = new Date(Admin_GlobalServerTime);
-            Admin_NewDate.setDate(Admin_NewDate.getDate() + parseInt(Admin_Days));
+            const newDate = new Date(globalServerTime);
+            newDate.setDate(newDate.getDate() + parseInt(days));
 
-            document.getElementById('Admin_LoaderOverlay').style.display = 'flex';
-            await Core_N_ONE_CORE.Core_postData('update', { Auth_User: Admin_Username, data: { Auth_Expiry: Admin_NewDate.toISOString().split('T')[0], Auth_Status: 'active', Admin_Price: Admin_NewPrice } });
-            await Admin_FetchData();
-            document.getElementById('Admin_LoaderOverlay').style.display = 'none';
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.postData('update', { user: username, data: { expiry: newDate.toISOString().split('T')[0], status: 'active', price: newPrice } });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
             alert("تم تجديد الاشتراك ☺️📅");
         }
 
-        async function Admin_DeleteUser(Admin_Username) {
-            if (!confirm("تحذير حذف نهائي لا يمكن التراجع عنه هل أنت متأكد")) return;
-            document.getElementById('Admin_LoaderOverlay').style.display = 'flex';
-            await Core_N_ONE_CORE.Core_fetchData('delete', { Auth_User: Admin_Username });
-            await Admin_FetchData();
-            document.getElementById('Admin_LoaderOverlay').style.display = 'none';
+        async function deleteUser(username) {
+            if (!confirm("تحذير: حذف نهائي لا يمكن التراجع عنه! هل أنت متأكد؟")) return;
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await N_ONE_CORE.fetchData('delete', { user: username });
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
             alert("تم حذف الحساب 🗑️");
         }
 
-        function Admin_Logout() { Core_N_ONE_CORE.Core_logout(); }
+        function logout() { N_ONE_CORE.logout(); }
     </script>
 
 </body>
