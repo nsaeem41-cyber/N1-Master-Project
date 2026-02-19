@@ -80,22 +80,22 @@
 
         <div class="input-group">
             <label>اسم المستخدم (User ID)</label>
-            <input type="text" id="Auth_User" placeholder="أدخل اسم المستخدم">
+            <input type="text" id="username" placeholder="أدخل اسم المستخدم">
         </div>
 
         <div class="input-group">
             <label>كلمة المرور (Password)</label>
-            <input type="password" id="Auth_Pass" placeholder="أدخل كلمة المرور">
+            <input type="password" id="password" placeholder="أدخل كلمة المرور">
         </div>
 
         <div class="shop-login-option">
-            <input type="checkbox" id="Auth_IsShop">
-            <label for="Auth_IsShop">تسجيل دخول كمنشأة تجارية مطعم ومحل</label>
+            <input type="checkbox" id="is_shop">
+            <label for="is_shop">تسجيل دخول كمنشأة تجارية مطعم ومحل</label>
         </div>
 
-        <button class="btn-login" onclick="Auth_LoginNow()" id="Auth_Btn">تسجيل الدخول 🚀</button>
+        <button class="btn-login" onclick="loginNow()" id="loginBtn">تسجيل الدخول 🚀</button>
 
-        <div id="Auth_Msg" class="msg-box error"></div>
+        <div id="msg" class="msg-box error"></div>
 
         <div class="footer">
             &copy; 2026 N One Global Systems<br>
@@ -105,91 +105,91 @@
 
     <script>
         // 💎 الرابط الملكي 💎
-        const Auth_API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
 
 
         // التنظيف الفوري للذاكرة لضمان جلسة نظيفة
         window.onload = function() {
-            localStorage.removeItem('Auth_CurrentUser');
+            localStorage.removeItem('currentUser');
             console.log("Session Cleared Ready for secure login");
         };
 
-        async function Auth_LoginNow() {
-            const Auth_u = document.getElementById('Auth_User').value.trim();
-            const Auth_p = document.getElementById('Auth_Pass').value.trim();
-            const Auth_isShop = document.getElementById('Auth_IsShop').checked; 
-            const Auth_btn = document.getElementById('Auth_Btn');
-            const Auth_msgBox = document.getElementById('Auth_Msg');
+        async function loginNow() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            const isShop = document.getElementById('is_shop').checked; 
+            const btn = document.getElementById('loginBtn');
+            const msgBox = document.getElementById('msg');
 
-            Auth_msgBox.style.display = 'none';
+            msgBox.style.display = 'none';
 
-            if (!Auth_u || !Auth_p) {
-                Auth_ShowError("يرجى إدخال اسم المستخدم وكلمة المرور ☺️");
+            if (!u || !p) {
+                showError("يرجى إدخال اسم المستخدم وكلمة المرور ☺️");
                 return;
             }
 
             // تشغيل وضع التحقق الآمن
-            Auth_btn.innerHTML = "جاري التحقق الآمن ⏳";
-            Auth_btn.disabled = true;
+            btn.innerHTML = "جاري التحقق الآمن ⏳";
+            btn.disabled = true;
 
             try {
                 // طلب بيانات المستخدم المحدد فقط من السيرفر لمنع تسريب الداتا
-                const Auth_response = await fetch(Auth_API_URL + "?action=read&Auth_User=" + encodeURIComponent(Auth_u));
-                const Auth_data = await Auth_response.json();
+                const response = await fetch(API_URL + "?action=read&user=" + encodeURIComponent(u));
+                const data = await response.json();
 
-                // التحقق الدقيق من مطابقة البيانات المستلمة مع التشفير الجديد للإكسل
-                const Auth_FoundUser = Auth_data.find(item => 
-                    String(item.Auth_User).trim().toLowerCase() === String(Auth_u).toLowerCase() && 
-                    String(item.Auth_Pass).trim() === String(Auth_p)
+                // التحقق الدقيق من مطابقة البيانات المستلمة
+                const user = data.find(item => 
+                    String(item.user).trim().toLowerCase() === String(u).toLowerCase() && 
+                    String(item.pass).trim() === String(p)
                 );
 
-                if (Auth_FoundUser) {
-                    if (Auth_FoundUser.Auth_Status !== 'active') {
-                        Auth_ShowError("عذرا هذا الحساب موقوف راجع الإدارة ☺️");
-                        Auth_ResetBtn();
+                if (user) {
+                    if (user.status !== 'active') {
+                        showError("عذرا هذا الحساب موقوف راجع الإدارة ☺️");
+                        resetBtn();
                         return;
                     }
 
                     // نظام التشفير وحماية الجلسات
-                    const Auth_SecureSession = {
-                        ...Auth_FoundUser,
-                        Auth_SessionToken: btoa(Auth_FoundUser.Auth_User + Date.now() + "N1_SECURE"), 
-                        Auth_LoginTime: Date.now()
+                    const secureSession = {
+                        ...user,
+                        sessionToken: btoa(user.user + Date.now() + "N1_SECURE"), 
+                        loginTime: Date.now()
                     };
                     
-                    localStorage.setItem('Auth_CurrentUser', JSON.stringify(Auth_SecureSession));
+                    localStorage.setItem('currentUser', JSON.stringify(secureSession));
                     
                     // التوجيه الذكي الآمن لمنع الرجوع للخلف
-                    if (Auth_isShop) {
+                    if (isShop) {
                         window.location.replace('shop.html'); 
-                    } else if (Auth_FoundUser.Auth_Role === 'admin') {
+                    } else if (user.role === 'admin') {
                         window.location.replace('admin.html'); 
                     } else {
                         window.location.replace('client.html'); 
                     }
 
                 } else {
-                    Auth_ShowError("اسم المستخدم أو كلمة المرور غير صحيحة ☺️");
-                    Auth_ResetBtn();
+                    showError("اسم المستخدم أو كلمة المرور غير صحيحة ☺️");
+                    resetBtn();
                 }
 
             } catch (err) {
                 console.error(err);
-                Auth_ShowError("تعذر الاتصال بالسيرفر المركزي تأكد من الإنترنت ☺️");
-                Auth_ResetBtn();
+                showError("تعذر الاتصال بالسيرفر المركزي تأكد من الإنترنت ☺️");
+                resetBtn();
             }
         }
 
-        function Auth_ShowError(text) {
-            const Auth_msg = document.getElementById('Auth_Msg');
-            Auth_msg.innerText = text;
-            Auth_msg.style.display = 'block';
+        function showError(text) {
+            const msg = document.getElementById('msg');
+            msg.innerText = text;
+            msg.style.display = 'block';
         }
 
-        function Auth_ResetBtn() {
-            const Auth_btn = document.getElementById('Auth_Btn');
-            Auth_btn.innerHTML = "تسجيل الدخول 🚀";
-            Auth_btn.disabled = false;
+        function resetBtn() {
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = "تسجيل الدخول 🚀";
+            btn.disabled = false;
         }
     </script>
 
