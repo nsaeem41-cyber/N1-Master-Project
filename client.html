@@ -75,32 +75,32 @@
         .btn-delete { background: var(--danger); }
         .btn-active { background: var(--success); }
         
-        #HQ_LoaderOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; font-weight: bold; color: var(--primary); }
+        #loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; font-weight: bold; color: var(--primary); }
         
         /* حقل العمولة المخفي */
-        #HQ_CommissionField { display: none; background: #e8f5e9; padding: 10px; border-radius: 8px; border: 1px solid #a5d6a7; grid-column: span 1; }
+        #commission-field { display: none; background: #e8f5e9; padding: 10px; border-radius: 8px; border: 1px solid #a5d6a7; grid-column: span 1; }
     </style>
 </head>
 <body> 
 
-    <div id="HQ_LoaderOverlay">
+    <div id="loader-overlay">
         <div style="font-size:35px; margin-bottom:10px;">🏢</div>
-        <div>جاري الاتصال بالنواة المركزية</div>
+        <div>جاري الاتصال بالنواة المركزية...</div>
     </div>
 
     <nav class="navbar">
         <div class="brand">N <span class="gold-text">One</span> Empire</div>
         <div style="display:flex; gap:15px; align-items:center;">
-            <span id="HQ_WelcomeMsg" style="font-size:14px; font-weight:bold; color:#555;">مرحبا</span>
-            <button class="btn-logout" onclick="HQ_Logout()">خروج 🔒</button>
+            <span id="welcome-msg" style="font-size:14px; font-weight:bold; color:#555;">مرحباً</span>
+            <button class="btn-logout" onclick="logout()">خروج 🔒</button>
         </div>
     </nav>
 
     <div class="container">
         
         <div class="tabs">
-            <button class="tab-btn active" onclick="HQ_SwitchTab('dashboard', event)">📊 لوحة المعلومات</button>
-            <button class="tab-btn" onclick="HQ_SwitchTab('shops', event)">🏪 إدارة المنشآت</button>
+            <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 لوحة المعلومات</button>
+            <button class="tab-btn" onclick="switchTab('shops', event)">🏪 إدارة المنشآت</button>
             
             <button class="tab-btn tab-link tab-captain" onclick="window.open('captains-manager.html', '_blank')">👮‍♂️ إدارة الكباتن (System) ↗️</button>
             
@@ -113,7 +113,7 @@
                 
                 <div class="card" style="text-align:center;">
                     <h3 style="margin:0; color:#555;">إجمالي المنشآت (الخيوط المسحوبة)</h3>
-                    <h1 id="HQ_TotalShops" style="color:var(--primary); font-size:40px; margin:10px 0;">0</h1>
+                    <h1 id="total-shops" style="color:var(--primary); font-size:40px; margin:10px 0;">0</h1>
                     <small style="color:#777;">منشأة نشطة جاهزة للربط</small>
                 </div>
                 
@@ -121,11 +121,11 @@
                     <h3 style="margin:0; color:#555;">نوع الاشتراكات</h3>
                     <div style="margin-top:15px; display:flex; justify-content:space-around;">
                         <div>
-                            <span style="font-size:20px; font-weight:bold; color:#1b5e20;" id="HQ_CountPaid">0</span><br>
+                            <span style="font-size:20px; font-weight:bold; color:#1b5e20;" id="count-paid">0</span><br>
                             <span style="font-size:12px;">مدفوع</span>
                         </div>
                         <div>
-                            <span style="font-size:20px; font-weight:bold; color:#777;" id="HQ_CountFree">0</span><br>
+                            <span style="font-size:20px; font-weight:bold; color:#777;" id="count-free">0</span><br>
                             <span style="font-size:12px;">مجاني</span>
                         </div>
                     </div>
@@ -139,39 +139,39 @@
                     <span> إضافة منشأة جديدة (تجهيز خيوط الربط)</span>
                 </div>
                 <div class="form-grid">
-                    <input type="text" id="HQ_ShopName" placeholder="اسم المنشأة التجاري (خيط الاسم)">
+                    <input type="text" id="shop_name" placeholder="اسم المنشأة التجاري (خيط الاسم)">
                     
                     <div style="display:flex; gap:5px;">
-                        <input type="text" id="HQ_ShopUser" placeholder="اسم المستخدم (English)" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
-                        <button class="btn-check" onclick="HQ_CheckAvailability()">فحص 🔍</button>
+                        <input type="text" id="shop_user" placeholder="اسم المستخدم (English)" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
+                        <button class="btn-check" onclick="checkAvailability()">فحص 🔍</button>
                     </div>
 
-                    <input type="password" id="HQ_ShopPass" placeholder="كلمة المرور">
+                    <input type="password" id="shop_pass" placeholder="كلمة المرور">
                     
                     <div class="phone-wrapper">
                         <div class="phone-prefix">+962</div>
-                        <input type="tel" id="HQ_ShopPhone" placeholder="7xxxxxxxx (خيط الهاتف - المفتاح)" maxlength="9">
+                        <input type="tel" id="shop_phone" placeholder="7xxxxxxxx (خيط الهاتف - المفتاح)" maxlength="9">
                     </div>
 
-                    <input type="text" id="HQ_ShopLocLink" placeholder="رابط الموقع (Google Maps) (خيط التوجيه)">
+                    <input type="text" id="shop_location_link" placeholder="رابط الموقع (Google Maps) (خيط التوجيه)">
 
-                    <select id="HQ_SubType" onchange="HQ_ToggleCommissionField()">
+                    <select id="sub_type" onchange="toggleCommissionField()">
                         <option value="free">اشتراك مجاني (بدون عمولة)</option>
                         <option value="paid">اشتراك مدفوع (Premium)</option>
                     </select>
 
-                    <div id="HQ_CommissionField">
+                    <div id="commission-field">
                         <label style="font-size:11px; font-weight:bold; color:var(--money);">💰 قيمة العمولة الثابتة (لكل طلب)</label>
-                        <input type="number" id="HQ_FixedCommission" placeholder="مثلا 0.50" step="0.01">
+                        <input type="number" id="fixed_commission" placeholder="مثلاً 0.50" step="0.01">
                     </div>
 
-                    <select id="HQ_SubDuration">
+                    <select id="sub_duration">
                         <option value="30">30 يوم</option>
                         <option value="90">3 أشهر</option>
                         <option value="365">سنة كاملة</option>
                     </select>
 
-                    <button class="btn-action btn-add" onclick="HQ_AddShop()">+ إضافة وتفعيل (ربط الخيوط) 🚀</button>
+                    <button class="btn-action btn-add" onclick="addShop()">+ إضافة وتفعيل (ربط الخيوط) 🚀</button>
                 </div>
             </div>
 
@@ -190,8 +190,8 @@
                                 <th>التحكم</th>
                             </tr>
                         </thead>
-                        <tbody id="HQ_ShopsTableBody">
-                            <tr><td colspan="7" style="text-align:center;">جاري سحب البيانات ⏳</td></tr>
+                        <tbody id="shops-table-body">
+                            <tr><td colspan="7" style="text-align:center;">جاري سحب البيانات... ⏳</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -207,28 +207,28 @@
         
         // الرابط الملكي المعتمد
         if (typeof N_ONE_CORE !== 'undefined') {
-            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
+            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
         }
 
-        let HQ_CurrentUser = null;
-        let HQ_AllData = [];
+        let currentUser = null;
+        let allData = [];
 
         window.onload = async function() {
-            if (typeof N_ONE_CORE === 'undefined') { alert("خطأ المصلح المركزي غير متصل"); return; }
+            if (typeof N_ONE_CORE === 'undefined') { alert("خطأ: المصلح المركزي غير متصل!"); return; }
             
             // التحقق من الجلسة
-            HQ_CurrentUser = N_ONE_CORE.checkSession('client');
-            if (HQ_CurrentUser) {
-                document.getElementById('HQ_WelcomeMsg').innerText = `أهلا ${HQ_CurrentUser.name}`;
-                await HQ_FetchData();
+            currentUser = N_ONE_CORE.checkSession('client');
+            if (currentUser) {
+                document.getElementById('welcome-msg').innerText = `أهلاً، ${currentUser.name}`;
+                await fetchData();
             }
         };
 
         // دالة التبديل بين التبويبات الداخلية فقط
-        function HQ_SwitchTab(tabId, event) {
+        function switchTab(tabId, event) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => {
-                // إزالة التفعيل فقط عن الأزرار الداخلية ليست روابط
+                // إزالة التفعيل فقط عن الأزرار الداخلية (ليست روابط)
                 if(!el.classList.contains('tab-link')) el.classList.remove('active');
             });
             
@@ -236,50 +236,50 @@
             event.target.classList.add('active');
         }
 
-        async function HQ_FetchData() {
+        async function fetchData() {
             try {
                 // سحب البيانات من السيرفر
-                HQ_AllData = await N_ONE_CORE.fetchData('read');
-                HQ_RenderShops();
+                allData = await N_ONE_CORE.fetchData('read');
+                renderShops();
             } catch (e) { console.error(e); }
         }
 
         // ================= ميزات إدارة المنشآت الذكية =================
 
-        function HQ_ToggleCommissionField() {
-            const type = document.getElementById('HQ_SubType').value;
-            const field = document.getElementById('HQ_CommissionField');
+        function toggleCommissionField() {
+            const type = document.getElementById('sub_type').value;
+            const field = document.getElementById('commission-field');
             if (type === 'paid') field.style.display = 'block';
             else field.style.display = 'none';
         }
 
-        async function HQ_CheckAvailability() {
-            const user = document.getElementById('HQ_ShopUser').value.trim();
+        async function checkAvailability() {
+            const user = document.getElementById('shop_user').value.trim();
             if (!user) return;
             const btn = document.querySelector('.btn-check');
             btn.innerText = "فحص...";
             
             // فحص سريع من البيانات المحلية
-            const exists = HQ_AllData.some(u => String(u.user).toLowerCase() === user.toLowerCase());
+            const exists = allData.some(u => String(u.user).toLowerCase() === user.toLowerCase());
             
-            if (exists) alert("هذا الاسم مستخدم اختر غيره ☺️");
-            else alert("الاسم متاح ويمكن استخدامه ✅");
+            if (exists) alert("❌ هذا الاسم مستخدم، اختر غيره ☺️");
+            else alert("✅ الاسم متاح ويمكن استخدامه");
             
             btn.innerText = "فحص 🔍";
         }
 
-        async function HQ_AddShop() {
-            const name = document.getElementById('HQ_ShopName').value;
-            const user = document.getElementById('HQ_ShopUser').value.trim();
-            const pass = document.getElementById('HQ_ShopPass').value;
-            const subType = document.getElementById('HQ_SubType').value;
-            const phone = document.getElementById('HQ_ShopPhone').value; 
-            const locLink = document.getElementById('HQ_ShopLocLink').value;
-            const days = document.getElementById('HQ_SubDuration').value;
+        async function addShop() {
+            const name = document.getElementById('shop_name').value;
+            const user = document.getElementById('shop_user').value.trim();
+            const pass = document.getElementById('shop_pass').value;
+            const subType = document.getElementById('sub_type').value;
+            const phone = document.getElementById('shop_phone').value; 
+            const locLink = document.getElementById('shop_location_link').value;
+            const days = document.getElementById('sub_duration').value;
             
             let commission = "0";
             if (subType === 'paid') {
-                commission = document.getElementById('HQ_FixedCommission').value;
+                commission = document.getElementById('fixed_commission').value;
                 if (!commission) { alert("يرجى تحديد قيمة العمولة للاشتراك المدفوع ☺️"); return; }
             }
 
@@ -289,7 +289,7 @@
             const expDate = new Date();
             expDate.setDate(expDate.getDate() + parseInt(days));
 
-            document.getElementById('HQ_LoaderOverlay').style.display = 'flex';
+            document.getElementById('loader-overlay').style.display = 'flex';
             
             const newShop = {
                 id: "SH_" + Date.now(),
@@ -298,39 +298,39 @@
                 name: name,
                 role: "shop", 
                 type: "shop", 
-                client_user: HQ_CurrentUser.user,
+                client_user: currentUser.user,
                 status: "active",
                 
                 // === تنفيذ بروتوكول سحب الخيوط الذهبية ===
-                cap_phone: phone, // الخيط الأول الهاتف المفتاح العمود O
-                pickup: locLink,  // الخيط الثاني الموقع التوجيه العمود P
-                company_share: commission, // الخيط المالي العمولة العمود S
+                cap_phone: phone, // الخيط الأول: الهاتف (المفتاح) - العمود O
+                pickup: locLink,  // الخيط الثاني: الموقع (التوجيه) - العمود P
+                company_share: commission, // الخيط المالي: العمولة - العمود S
                 expiry: expDate.toISOString().split('T')[0], // العمود I
                 plan_days: days // العمود J
             };
 
             await N_ONE_CORE.postData('add', [newShop]);
-            await HQ_FetchData();
+            await fetchData();
             
-            document.getElementById('HQ_LoaderOverlay').style.display = 'none';
+            document.getElementById('loader-overlay').style.display = 'none';
             alert("تم إضافة المنشأة وحفظ الخيوط بنجاح للربط ☺️✅");
             
             // تنظيف الحقول
-            document.getElementById('HQ_ShopName').value = '';
-            document.getElementById('HQ_ShopUser').value = '';
-            document.getElementById('HQ_ShopPass').value = '';
-            document.getElementById('HQ_ShopPhone').value = '';
-            document.getElementById('HQ_ShopLocLink').value = '';
+            document.getElementById('shop_name').value = '';
+            document.getElementById('shop_user').value = '';
+            document.getElementById('shop_pass').value = '';
+            document.getElementById('shop_phone').value = '';
+            document.getElementById('shop_location_link').value = '';
         }
 
-        function HQ_RenderShops() {
-            const tbody = document.getElementById('HQ_ShopsTableBody');
-            const myShops = HQ_AllData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(HQ_CurrentUser.user)).reverse();
+        function renderShops() {
+            const tbody = document.getElementById('shops-table-body');
+            const myShops = allData.filter(i => (i.type == 'shop' || i.role == 'shop') && String(i.client_user) === String(currentUser.user)).reverse();
             
-            // تحديث العدادات الذكية في لوحة المعلومات بدون كباتن
-            document.getElementById('HQ_TotalShops').innerText = myShops.length;
-            document.getElementById('HQ_CountPaid').innerText = myShops.filter(s => Number(s.company_share) > 0).length;
-            document.getElementById('HQ_CountFree').innerText = myShops.filter(s => Number(s.company_share) <= 0).length;
+            // تحديث العدادات الذكية في لوحة المعلومات (بدون كباتن)
+            document.getElementById('total-shops').innerText = myShops.length;
+            document.getElementById('count-paid').innerText = myShops.filter(s => Number(s.company_share) > 0).length;
+            document.getElementById('count-free').innerText = myShops.filter(s => Number(s.company_share) <= 0).length;
 
             if (myShops.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">لا توجد منشآت</td></tr>'; return; }
             tbody.innerHTML = '';
@@ -342,15 +342,15 @@
                     ? `<span class="badge" style="background:#e8f5e9; color:#1b5e20;">مدفوع (${commVal} د.أ)</span>` 
                     : `<span class="badge" style="background:#eee; color:#777;">مجاني</span>`;
 
-                // منطق التجميد الصحيح عكس الحالة للزر
+                // منطق التجميد الصحيح (عكس الحالة للزر)
                 const isPaused = shop.status === 'paused';
                 const statusBadge = isPaused 
                     ? '<span class="badge" style="background:#fff3e0; color:#ef6c00;">مجمد ❄️</span>' 
                     : '<span class="badge" style="background:#e8f5e9; color:#2e7d32;">نشط ✅</span>';
                 
                 const toggleBtn = isPaused 
-                    ? `<button class="btn-active" title="إعادة تفعيل" onclick="HQ_ToggleStatus('${shop.user}', 'paused')">▶️</button>` 
-                    : `<button class="btn-freeze" title="تجميد مؤقت" onclick="HQ_ToggleStatus('${shop.user}', 'active')">❄️</button>`;
+                    ? `<button class="btn-active" title="إعادة تفعيل" onclick="toggleStatus('${shop.user}', 'paused')">▶️</button>` 
+                    : `<button class="btn-freeze" title="تجميد مؤقت" onclick="toggleStatus('${shop.user}', 'active')">❄️</button>`;
                 
                 // حساب الأيام المتبقية
                 let daysLeft = "غير محدد";
@@ -360,7 +360,7 @@
                     daysLeft = d > 0 ? d + " يوم" : "منتهي";
                 }
                 
-                // عرض الموقع إن وجد الخيط المرئي
+                // عرض الموقع إن وجد (الخيط المرئي)
                 let locDisplay = shop.pickup ? `<br><a href="${shop.pickup}" target="_blank" style="font-size:11px; text-decoration:none;">📍 الموقع</a>` : '';
 
                 tbody.innerHTML += `
@@ -372,9 +372,9 @@
                         <td style="font-size:12px;">${daysLeft}</td>
                         <td>${statusBadge}</td>
                         <td class="controls">
-                            <button class="btn-edit" onclick="HQ_EditShop('${shop.user}', '${shop.name}', '${shop.pass}')">✏️</button>
+                            <button class="btn-edit" onclick="editShop('${shop.user}', '${shop.name}', '${shop.pass}')">✏️</button>
                             ${toggleBtn}
-                            <button class="btn-delete" onclick="HQ_DeleteShop('${shop.user}')">❌</button>
+                            <button class="btn-delete" onclick="deleteShop('${shop.user}')">❌</button>
                         </td>
                     </tr>
                 `;
@@ -383,38 +383,38 @@
 
         // ================= عمليات التحكم =================
 
-        async function HQ_ToggleStatus(u, currentStatus) {
+        async function toggleStatus(u, currentStatus) {
             // نرسل عكس الحالة الحالية
             const nextStatus = (currentStatus === 'active') ? 'paused' : 'active';
-            const confirmMsg = nextStatus === 'paused' ? "تجميد الحساب لن يتمكن من إرسال طلبات" : "إعادة التفعيل";
+            const confirmMsg = nextStatus === 'paused' ? "تجميد الحساب؟ لن يتمكن من إرسال طلبات." : "إعادة التفعيل؟";
             
             if(!confirm(confirmMsg)) return;
             
-            document.getElementById('HQ_LoaderOverlay').style.display = 'flex';
+            document.getElementById('loader-overlay').style.display = 'flex';
             await N_ONE_CORE.postData('update', { user: u, data: { status: nextStatus } });
-            await HQ_FetchData(); 
-            document.getElementById('HQ_LoaderOverlay').style.display = 'none';
+            await fetchData(); 
+            document.getElementById('loader-overlay').style.display = 'none';
         }
 
-        async function HQ_EditShop(u, n, p) {
-            const newN = prompt("تعديل اسم المنشأة", n); if (!newN) return;
-            const newP = prompt("تعديل كلمة المرور", p);
+        async function editShop(u, n, p) {
+            const newN = prompt("تعديل اسم المنشأة:", n); if (!newN) return;
+            const newP = prompt("تعديل كلمة المرور:", p);
             
-            document.getElementById('HQ_LoaderOverlay').style.display = 'flex';
+            document.getElementById('loader-overlay').style.display = 'flex';
             await N_ONE_CORE.postData('update', { user: u, data: { name: newN, pass: newP } });
-            await HQ_FetchData();
-            document.getElementById('HQ_LoaderOverlay').style.display = 'none';
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
         }
 
-        async function HQ_DeleteShop(u) {
-            if(!confirm("حذف نهائي سيتم قطع الخيوط")) return;
-            document.getElementById('HQ_LoaderOverlay').style.display = 'flex';
+        async function deleteShop(u) {
+            if(!confirm("حذف نهائي؟ (سيتم قطع الخيوط)")) return;
+            document.getElementById('loader-overlay').style.display = 'flex';
             await N_ONE_CORE.fetchData('delete', { user: u });
-            await HQ_FetchData();
-            document.getElementById('HQ_LoaderOverlay').style.display = 'none';
+            await fetchData();
+            document.getElementById('loader-overlay').style.display = 'none';
         }
 
-        function HQ_Logout() { N_ONE_CORE.logout(); }
+        function logout() { N_ONE_CORE.logout(); }
     </script>
 </body>
 </html>
