@@ -148,9 +148,9 @@
         @media (max-width: 900px) { .ops-container { grid-template-columns: 1fr; height: auto; } .live-section { border-left: none; } }
     </style>
 </head>
-<body onclick="enableSound()">
+<body onclick="Ops_EnableSound()">
 
-    <audio id="notif-sound" preload="auto" loop>
+    <audio id="Ops_NotifSound" preload="auto" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" type="audio/mpeg">
     </audio>
 
@@ -159,15 +159,15 @@
         
         <div class="live-stats-bar">
             <div class="stat-box">
-                <div class="stat-val" id="stat-total">0</div>
+                <div class="stat-val" id="Ops_StatTotal">0</div>
                 <div class="stat-lbl">الطلبات</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" id="stat-pending" style="color:var(--danger);">0</div>
+                <div class="stat-val" id="Ops_StatPending" style="color:var(--danger);">0</div>
                 <div class="stat-lbl">انتظار</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" id="stat-comm">0.00</div>
+                <div class="stat-val" id="Ops_StatComm">0.00</div>
                 <div class="stat-lbl">عمولة</div>
             </div>
         </div>
@@ -193,7 +193,7 @@
                             <th>الموقع</th>
                         </tr>
                     </thead>
-                    <tbody id="live-table-body">
+                    <tbody id="Ops_LiveTableBody">
                         <tr><td colspan="7" style="text-align:center; padding:30px; color:#94a3b8;">جاري الاتصال...</td></tr>
                     </tbody>
                 </table>
@@ -208,35 +208,35 @@
                 
                 <div class="manual-form">
                     <div>
-                        <input type="tel" id="man_phone" placeholder="رقم الكابتن (07xxxxxxxx)" oninput="checkCaptainMemory()">
-                        <div id="mem_hint" class="memory-hint"> البطل: <span id="mem_name"></span></div>
+                        <input type="tel" id="Ops_ManPhone" placeholder="رقم الكابتن (07xxxxxxxx)" oninput="Ops_CheckCapMemory()">
+                        <div id="Ops_MemHint" class="memory-hint"> البطل: <span id="Ops_MemName"></span></div>
                     </div>
 
-                    <input type="text" id="man_cap_name" placeholder="اسم الكابتن">
-                    <input type="text" id="man_rest_name" placeholder="اسم المنشأة">
+                    <input type="text" id="Ops_ManCapName" placeholder="اسم الكابتن">
+                    <input type="text" id="Ops_ManRestName" placeholder="اسم المنشأة">
                     
                     <div style="display:flex; gap:10px;">
-                        <input type="number" id="man_val" placeholder="السعر">
-                        <input type="number" id="man_fee" placeholder="التوصيل">
+                        <input type="number" id="Ops_ManVal" placeholder="السعر">
+                        <input type="number" id="Ops_ManFee" placeholder="التوصيل">
                     </div>
 
                     <div style="display:flex; gap:10px;">
-                        <input type="number" id="man_ratio" placeholder="نسبة %">
+                        <input type="number" id="Ops_ManRatio" placeholder="نسبة %">
                     </div>
 
-                    <button class="btn-whatsapp" onclick="sendManualOrder()">
+                    <button class="btn-whatsapp" onclick="Ops_SendManualOrder()">
                         <span>إرسال وتوثيق</span> 🚀
                     </button>
                     
-                    <input type="hidden" id="edit_mode_index" value="-1">
-                    <button id="cancel_edit_btn" onclick="cancelEdit()" style="display:none; background:#64748b; border:none; padding:10px; border-radius:10px; color:white; cursor:pointer; font-weight:bold;">إلغاء التعديل</button>
+                    <input type="hidden" id="Ops_EditModeIndex" value="-1">
+                    <button id="Ops_CancelEditBtn" onclick="Ops_CancelEdit()" style="display:none; background:#64748b; border:none; padding:10px; border-radius:10px; color:white; cursor:pointer; font-weight:bold;">إلغاء التعديل</button>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
                     <span>🗂️ الأرشيف اليومي</span>
-                    <button onclick="clearDailyArchive()" class="mini-btn" style="color:var(--danger);" title="تصفير">🗑️</button>
+                    <button onclick="Ops_ClearArchive()" class="mini-btn" style="color:var(--danger);" title="تصفير">🗑️</button>
                 </div>
                 <div style="padding:10px;">
                     <table style="font-size:11px;">
@@ -248,7 +248,7 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody id="archive-body">
+                        <tbody id="Ops_ArchiveBody">
                             <tr><td colspan="4" style="text-align:center; color:#94a3b8;">فارغ</td></tr>
                         </tbody>
                     </table>
@@ -260,268 +260,276 @@
 
     <script>
         // ========================================================
-        // كود الرادار الماسي - v10.0 (Diamond Edition)
+        // كود الرادار الماسي - v10.0 (Diamond Edition) المشفر
         // ========================================================
         
-        if (typeof N_ONE_CORE !== 'undefined') {
-            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
+        if (typeof Core_N_ONE_CORE !== 'undefined') {
+            Core_N_ONE_CORE.Core_API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
         }
 
-        let allData = [];
+        let Ops_AllData = [];
         // ذاكرة دائمة للطلبات المؤكدة
-        let acknowledgedSet = new Set(JSON.parse(localStorage.getItem('nOne_acked_orders') || '[]'));
+        let Ops_AckedSet = new Set(JSON.parse(localStorage.getItem('Ops_AckedOrders') || '[]'));
         
-        let soundEnabled = false;
-        let isAlarmPlaying = false;
-        let captainMemory = JSON.parse(localStorage.getItem('n1_captains') || '{}');
-        let dailyArchive = JSON.parse(localStorage.getItem('n1_daily_archive') || '[]');
+        let Ops_SoundEnabled = false;
+        let Ops_IsAlarmPlaying = false;
+        let Ops_CaptainMemory = JSON.parse(localStorage.getItem('Ops_CaptainsDB') || '{}');
+        let Ops_DailyArchive = JSON.parse(localStorage.getItem('Ops_DailyArchiveDB') || '[]');
 
         window.onload = async function() {
-            await fetchData();
-            renderArchive();
-            setInterval(fetchDataSilent, 5000);
-            setInterval(updateTimersAndColors, 1000);
+            await Ops_FetchData();
+            Ops_RenderArchive();
+            setInterval(Ops_FetchDataSilent, 5000);
+            setInterval(Ops_UpdateTimers, 1000);
         };
 
-        function enableSound() {
-            if (!soundEnabled) {
-                const audio = document.getElementById('notif-sound');
-                audio.play().then(() => { 
-                    audio.pause(); audio.currentTime = 0; soundEnabled = true; 
+        function Ops_EnableSound() {
+            if (!Ops_SoundEnabled) {
+                const Ops_Audio = document.getElementById('Ops_NotifSound');
+                Ops_Audio.play().then(() => { 
+                    Ops_Audio.pause(); Ops_Audio.currentTime = 0; Ops_SoundEnabled = true; 
                 }).catch(() => {});
             }
         }
 
-        function playAlarm() {
-            const audio = document.getElementById('notif-sound');
-            if (soundEnabled && !isAlarmPlaying) {
-                audio.loop = true; audio.play().catch(()=>{}); isAlarmPlaying = true;
+        function Ops_PlayAlarm() {
+            const Ops_Audio = document.getElementById('Ops_NotifSound');
+            if (Ops_SoundEnabled && !Ops_IsAlarmPlaying) {
+                Ops_Audio.loop = true; Ops_Audio.play().catch(()=>{}); Ops_IsAlarmPlaying = true;
             }
         }
 
-        function stopAlarm() {
-            const audio = document.getElementById('notif-sound');
-            audio.pause(); audio.currentTime = 0; isAlarmPlaying = false;
+        function Ops_StopAlarm() {
+            const Ops_Audio = document.getElementById('Ops_NotifSound');
+            Ops_Audio.pause(); Ops_Audio.currentTime = 0; Ops_IsAlarmPlaying = false;
         }
 
-        async function fetchData() {
-            try { allData = await N_ONE_CORE.fetchData('read'); renderLiveTable(); } catch (e) {}
+        async function Ops_FetchData() {
+            try { Ops_AllData = await Core_N_ONE_CORE.Core_fetchData('read'); Ops_RenderLiveTable(); } catch (Ops_E) {}
         }
 
-        async function fetchDataSilent() {
+        async function Ops_FetchDataSilent() {
             try {
-                const newData = await N_ONE_CORE.fetchData('read');
-                if (newData.length > 0) { allData = newData; renderLiveTable(); }
-            } catch (e) {}
+                const Ops_NewData = await Core_N_ONE_CORE.Core_fetchData('read');
+                if (Ops_NewData.length > 0) { Ops_AllData = Ops_NewData; Ops_RenderLiveTable(); }
+            } catch (Ops_E) {}
         }
 
-        function renderLiveTable() {
-            const tbody = document.getElementById('live-table-body');
-            const orders = allData.filter(i => i.type === 'order').reverse();
+        function Ops_RenderLiveTable() {
+            const Ops_Tbody = document.getElementById('Ops_LiveTableBody');
+            const Ops_Orders = Ops_AllData.filter(i => i.type === 'order' || i.Auth_Type === 'order').reverse();
             
-            document.getElementById('stat-total').innerText = orders.length;
+            document.getElementById('Ops_StatTotal').innerText = Ops_Orders.length;
             
             // حساب غير المؤكدين
-            const pendingCount = orders.filter(o => !acknowledgedSet.has(o.id)).length;
-            document.getElementById('stat-pending').innerText = pendingCount;
+            const Ops_PendingCount = Ops_Orders.filter(o => !Ops_AckedSet.has(o.id || o.Auth_ID)).length;
+            document.getElementById('Ops_StatPending').innerText = Ops_PendingCount;
             
-            if (pendingCount > 0) playAlarm(); else stopAlarm();
+            if (Ops_PendingCount > 0) Ops_PlayAlarm(); else Ops_StopAlarm();
 
-            if (orders.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#94a3b8;">الرادار هادئ...</td></tr>'; return; }
+            if (Ops_Orders.length === 0) { Ops_Tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#94a3b8;">الرادار هادئ...</td></tr>'; return; }
             
-            tbody.innerHTML = '';
+            Ops_Tbody.innerHTML = '';
             
-            orders.forEach(ord => {
-                const isAck = acknowledgedSet.has(ord.id);
+            Ops_Orders.forEach(Ops_Ord => {
+                const Ops_OrderID = Ops_Ord.id || Ops_Ord.Auth_ID;
+                const Ops_IsAck = Ops_AckedSet.has(Ops_OrderID);
                 
-                let rowClass = '';
-                const orderTime = new Date(ord.date).getTime();
-                const now = Date.now();
-                const diffSec = Math.floor((now - orderTime) / 1000);
+                let Ops_RowClass = '';
+                const Ops_OrderDate = Ops_Ord.date || Ops_Ord.Auth_Date;
+                const Ops_OrderTime = new Date(Ops_OrderDate).getTime();
+                const Ops_Now = Date.now();
+                const Ops_DiffSec = Math.floor((Ops_Now - Ops_OrderTime) / 1000);
                 
-                if (isAck) {
-                    rowClass = 'row-acked';
+                if (Ops_IsAck) {
+                    Ops_RowClass = 'row-acked';
                 } else {
-                    if (diffSec > 120) rowClass = 'urgent-order';
-                    else rowClass = 'new-order-active';
+                    if (Ops_DiffSec > 120) Ops_RowClass = 'urgent-order';
+                    else Ops_RowClass = 'new-order-active';
                 }
 
-                const ackIcon = isAck ? '✔' : '✓';
+                const Ops_AckIcon = Ops_IsAck ? '✔' : '✓';
                 
-                // === التأكد من رقم الهاتف (الأولوية للرقم المرسل مع الطلب) ===
-                // إذا لم يوجد cap_phone، نبحث في قاعدة بيانات المستخدمين
-                let shopPhone = ord.cap_phone;
-                if (!shopPhone || shopPhone === "غير مسجل") {
-                    const userRecord = allData.find(u => u.user === ord.client_user && u.type === 'shop');
-                    if (userRecord && userRecord.cap_phone) shopPhone = userRecord.cap_phone;
-                    else shopPhone = "---";
+                // === التأكد من رقم الهاتف ===
+                let Ops_ShopPhone = Ops_Ord.cap_phone || Ops_Ord.Auth_CapPhone;
+                const Ops_ClientUser = Ops_Ord.client_user || Ops_Ord.Auth_ClientUser;
+
+                if (!Ops_ShopPhone || Ops_ShopPhone === "غير مسجل") {
+                    const Ops_UserRecord = Ops_AllData.find(u => (u.user === Ops_ClientUser || u.Auth_User === Ops_ClientUser) && (u.type === 'shop' || u.Auth_Type === 'shop'));
+                    if (Ops_UserRecord && (Ops_UserRecord.cap_phone || Ops_UserRecord.Auth_CapPhone)) Ops_ShopPhone = Ops_UserRecord.cap_phone || Ops_UserRecord.Auth_CapPhone;
+                    else Ops_ShopPhone = "---";
                 }
                 
-                let shopLocLink = '#';
-                if (ord.pickup && ord.pickup.includes('http')) shopLocLink = ord.pickup;
-                else if (ord.pickup) shopLocLink = `http://googleusercontent.com/maps.google.com/search?q=${encodeURIComponent(ord.pickup)}`;
+                let Ops_ShopLocLink = '#';
+                const Ops_PickupLoc = Ops_Ord.pickup || Ops_Ord.Auth_Pickup;
+                if (Ops_PickupLoc && Ops_PickupLoc.includes('http')) Ops_ShopLocLink = Ops_PickupLoc;
+                else if (Ops_PickupLoc) Ops_ShopLocLink = `http://googleusercontent.com/maps.google.com/search?q=${encodeURIComponent(Ops_PickupLoc)}`;
 
-                const timeObj = new Date(ord.date);
-                const exactTime = timeObj.toLocaleTimeString('en-US', {hour12:false}); 
+                const Ops_TimeObj = new Date(Ops_OrderDate);
+                const Ops_ExactTime = Ops_TimeObj.toLocaleTimeString('en-US', {hour12:false}); 
 
-                tbody.innerHTML += `
-                    <tr class="${rowClass}" id="row-${ord.id}" data-time="${orderTime}" data-ack="${isAck}">
+                const Ops_ClientNameDisplay = Ops_Ord.cl_name || Ops_Ord.Auth_ClName || '---';
+                const Ops_ValDisplay = Ops_Ord.val || Ops_Ord.Auth_Val;
+                const Ops_FeeDisplay = Ops_Ord.fee || Ops_Ord.Auth_Fee;
+
+                Ops_Tbody.innerHTML += `
+                    <tr class="${Ops_RowClass}" id="Ops_Row_${Ops_OrderID}" data-time="${Ops_OrderTime}" data-ack="${Ops_IsAck}">
                         <td>
-                            <button class="btn-ack" onclick="acknowledgeOrder('${ord.id}')">${ackIcon}</button>
+                            <button class="btn-ack" onclick="Ops_AckOrder('${Ops_OrderID}')">${Ops_AckIcon}</button>
                         </td>
-                        <td class="bg-time">${exactTime}</td>
-                        <td><span class="timer-badge" id="timer-${ord.id}" style="color:${isAck ? '#cbd5e1' : 'var(--gold)'}">0s</span></td>
-                        <td class="bg-shop">${ord.cl_name || '---'}</td>
-                        <td><span class="badge bg-phone">${shopPhone}</span></td>
+                        <td class="bg-time">${Ops_ExactTime}</td>
+                        <td><span class="timer-badge" id="Ops_Timer_${Ops_OrderID}" style="color:${Ops_IsAck ? '#cbd5e1' : 'var(--gold)'}">0s</span></td>
+                        <td class="bg-shop">${Ops_ClientNameDisplay}</td>
+                        <td><span class="badge bg-phone">${Ops_ShopPhone}</span></td>
                         <td>
                             <div class="financial-cell">
-                                <span class="badge bg-money" title="قيمة الطلب">${ord.val} د.أ</span>
-                                <span class="badge bg-fee" title="التوصيل">+ ${ord.fee}</span>
+                                <span class="badge bg-money" title="قيمة الطلب">${Ops_ValDisplay} د.أ</span>
+                                <span class="badge bg-fee" title="التوصيل">+ ${Ops_FeeDisplay}</span>
                             </div>
                         </td>
-                        <td><a href="${shopLocLink}" target="_blank" class="badge" style="background:#e0f2fe; color:#0284c7; text-decoration:none;">📍 خريطة</a></td>
+                        <td><a href="${Ops_ShopLocLink}" target="_blank" class="badge" style="background:#e0f2fe; color:#0284c7; text-decoration:none;">📍 خريطة</a></td>
                     </tr>
                 `;
             });
-            updateTimersAndColors();
+            Ops_UpdateTimers();
         }
 
-        function acknowledgeOrder(id) {
-            acknowledgedSet.add(id);
-            localStorage.setItem('nOne_acked_orders', JSON.stringify(Array.from(acknowledgedSet)));
-            renderLiveTable(); 
+        function Ops_AckOrder(Ops_ID) {
+            Ops_AckedSet.add(Ops_ID);
+            localStorage.setItem('Ops_AckedOrders', JSON.stringify(Array.from(Ops_AckedSet)));
+            Ops_RenderLiveTable(); 
         }
 
-        function updateTimersAndColors() {
-            const rows = document.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const time = row.getAttribute('data-time');
-                const isAck = row.getAttribute('data-ack') === 'true';
-                const id = row.id.replace('row-', '');
+        function Ops_UpdateTimers() {
+            const Ops_Rows = document.querySelectorAll('tbody tr');
+            Ops_Rows.forEach(Ops_Row => {
+                const Ops_Time = Ops_Row.getAttribute('data-time');
+                const Ops_IsAck = Ops_Row.getAttribute('data-ack') === 'true';
+                const Ops_RowID = Ops_Row.id.replace('Ops_Row_', '');
                 
-                if (time) {
-                    const diff = Math.floor((Date.now() - parseInt(time)) / 1000);
-                    const timerEl = document.getElementById(`timer-${id}`);
-                    if (timerEl) {
-                        timerEl.innerText = diff + "s";
-                        if (diff > 120 && !isAck) timerEl.style.color = "var(--danger)";
+                if (Ops_Time) {
+                    const Ops_Diff = Math.floor((Date.now() - parseInt(Ops_Time)) / 1000);
+                    const Ops_TimerEl = document.getElementById(`Ops_Timer_${Ops_RowID}`);
+                    if (Ops_TimerEl) {
+                        Ops_TimerEl.innerText = Ops_Diff + "s";
+                        if (Ops_Diff > 120 && !Ops_IsAck) Ops_TimerEl.style.color = "var(--danger)";
                     }
-                    if (!isAck && diff > 120 && !row.classList.contains('urgent-order')) {
-                        row.classList.remove('new-order-active');
-                        row.classList.add('urgent-order');
+                    if (!Ops_IsAck && Ops_Diff > 120 && !Ops_Row.classList.contains('urgent-order')) {
+                        Ops_Row.classList.remove('new-order-active');
+                        Ops_Row.classList.add('urgent-order');
                     }
                 }
             });
         }
 
         // ================= المرسل اليدوي =================
-        function checkCaptainMemory() {
-            const phone = document.getElementById('man_phone').value;
-            const hint = document.getElementById('mem_hint');
-            if (captainMemory[phone]) {
-                hint.style.display = 'block';
-                document.getElementById('mem_name').innerText = captainMemory[phone];
-                document.getElementById('man_cap_name').value = captainMemory[phone];
-            } else hint.style.display = 'none';
+        function Ops_CheckCapMemory() {
+            const Ops_Phone = document.getElementById('Ops_ManPhone').value;
+            const Ops_Hint = document.getElementById('Ops_MemHint');
+            if (Ops_CaptainMemory[Ops_Phone]) {
+                Ops_Hint.style.display = 'block';
+                document.getElementById('Ops_MemName').innerText = Ops_CaptainMemory[Ops_Phone];
+                document.getElementById('Ops_ManCapName').value = Ops_CaptainMemory[Ops_Phone];
+            } else Ops_Hint.style.display = 'none';
         }
 
-        function sendManualOrder() {
-            const phone = document.getElementById('man_phone').value;
-            const capName = document.getElementById('man_cap_name').value;
-            const restName = document.getElementById('man_rest_name').value;
-            const val = document.getElementById('man_val').value;
-            const fee = document.getElementById('man_fee').value;
-            const ratio = document.getElementById('man_ratio').value || 0;
-            const editIndex = document.getElementById('edit_mode_index').value;
+        function Ops_SendManualOrder() {
+            const Ops_Phone = document.getElementById('Ops_ManPhone').value;
+            const Ops_CapName = document.getElementById('Ops_ManCapName').value;
+            const Ops_RestName = document.getElementById('Ops_ManRestName').value;
+            const Ops_Val = document.getElementById('Ops_ManVal').value;
+            const Ops_Fee = document.getElementById('Ops_ManFee').value;
+            const Ops_Ratio = document.getElementById('Ops_ManRatio').value || 0;
+            const Ops_EditIndex = document.getElementById('Ops_EditModeIndex').value;
 
-            if (!phone || !restName) { alert("بيانات ناقصة"); return; }
+            if (!Ops_Phone || !Ops_RestName) { alert("بيانات ناقصة"); return; }
 
-            if (capName) {
-                captainMemory[phone] = capName;
-                localStorage.setItem('n1_captains', JSON.stringify(captainMemory));
+            if (Ops_CapName) {
+                Ops_CaptainMemory[Ops_Phone] = Ops_CapName;
+                localStorage.setItem('Ops_CaptainsDB', JSON.stringify(Ops_CaptainMemory));
             }
 
-            const capOrders = dailyArchive.filter(o => o.cap === capName);
-            const todayCount = capOrders.length + 1; 
-            let todayEarnings = capOrders.reduce((sum, o) => sum + parseFloat(o.fee || 0), 0);
-            todayEarnings += parseFloat(fee || 0);
+            const Ops_CapOrders = Ops_DailyArchive.filter(o => o.cap === Ops_CapName);
+            const Ops_TodayCount = Ops_CapOrders.length + 1; 
+            let Ops_TodayEarnings = Ops_CapOrders.reduce((Ops_Sum, o) => Ops_Sum + parseFloat(o.fee || 0), 0);
+            Ops_TodayEarnings += parseFloat(Ops_Fee || 0);
 
-            const mapLink = `http://googleusercontent.com/maps.google.com/search?q=${encodeURIComponent(restName)}`;
+            const Ops_MapLink = `http://googleusercontent.com/maps.google.com/search?q=${encodeURIComponent(Ops_RestName)}`;
             
-            let finalPhone = phone.startsWith('0') ? '962' + phone.substring(1) : phone;
-            if (!finalPhone.startsWith('962')) finalPhone = '962' + phone;
+            let Ops_FinalPhone = Ops_Phone.startsWith('0') ? '962' + Ops_Phone.substring(1) : Ops_Phone;
+            if (!Ops_FinalPhone.startsWith('962')) Ops_FinalPhone = '962' + Ops_Phone;
 
-            const msg = `يا هلا بـ *${capName}* البطل 🦸‍♂️%0a` +
+            const Ops_Msg = `يا هلا بـ *${Ops_CapName}* البطل 🦸‍♂️%0a` +
                         `يسعدنا نبلغك إنه وصلك أوردر جديد 🚀%0a` +
                         `-----------------------------%0a` +
-                        `🏪 المنشأة: *${restName}*%0a` +
-                        `📍 اللوكيشن: ${mapLink}%0a` +
-                        `🛵 التوصيل: *${fee} د.أ*%0a` +
-                        `💰 القيمة: *${val} د.أ*%0a` +
+                        `🏪 المنشأة: *${Ops_RestName}*%0a` +
+                        `📍 اللوكيشن: ${Ops_MapLink}%0a` +
+                        `🛵 التوصيل: *${Ops_Fee} د.أ*%0a` +
+                        `💰 القيمة: *${Ops_Val} د.أ*%0a` +
                         `-----------------------------%0a` +
-                        `📊 اليوم: *${todayCount}* | 💵 المجموع: *${todayEarnings.toFixed(2)} د.أ*`;
+                        `📊 اليوم: *${Ops_TodayCount}* | 💵 المجموع: *${Ops_TodayEarnings.toFixed(2)} د.أ*`;
 
             if (confirm("إرسال واتساب؟")) {
-                window.open(`https://wa.me/${finalPhone}?text=${msg}`, '_blank');
+                window.open(`https://wa.me/${Ops_FinalPhone}?text=${Ops_Msg}`, '_blank');
             }
 
-            const commission = (parseFloat(fee || 0) * (parseFloat(ratio) / 100)).toFixed(2);
-            const entry = { cap: capName, phone: phone, rest: restName, val: val, fee: fee, ratio: ratio, comm: commission };
+            const Ops_Commission = (parseFloat(Ops_Fee || 0) * (parseFloat(Ops_Ratio) / 100)).toFixed(2);
+            const Ops_Entry = { cap: Ops_CapName, phone: Ops_Phone, rest: Ops_RestName, val: Ops_Val, fee: Ops_Fee, ratio: Ops_Ratio, comm: Ops_Commission };
 
-            if (editIndex > -1) { dailyArchive[editIndex] = entry; cancelEdit(); } 
-            else { dailyArchive.unshift(entry); }
+            if (Ops_EditIndex > -1) { Ops_DailyArchive[Ops_EditIndex] = Ops_Entry; Ops_CancelEdit(); } 
+            else { Ops_DailyArchive.unshift(Ops_Entry); }
             
-            document.getElementById('man_rest_name').value = '';
-            document.getElementById('man_val').value = '';
-            document.getElementById('man_fee').value = '';
+            document.getElementById('Ops_ManRestName').value = '';
+            document.getElementById('Ops_ManVal').value = '';
+            document.getElementById('Ops_ManFee').value = '';
             
-            localStorage.setItem('n1_daily_archive', JSON.stringify(dailyArchive));
-            renderArchive();
+            localStorage.setItem('Ops_DailyArchiveDB', JSON.stringify(Ops_DailyArchive));
+            Ops_RenderArchive();
         }
 
-        function renderArchive() {
-            const tbody = document.getElementById('archive-body');
-            let totalComm = 0;
-            if (dailyArchive.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">فارغ</td></tr>'; } 
+        function Ops_RenderArchive() {
+            const Ops_Tbody = document.getElementById('Ops_ArchiveBody');
+            let Ops_TotalComm = 0;
+            if (Ops_DailyArchive.length === 0) { Ops_Tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">فارغ</td></tr>'; } 
             else {
-                tbody.innerHTML = '';
-                dailyArchive.forEach((item, index) => {
-                    totalComm += parseFloat(item.comm);
-                    tbody.innerHTML += `
+                Ops_Tbody.innerHTML = '';
+                Ops_DailyArchive.forEach((Ops_Item, Ops_Index) => {
+                    Ops_TotalComm += parseFloat(Ops_Item.comm);
+                    Ops_Tbody.innerHTML += `
                         <tr>
-                            <td>${item.cap}</td>
-                            <td>${item.rest}</td>
-                            <td style="color:var(--success); font-weight:bold;">${item.comm}</td>
-                            <td><button class="mini-btn" onclick="deleteItem(${index})" style="color:var(--danger);">×</button></td>
+                            <td>${Ops_Item.cap}</td>
+                            <td>${Ops_Item.rest}</td>
+                            <td style="color:var(--success); font-weight:bold;">${Ops_Item.comm}</td>
+                            <td><button class="mini-btn" onclick="Ops_DeleteItem(${Ops_Index})" style="color:var(--danger);">×</button></td>
                         </tr>`;
                 });
             }
-            document.getElementById('stat-comm').innerText = totalComm.toFixed(2);
+            document.getElementById('Ops_StatComm').innerText = Ops_TotalComm.toFixed(2);
         }
 
-        function deleteItem(index) { if(confirm("حذف؟")) { dailyArchive.splice(index, 1); saveAndRender(); } }
-        function editItem(index) { 
-            const item = dailyArchive[index];
-            document.getElementById('man_phone').value = item.phone;
-            document.getElementById('man_cap_name').value = item.cap;
-            document.getElementById('man_rest_name').value = item.rest;
-            document.getElementById('man_val').value = item.val;
-            document.getElementById('man_fee').value = item.fee;
-            document.getElementById('man_ratio').value = item.ratio;
-            document.getElementById('edit_mode_index').value = index;
-            document.getElementById('cancel_edit_btn').style.display = 'block';
+        function Ops_DeleteItem(Ops_Index) { if(confirm("حذف؟")) { Ops_DailyArchive.splice(Ops_Index, 1); Ops_SaveAndRender(); } }
+        function Ops_EditItem(Ops_Index) { 
+            const Ops_Item = Ops_DailyArchive[Ops_Index];
+            document.getElementById('Ops_ManPhone').value = Ops_Item.phone;
+            document.getElementById('Ops_ManCapName').value = Ops_Item.cap;
+            document.getElementById('Ops_ManRestName').value = Ops_Item.rest;
+            document.getElementById('Ops_ManVal').value = Ops_Item.val;
+            document.getElementById('Ops_ManFee').value = Ops_Item.fee;
+            document.getElementById('Ops_ManRatio').value = Ops_Item.ratio;
+            document.getElementById('Ops_EditModeIndex').value = Ops_Index;
+            document.getElementById('Ops_CancelEditBtn').style.display = 'block';
             document.querySelector('.btn-whatsapp span').innerText = "حفظ التعديلات"; 
         }
-        function cancelEdit() { 
-            document.getElementById('edit_mode_index').value = "-1";
-            document.getElementById('cancel_edit_btn').style.display = 'none';
+        function Ops_CancelEdit() { 
+            document.getElementById('Ops_EditModeIndex').value = "-1";
+            document.getElementById('Ops_CancelEditBtn').style.display = 'none';
             document.querySelector('.btn-whatsapp span').innerText = "إرسال وتوثيق";
-            document.getElementById('man_rest_name').value = '';
-            document.getElementById('man_val').value = '';
-            document.getElementById('man_fee').value = '';
+            document.getElementById('Ops_ManRestName').value = '';
+            document.getElementById('Ops_ManVal').value = '';
+            document.getElementById('Ops_ManFee').value = '';
         }
-        function clearDailyArchive() { if(confirm("تصفير؟")) { dailyArchive = []; saveAndRender(); } }
-        function saveAndRender() { localStorage.setItem('n1_daily_archive', JSON.stringify(dailyArchive)); renderArchive(); }
+        function Ops_ClearArchive() { if(confirm("تصفير؟")) { Ops_DailyArchive = []; Ops_SaveAndRender(); } }
+        function Ops_SaveAndRender() { localStorage.setItem('Ops_DailyArchiveDB', JSON.stringify(Ops_DailyArchive)); Ops_RenderArchive(); }
     </script>
 </body>
 </html>
