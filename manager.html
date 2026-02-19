@@ -59,7 +59,7 @@
 
         .tag { padding: 4px 10px; border-radius: 15px; font-size: 11px; background: #333; color: #ccc; }
         
-        #Ops_Loader { text-align: center; padding: 50px; color: #777; }
+        #loader { text-align: center; padding: 50px; color: #777; }
     </style>
 </head>
 <body>
@@ -72,27 +72,27 @@
     <div class="dashboard-grid">
         <div class="dash-card c-gold">
             <div class="dash-lbl">إجمالي الطلبات (النظام)</div>
-            <div class="dash-num" id="Ops_TotalOrders">0</div>
+            <div class="dash-num" id="total-orders">0</div>
         </div>
         <div class="dash-card c-blue">
             <div class="dash-lbl">الكباتن المسجلين</div>
-            <div class="dash-num" id="Ops_TotalCaptains">0</div>
+            <div class="dash-num" id="total-captains">0</div>
         </div>
         <div class="dash-card c-green">
             <div class="dash-lbl">حجم التداول المالي</div>
-            <div class="dash-num" id="Ops_TotalMoney">0</div>
+            <div class="dash-num" id="total-money">0</div>
         </div>
     </div>
 
     <div class="live-feed">
         <div class="feed-title">
             <span>📡 مراقبة العمليات الحية (Live Feed)</span>
-            <button onclick="Ops_LoadData()" style="background:none; border:none; color:#d4af37; cursor:pointer;">🔄 تحديث يدوي</button>
+            <button onclick="loadData()" style="background:none; border:none; color:#d4af37; cursor:pointer;">🔄 تحديث يدوي</button>
         </div>
         
-        <div id="Ops_Loader">جاري الاتصال بالأقمار الصناعية... 🛰️</div>
+        <div id="loader">جاري الاتصال بالأقمار الصناعية... 🛰️</div>
         
-        <table id="Ops_FeedTable" style="display:none;">
+        <table id="feed-table" style="display:none;">
             <thead>
                 <tr>
                     <th>التاريخ</th>
@@ -102,13 +102,13 @@
                     <th>القيمة</th>
                 </tr>
             </thead>
-            <tbody id="Ops_FeedBody"></tbody>
+            <tbody id="feed-body"></tbody>
         </table>
     </div>
 
     <script>
         // 💎 الرابط الملكي 💎
-        const Ops_API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
 
         window.onload = function() {
             // حماية الجلسة والزر الخلفي
@@ -117,84 +117,84 @@
                 window.history.pushState(null, "", window.location.href);
             };
 
-            // التحقق المعمق من التشفير الجديد للمدير بالاعتماد على البوابة
-            const Ops_User = JSON.parse(localStorage.getItem('Auth_CurrentUser'));
-            if (!Ops_User || Ops_User.Auth_Role !== 'admin' || !Ops_User.Auth_SessionToken || !Ops_User.Auth_SessionToken.includes('N1_SECURE')) {
+            // التحقق المعمق من التشفير الجديد للمدير
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user || user.role !== 'admin' || !user.sessionToken || !user.sessionToken.includes('N1_SECURE')) {
                 window.location.replace('index.html');
                 return;
             }
             
-            Ops_LoadData();
+            loadData();
             // تفعيل نظام الرادار الذكي للتحديث الصامت كل 8 ثواني
-            setInterval(Ops_LoadDataSilent, 8000);
+            setInterval(loadDataSilent, 8000);
         };
 
         // دالة التحميل الرئيسية التي تظهر رسالة التحميل
-        async function Ops_LoadData() {
-            document.getElementById('Ops_Loader').style.display = 'block';
-            document.getElementById('Ops_FeedTable').style.display = 'none';
+        async function loadData() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('feed-table').style.display = 'none';
 
             try {
-                const Ops_Res = await fetch(Ops_API_URL + "?action=read");
-                const Ops_Data = await Ops_Res.json();
-                Ops_ProcessData(Ops_Data);
-            } catch (Ops_E) {
-                console.error(Ops_E);
+                const res = await fetch(API_URL + "?action=read");
+                const data = await res.json();
+                processData(data);
+            } catch (e) {
+                console.error(e);
             }
         }
 
         // دالة الرادار الذكي للعمل بصمت في الخلفية
-        async function Ops_LoadDataSilent() {
+        async function loadDataSilent() {
             try {
-                const Ops_Res = await fetch(Ops_API_URL + "?action=read");
-                const Ops_Data = await Ops_Res.json();
-                Ops_ProcessData(Ops_Data);
-            } catch (Ops_E) {
-                console.error(Ops_E);
+                const res = await fetch(API_URL + "?action=read");
+                const data = await res.json();
+                processData(data);
+            } catch (e) {
+                console.error(e);
             }
         }
 
-        function Ops_ProcessData(Ops_Data) {
-            // 1. فلترة الطلبات والكباتن بسرعة عالية مع مراعاة التشفير القديم والجديد
-            const Ops_Orders = Ops_Data.filter(i => i.type === 'order' || i.Auth_Type === 'order').reverse(); 
-            const Ops_Captains = Ops_Data.filter(i => i.type === 'captain' || i.Auth_Type === 'captain');
+        function processData(data) {
+            // 1. فلترة الطلبات والكباتن بسرعة عالية
+            const orders = data.filter(i => i.type === 'order').reverse(); 
+            const captains = data.filter(i => i.type === 'captain');
 
             // 2. تحديث العدادات اللحظية
-            document.getElementById('Ops_TotalOrders').innerText = Ops_Orders.length;
-            document.getElementById('Ops_TotalCaptains').innerText = Ops_Captains.length;
+            document.getElementById('total-orders').innerText = orders.length;
+            document.getElementById('total-captains').innerText = captains.length;
             
-            let Ops_Money = 0;
-            Ops_Orders.forEach(o => Ops_Money += (Number(o.val) || 0) + (Number(o.fee) || 0));
-            document.getElementById('Ops_TotalMoney').innerText = Ops_Money.toLocaleString() + " د.أ";
+            let money = 0;
+            orders.forEach(o => money += (Number(o.val) || 0) + (Number(o.fee) || 0));
+            document.getElementById('total-money').innerText = money.toLocaleString() + " د.أ";
 
             // 3. تعبئة الجدول بسلاسة
-            const Ops_Tbody = document.getElementById('Ops_FeedBody');
-            let Ops_HtmlContent = '';
+            const tbody = document.getElementById('feed-body');
+            let htmlContent = '';
 
-            if (Ops_Orders.length === 0) {
-                Ops_HtmlContent = '<tr><td colspan="5" style="text-align:center; padding:30px;">لا يوجد عمليات حتى الآن</td></tr>';
+            if (orders.length === 0) {
+                htmlContent = '<tr><td colspan="5" style="text-align:center; padding:30px;">لا يوجد عمليات حتى الآن</td></tr>';
             } else {
-                Ops_Orders.forEach(Ops_Ord => {
-                    const Ops_Company = Ops_Data.find(u => u.user === Ops_Ord.client_user || u.Auth_User === Ops_Ord.client_user);
-                    const Ops_CompName = Ops_Company ? (Ops_Company.name || Ops_Company.Auth_Name) : Ops_Ord.client_user;
+                orders.forEach(ord => {
+                    const company = data.find(u => u.user === ord.client_user);
+                    const compName = company ? company.name : ord.client_user;
 
-                    Ops_HtmlContent += `
+                    htmlContent += `
                         <tr>
-                            <td><span class="tag">${Ops_Ord.date.split('T')[0]}</span></td>
-                            <td style="font-weight:bold; color:#d4af37;">${Ops_CompName}</td>
-                            <td>${Ops_Ord.cap_name}</td>
-                            <td>${Ops_Ord.pickup}</td>
-                            <td>${(Number(Ops_Ord.val) + Number(Ops_Ord.fee)).toFixed(2)}</td>
+                            <td><span class="tag">${ord.date.split('T')[0]}</span></td>
+                            <td style="font-weight:bold; color:#d4af37;">${compName}</td>
+                            <td>${ord.cap_name}</td>
+                            <td>${ord.pickup}</td>
+                            <td>${(Number(ord.val) + Number(ord.fee)).toFixed(2)}</td>
                         </tr>
                     `;
                 });
             }
             
             // تطبيق المحتوى مرة واحدة لمنع استنزاف الذاكرة
-            Ops_Tbody.innerHTML = Ops_HtmlContent;
+            tbody.innerHTML = htmlContent;
 
-            document.getElementById('Ops_Loader').style.display = 'none';
-            document.getElementById('Ops_FeedTable').style.display = 'table';
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('feed-table').style.display = 'table';
         }
     </script>
 
