@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>N One | Business Elite</title>
+    <title>N One | Business Portal (Royal Edition)</title>
     
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
     <style>
-        /* ================= تصميم N One Legendary (Minimalist Luxury) ================= */
+        /* ============================================================
+           تصميم ROYAL LIGHT - قمة الفخامة للمنشآت (Unified Theme)
+           ============================================================ */
         :root {
-            --primary: #0f172a;      /* نيفي بلو عميق جداً (Midnight) */
-            --accent: #1e293b;       /* نيفي بلو فاتح قليلاً للكروت */
-            --gold: #d4af37;         /* ذهبي ملكي */
-            --gold-light: #fbe083;   /* ذهبي فاتح للتدرجات */
+            --primary: #0f172a;      /* كحلي ملكي عميق */
             --bg: #f8fafc;           /* خلفية رمادية ثلجية */
-            --text: #334155;         /* نص رمادي غامق */
-            --text-light: #64748b;   /* نص ثانوي */
-            --success: #10b981;      /* أخضر زمردي */
-            --danger: #ef4444;       /* أحمر حيوي */
+            --card-bg: #ffffff;      /* أبيض ناصع للكروت */
+            --gold: #d4af37;         /* ذهبي للأيقونات والحدود */
+            --text-main: #334155;    /* رمادي غامق للنصوص */
+            --text-light: #64748b;   /* رمادي فاتح للعناوين */
+            --success: #10b981;      /* أخضر للعمليات الناجحة */
+            --danger: #ef4444;       /* أحمر للخروج والتنبيه */
+            --border: #e2e8f0;       /* حدود ناعمة */
+            --input-bg: #f1f5f9;     /* خلفية الحقول */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -26,234 +29,327 @@
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: var(--bg); margin: 0; padding: 0; 
-            color: var(--text); user-select: none; padding-bottom: 100px;
+            color: var(--text-main); user-select: none; padding-bottom: 80px;
         }
 
-        /* 1. الهيدر الأسطوري */
+        /* --- الهيدر الملكي --- */
         .header {
             background: var(--primary);
-            padding: 20px 25px;
+            padding: 25px 20px;
             border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
-            position: relative; z-index: 10;
+            text-align: center; position: relative; z-index: 10;
+            border-bottom: 3px solid var(--gold);
         }
 
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .brand { font-size: 22px; font-weight: 900; color: white; letter-spacing: 1px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .brand { font-size: 24px; font-weight: 900; color: white; letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
-        .rating-badge { 
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 5px 12px; border-radius: 20px; 
-            color: var(--gold); font-weight: bold; font-size: 13px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
+        
+        /* زر الخروج الآمن (New Logout System) */
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15); color: #fecaca; 
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            padding: 8px 16px; border-radius: 12px; 
+            font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.3s;
             display: flex; align-items: center; gap: 5px;
         }
+        .btn-logout:active { transform: scale(0.95); background: var(--danger); color: white; }
 
-        /* كارت الإنجاز المدمج في الهيدر */
-        .achievement-card { color: white; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; color: #cbd5e1; }
-        .progress-track { background: rgba(255, 255, 255, 0.1); height: 8px; border-radius: 10px; overflow: hidden; }
-        .progress-fill { 
-            height: 100%; width: 0%; 
-            background: linear-gradient(90deg, var(--gold), var(--gold-light)); 
-            border-radius: 10px; transition: width 1s ease-out;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        /* عرض اسم المطعم */
+        .shop-info-badge { 
+            background: rgba(255, 255, 255, 0.1); color: var(--gold);
+            padding: 8px 20px; border-radius: 20px; display: inline-block;
+            font-size: 14px; font-weight: bold; border: 1px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        /* 2. المحتوى الرئيسي */
-        .container { max-width: 500px; margin: -20px auto 0; padding: 0 20px; position: relative; z-index: 20; }
-
-        /* كارت الطلب العائم */
-        .order-card {
-            background: white; padding: 30px 25px; border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-            border-top: 4px solid var(--gold);
+        /* --- التبويبات (Tabs) --- */
+        .nav-tabs {
+            display: flex; justify-content: center; gap: 12px; margin-top: 10px;
+            background: rgba(255,255,255,0.05); padding: 6px; border-radius: 20px;
+        }
+        .nav-tab {
+            flex: 1; padding: 12px; border: none; border-radius: 15px;
+            font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.3s;
+            background: transparent; color: #94a3b8;
+        }
+        .nav-tab.active { 
+            background: var(--gold); color: var(--primary); 
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); transform: translateY(-2px);
         }
 
-        .section-title { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 25px; text-align: center; }
+        /* --- الحاوية الرئيسية --- */
+        .container { max-width: 500px; margin: 20px auto; padding: 0 20px; }
 
-        /* حقول الإدخال الحديثة */
-        .input-wrapper { position: relative; margin-bottom: 20px; }
-        .input-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        /* الأقسام (Fade In Animation) */
+        .section { display: none; animation: slideUp 0.4s ease-out; }
+        .section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- الكروت --- */
+        .card {
+            background: var(--card-bg); padding: 25px; border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border);
+            margin-bottom: 20px; position: relative; overflow: hidden;
+        }
+
+        /* --- العدادات (Daily & Total) --- */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box {
+            background: white; padding: 20px; border-radius: 20px; text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid var(--border);
+            position: relative; overflow: hidden;
+        }
+        .stat-box::before { content:''; position: absolute; top:0; left:0; width:100%; height:4px; background:var(--primary); }
+        .stat-box.gold-top::before { background:var(--gold); }
         
+        .stat-label { font-size: 12px; font-weight:bold; color: var(--text-light); display:block; margin-bottom:5px; }
+        .stat-val { font-size: 24px; font-weight: 900; color: var(--primary); }
+        .stat-val.gold { color: var(--gold); }
+
+        /* --- حقول الإدخال --- */
+        .input-group { margin-bottom: 18px; position: relative; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 800; color: var(--text-light); }
         input {
-            width: 100%; padding: 16px 50px 16px 20px; /* مساحة للأيقونة */
-            border: 2px solid #e2e8f0; border-radius: 16px;
-            font-size: 15px; background: #f8fafc; outline: none; transition: 0.3s;
-            color: var(--primary); font-weight: 600;
+            width: 100%; padding: 16px; border: 2px solid var(--border); border-radius: 16px;
+            font-size: 15px; background: var(--input-bg); outline: none; transition: 0.3s;
+            color: var(--primary); font-weight: 700;
         }
         input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
-        input::placeholder { color: #94a3b8; font-weight: normal; }
+        input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; }
 
-        /* حقل السعر المغلق (The Safe) */
-        .readonly-field { background: #f1f5f9; border-color: #cbd5e1; color: var(--text-light); pointer-events: none; }
-        .readonly-field.night-mode { background: #e0e7ff; border-color: #818cf8; color: #312e81; }
-
-        /* أيقونة القمر */
-        .moon-badge {
-            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-            background: #312e81; color: var(--gold); padding: 4px 8px; border-radius: 8px;
-            font-size: 10px; font-weight: bold; display: none;
-            box-shadow: 0 2px 5px rgba(49, 46, 129, 0.3);
+        /* --- الأزرار --- */
+        .btn-main {
+            width: 100%; padding: 18px; border: none; border-radius: 16px;
+            font-size: 16px; font-weight: 800; cursor: pointer; color: white;
+            transition: 0.2s; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .btn-main:active { transform: scale(0.98); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-send { background: var(--primary); }
+        .btn-check { background: var(--text-light); margin-bottom: 10px; }
+        .btn-confirm { background: var(--success); display: none; }
 
-        /* الأزرار الأسطورية */
-        .btn-primary {
-            width: 100%; padding: 18px; background: var(--primary); color: white;
-            border: none; border-radius: 16px; font-size: 16px; font-weight: 800;
-            cursor: pointer; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
-            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        /* --- تفاصيل التحقق من الكابتن --- */
+        #cap-check-result {
+            display: none; background: #ecfdf5; padding: 15px; border-radius: 15px;
+            border: 1px solid #a7f3d0; margin-bottom: 15px; text-align: center;
+            animation: slideUp 0.3s;
         }
-        .btn-primary:active { transform: scale(0.98); box-shadow: 0 5px 10px rgba(15, 23, 42, 0.2); }
+        .check-info { font-size: 14px; color: #064e3b; margin-bottom: 5px; }
+        .check-balance { font-size: 18px; font-weight: 900; color: var(--success); }
 
-        /* زر VIP الذكي */
-        .btn-vip {
-            width: 100%; padding: 16px; margin-top: 15px;
-            background: white; color: var(--danger);
-            border: 2px solid #fecaca; border-radius: 16px;
-            font-size: 14px; font-weight: 800; cursor: pointer;
-            transition: 0.2s; display: flex; justify-content: space-between; align-items: center;
-        }
-        .btn-vip:hover { background: #fef2f2; border-color: var(--danger); }
-        
-        .quota-badge { 
-            background: var(--danger); color: white; padding: 4px 10px; 
-            border-radius: 20px; font-size: 11px; 
-        }
-
-        /* 3. سجل الطلبات المصغر */
-        .history-mini { margin-top: 30px; }
-        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 10px; }
-        .history-title { font-size: 14px; font-weight: bold; color: var(--text-light); }
-        
-        .history-card {
-            background: white; padding: 15px; border-radius: 16px; margin-bottom: 10px;
+        /* --- السجل --- */
+        .history-list { margin-top: 10px; }
+        .history-item {
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border-right: 4px solid #e2e8f0;
+            padding: 15px; border-bottom: 1px solid #f1f5f9;
         }
-        .history-card.status-new { border-right-color: var(--primary); }
-        .history-card.status-vip { border-right-color: var(--danger); }
+        .history-item:last-child { border-bottom: none; }
+        .h-dest { font-weight: bold; color: var(--primary); font-size: 14px; }
+        .h-time { font-size: 11px; color: #94a3b8; }
+        .h-price { font-weight: 900; color: var(--gold); }
 
-        /* إشعارات */
+        /* --- إشعارات وشريط تحميل --- */
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); color: white; padding: 12px 25px; border-radius: 30px;
-            font-size: 13px; font-weight: bold; display: none; z-index: 100;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
-            animation: slideUp 0.3s ease-out;
+            background: var(--primary); color: white; padding: 12px 30px; border-radius: 30px;
+            font-size: 14px; font-weight: bold; display: none; z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        @keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
-
+        #loader { 
+            position: fixed; top: 0; left: 0; width: 0%; height: 5px; 
+            background: var(--gold); z-index: 3000; transition: width 0.3s; 
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
+        }
     </style>
 </head>
 <body>
 
+    <div id="loader"></div>
+
     <header class="header">
         <div class="header-top">
             <div class="brand">N <span class="gold-text">One</span></div>
-            <div class="rating-badge">
-                <span>⭐ 4.9</span>
-                <span>|</span>
-                <span id="shop-name-display">My Shop</span>
-            </div>
+            <button class="btn-logout" onclick="logout()">
+                <span>🏃‍♂️</span> مغادرة
+            </button>
         </div>
         
-        <div class="achievement-card">
-            <div class="progress-label">
-                <span>🚀 إنجاز اليوم</span>
-                <span><span id="orders-count">0</span> / 10 طلبات</span>
-            </div>
-            <div class="progress-track">
-                <div class="progress-fill" id="progress-bar"></div>
-            </div>
-            <div style="font-size:10px; color:#94a3b8; margin-top:5px; text-align:left;">أكمل 10 طلبات لفتح مكافأة VIP</div>
+        <div class="shop-info-badge">
+            🏪 <span id="shop-name-display">جاري التحميل...</span>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('orders')">📦 إرسال طلب</button>
+            <button class="nav-tab" onclick="switchTab('charging')">⚡ شحن كابتن</button>
         </div>
     </header>
 
     <div class="container">
         
-        <div class="order-card">
-            <div class="section-title">إرسال طلب جديد 📦</div>
-
-            <div class="input-wrapper">
-                <span class="input-icon">📍</span>
-                <input type="text" id="destination" list="areas-list" placeholder="وجهة الطلب (مثلاً: تلاع...)" onchange="calculateFee()">
-                <datalist id="areas-list">
-                    </datalist>
-            </div>
-
-            <div class="input-wrapper">
-                <span class="input-icon">💰</span>
-                <input type="number" id="order_val" placeholder="قيمة التحصيل (د.أ)">
-            </div>
-
-            <div class="input-wrapper">
-                <span class="input-icon">🛵</span>
-                <input type="text" id="delivery_fee" class="readonly-field" placeholder="سعر التوصيل (تلقائي)" readonly>
-                <div id="night-badge" class="moon-badge">🌙 +0.50 ليلي</div>
-            </div>
-
-            <button class="btn-primary" onclick="sendOrder(false)">
-                إرسال الطلب فوراً 🚀
-            </button>
+        <div id="orders" class="section active">
             
-            <button class="btn-vip" id="btn-vip" onclick="sendOrder(true)">
-                <span>⚡ طلب مستعجل (Priority)</span>
-                <span class="quota-badge" id="vip-quota">3 محاولات</span>
-            </button>
+            <div class="stats-grid">
+                <div class="stat-box gold-top">
+                    <span class="stat-label">إنجاز اليوم 🏆</span>
+                    <span class="stat-val gold" id="orders-today">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">الإجمالي العام 🚀</span>
+                    <span class="stat-val" id="orders-total">0</span>
+                </div>
+            </div>
 
+            <div class="card">
+                <div class="input-group">
+                    <label>📍 وجهة الطلب (اختر من القائمة)</label>
+                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." onchange="calculateFee()">
+                    <datalist id="areas-list"></datalist>
+                </div>
+
+                <div class="input-group">
+                    <label>💰 قيمة التحصيل (دينار)</label>
+                    <input type="number" id="order_val" placeholder="سعر الطلب (مثلاً 20, 50)">
+                </div>
+
+                <div class="input-group">
+                    <label>🛵 سعر التوصيل (تلقائي)</label>
+                    <input type="text" id="delivery_fee" placeholder="---" readonly>
+                </div>
+
+                <button class="btn-main btn-send" id="btn-send" onclick="sendOrder()">
+                    🚀 إرسال للرادار فوراً
+                </button>
+            </div>
+
+            <div class="card" style="padding: 20px;">
+                <div style="font-size:13px; font-weight:800; color:var(--text-light); margin-bottom:10px;">🕒 آخر الطلبات (Operations Trace)</div>
+                <div id="history-list" class="history-list">
+                    </div>
+            </div>
         </div>
 
-        <div class="history-mini">
-            <div class="history-header">
-                <span class="history-title">نشاطك اليوم 📅</span>
-            </div>
-            <div id="history-list">
+        <div id="charging" class="section">
+            <div class="card" style="border-top: 4px solid var(--success);">
+                <div style="text-align:center; margin-bottom:25px;">
+                    <h3 style="margin:0; color:var(--primary); font-size:18px;">نقطة شحن معتمدة ⚡</h3>
+                    <p style="font-size:13px; color:var(--text-light); margin-top:5px;">
+                        رصيدك الحالي: <b style="color:var(--success); font-size:18px;" id="my-shop-balance">...</b> د.أ
+                    </p>
                 </div>
+
+                <div class="input-group">
+                    <label>🔍 كود الكابتن أو رقم الهاتف</label>
+                    <input type="text" id="cap_id" placeholder="مثلاً: C-101 أو 07xxxxxxxx">
+                </div>
+
+                <div class="input-group">
+                    <label>💵 المبلغ المراد شحنه</label>
+                    <input type="number" id="charge_amount" placeholder="0.00">
+                </div>
+
+                <button class="btn-main btn-check" id="btn-check" onclick="verifyCaptain()">
+                    🔍 فحص الكابتن أولاً
+                </button>
+
+                <div id="cap-check-result">
+                    <div class="check-info">تم العثور على الكابتن: <b id="found-cap-name">---</b></div>
+                    <div class="check-info">رصيده الحالي: <b id="found-cap-balance">---</b> د.أ</div>
+                    <hr style="border:0; border-top:1px dashed #a7f3d0; margin:10px 0;">
+                    <div style="font-size:12px; font-weight:bold; color:var(--primary);">
+                        سيصبح رصيده: <span id="future-cap-balance" style="color:var(--success);">---</span>
+                    </div>
+                </div>
+
+                <button class="btn-main btn-confirm" id="btn-charge" onclick="executeTransfer()">
+                    ✅ تأكيد وتحويل الرصيد
+                </button>
+            </div>
         </div>
 
     </div>
 
-    <div id="toast" class="toast">✅ تم إرسال الطلب بنجاح!</div>
+    <div id="toast" class="toast">تمت العملية بنجاح!</div>
 
     <script>
         // ========================================================
-        // كود الواجهة الأسطورية - v7.0 (The Legend)
+        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v18.0) 💎
         // ========================================================
 
-        const API_URL = "https://script.google.com/macros/s/AKfycbybaX1dgu-rVIkUAz2w6H2NdYIuv3zKkmPbHON8NTRclD3H6cVgyW5SAzFfAPNcMt6g/exec";
+        // رابط الاتصال بالخادم
+        const API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
         
-        // بيانات الجلسة المحلية
-        let shopData = JSON.parse(localStorage.getItem('nOne_shop_data_v7')) || { 
+        // إدارة البيانات المحلية (مع التصفير الذكي)
+        let shopData = JSON.parse(localStorage.getItem('nOne_shop_legacy_v1')) || { 
             ordersToday: 0, 
-            vipCredits: 3, // رصيد ابتدائي
+            ordersTotal: 0, 
+            lastActiveDate: new Date().toDateString(), 
             history: [] 
         };
+        
         let pricingMatrix = {}; 
-        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        let currentUser = null;
+        let myBalance = 0;
+        let verifiedCaptain = null;
 
-        window.onload = function() {
-            // محاكاة مستخدم إذا لم يوجد (للتجربة)
-            if (!currentUser) currentUser = { name: "منشأة تجريبية", user: "demo" };
+        // التحقق من الجلسة
+        if (typeof N_ONE_CORE !== 'undefined') {
+            currentUser = N_ONE_CORE.checkSession('shop');
+        } else {
+            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        }
+
+        // --- عند تحميل الصفحة ---
+        window.onload = async function() {
+            if (!currentUser) { window.location.href = 'index.html'; return; }
             
-            document.getElementById('shop-name-display').innerText = currentUser.name.split(' ')[0];
+            document.getElementById('shop-name-display').innerText = currentUser.name;
             
-            // 1. تحميل المصفوفة الماسية (The Bridge)
             loadMatrix();
-            
-            // 2. تحديث الواجهة
+            checkDailyReset(); // تفعيل العداد الذكي والتصفير التلقائي
             updateUI();
+            
+            await fetchMyBalance(); 
         };
 
-        // --- نظام الجسر (سحب الأسعار) ---
+        // --- نظام العداد الذكي (Smart Auto-Reset) ---
+        function checkDailyReset() {
+            const todayStr = new Date().toDateString(); 
+            
+            // إذا تغير التاريخ (دخلنا يوم جديد بعد الساعة 12:00)
+            if (shopData.lastActiveDate !== todayStr) {
+                shopData.ordersToday = 0; // تصفير عداد اليوم
+                shopData.lastActiveDate = todayStr;
+                localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
+            }
+        }
+
+        // --- جلب رصيد المنشأة ---
+        async function fetchMyBalance() {
+            try {
+                const response = await fetch(API_URL + "?action=read");
+                const data = await response.json();
+                const me = data.find(u => u.user === currentUser.user);
+                if (me) {
+                    myBalance = parseFloat(me.balance || 0);
+                    document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
+                }
+            } catch (e) {
+                console.error("Balance Fetch Error", e);
+            }
+        }
+
+        // --- منطق إرسال الطلبات (التحصيل الذكي) ---
         function loadMatrix() {
             const rawData = localStorage.getItem('nOne_global_prices');
             if (rawData) {
                 const allData = JSON.parse(rawData);
                 const datalist = document.getElementById('areas-list');
+                datalist.innerHTML = '';
                 
-                // دمج المصادر للبحث
                 Object.keys(allData).forEach(source => {
                     allData[source].forEach(item => {
                         pricingMatrix[item.area] = parseFloat(item.price);
@@ -265,64 +361,25 @@
             }
         }
 
-        // --- نظام الحارس الليلي والتسعير ---
         function calculateFee() {
             const dest = document.getElementById('destination').value;
-            const feeInput = document.getElementById('delivery_fee');
-            const badge = document.getElementById('night-badge');
-            
             if (pricingMatrix[dest]) {
-                let price = pricingMatrix[dest];
-                
-                // فحص الليل
-                const hour = new Date().getHours();
-                const isNight = (hour >= 23 || hour < 6);
-                const isNightActive = localStorage.getItem('nOne_night_toggle') === 'true';
-                
-                if (isNight && isNightActive) {
-                    price += 0.50;
-                    feeInput.classList.add('night-mode');
-                    badge.style.display = 'block';
-                } else {
-                    feeInput.classList.remove('night-mode');
-                    badge.style.display = 'none';
-                }
-                
-                feeInput.value = price.toFixed(2);
-                
-                // تأثير بصري (Flash)
-                feeInput.style.transform = "scale(1.02)";
-                setTimeout(() => feeInput.style.transform = "scale(1)", 200);
-            } else {
-                feeInput.value = "";
-                badge.style.display = 'none';
+                document.getElementById('delivery_fee').value = pricingMatrix[dest].toFixed(2);
             }
         }
 
-        // --- نظام الإرسال والكوتا الذكي ---
-        async function sendOrder(isUrgent) {
+        async function sendOrder() {
+            checkDailyReset(); // تأكد أن العداد مصفر إذا كان يوم جديد
+            
             const dest = document.getElementById('destination').value;
             const val = document.getElementById('order_val').value;
             const fee = document.getElementById('delivery_fee').value;
 
-            // تحقق
             if (!dest || !val || !fee) { showToast("⚠️ يرجى تعبئة جميع الحقول"); return; }
             
-            // فحص الكوتا للمستعجل
-            if (isUrgent) {
-                if (shopData.vipCredits <= 0) {
-                    showToast("⛔ نفذ رصيد VIP! أكمل 5 طلبات عادية لشحنه.");
-                    return;
-                }
-            }
+            setLoading('btn-send', true);
 
-            // تجميد الزر
-            const btn = isUrgent ? document.getElementById('btn-vip') : document.querySelector('.btn-primary');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "جاري الاتصال...";
-            btn.style.opacity = "0.7";
-
-            // تجهيز الطلب
+            // خط رصد العمليات: إرسال الطلب للعقل المدبر بدون ميزة الطوارئ
             const orderData = {
                 id: "ORD_" + Date.now(),
                 type: "order",
@@ -332,94 +389,168 @@
                 val: val,
                 fee: fee,
                 date: new Date().toISOString(),
-                is_emergency: isUrgent,
-                status: isUrgent ? "emergency" : "new"
+                is_emergency: "false", // تم إلغاء الميزة من الجذور
+                status: "new"
             };
 
             try {
-                // إرسال
+                // إرسال للرادار (Radar Shield)
                 await fetch(API_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ action: 'add', data: orderData })
                 });
 
-                // --- تحديث البيانات المحلية (Gamification Logic) ---
+                // تحديث العدادات محلياً (Achievements)
                 shopData.ordersToday++;
+                shopData.ordersTotal++; 
                 
-                if (isUrgent) {
-                    shopData.vipCredits--; // خصم رصيد
-                } else {
-                    // كل 5 طلبات عادية = 1 VIP هدية
-                    if (shopData.ordersToday % 5 === 0) {
-                        shopData.vipCredits++;
-                        showToast("🎉 مبروك! كسبت محاولة VIP إضافية");
-                    }
-                }
-
-                // حفظ في السجل
+                // خط رصد العمليات المحلي (Visual Trace)
                 shopData.history.unshift({
                     dest: dest, val: val, 
-                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    type: isUrgent ? 'vip' : 'normal'
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
                 });
+                if (shopData.history.length > 5) shopData.history.pop(); 
+
+                localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
                 
-                localStorage.setItem('nOne_shop_data_v7', JSON.stringify(shopData));
-                
-                // تحديث الواجهة
                 updateUI();
-                showToast("✅ تم إرسال الطلب بنجاح!");
+                showToast("✅ تم إرسال الطلب للرادار بنجاح!");
                 
                 // تنظيف
                 document.getElementById('destination').value = '';
                 document.getElementById('order_val').value = '';
                 document.getElementById('delivery_fee').value = '';
-                document.getElementById('night-badge').style.display = 'none';
 
             } catch (e) {
                 showToast("❌ خطأ في الاتصال");
             } finally {
-                btn.innerHTML = originalText;
-                btn.style.opacity = "1";
+                setLoading('btn-send', false, "🚀 إرسال للرادار فوراً");
             }
         }
 
-        // --- تحديث الواجهة الشامل ---
+        // --- منطق الشحن ---
+        async function verifyCaptain() {
+            const capId = document.getElementById('cap_id').value.trim();
+            const amount = parseFloat(document.getElementById('charge_amount').value);
+
+            if (!capId || !amount) { showToast("⚠️ أدخل الكود والمبلغ"); return; }
+            if (amount <= 0) { showToast("⚠️ المبلغ غير صحيح"); return; }
+            
+            if (myBalance < amount) { 
+                alert(`⛔ رصيدك الحالي (${myBalance}) غير كافٍ لإتمام العملية!`); 
+                return; 
+            }
+
+            setLoading('btn-check', true);
+
+            try {
+                const response = await fetch(API_URL + "?action=read");
+                const data = await response.json();
+                
+                const cap = data.find(c => c.user === capId || c.cap_phone === capId);
+                
+                if (!cap) {
+                    alert("❌ الكابتن غير موجود! تأكد من الكود أو الهاتف.");
+                    verifiedCaptain = null;
+                    document.getElementById('cap-check-result').style.display = 'none';
+                    document.getElementById('btn-charge').style.display = 'none';
+                } else {
+                    verifiedCaptain = cap;
+                    document.getElementById('found-cap-name').innerText = cap.name;
+                    document.getElementById('found-cap-balance').innerText = parseFloat(cap.balance||0).toFixed(2);
+                    document.getElementById('future-cap-balance').innerText = (parseFloat(cap.balance||0) + amount).toFixed(2);
+                    
+                    document.getElementById('cap-check-result').style.display = 'block';
+                    document.getElementById('btn-charge').style.display = 'block';
+                }
+            } catch (e) {
+                showToast("❌ خطأ في الاتصال");
+            } finally {
+                setLoading('btn-check', false, "🔍 فحص الكابتن أولاً");
+            }
+        }
+
+        async function executeTransfer() {
+            if (!verifiedCaptain) return;
+            const amount = parseFloat(document.getElementById('charge_amount').value);
+            if (myBalance < amount) { alert("⛔ رصيدك نفذ!"); return; }
+
+            if (!confirm(`تأكيد نهائي:\nخصم ${amount} د.أ من رصيدك\nوشحنها للكابتن ${verifiedCaptain.name}؟`)) return;
+
+            setLoading('btn-charge', true);
+
+            try {
+                const newCapBal = parseFloat(verifiedCaptain.balance || 0) + amount;
+                const newShopBal = myBalance - amount;
+
+                // تحديث الكابتن (Listener سيسمع هذا التغيير في Ops Room)
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'update', user: verifiedCaptain.user, data: { balance: newCapBal } }) 
+                });
+                
+                // تحديث المنشأة
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'update', user: currentUser.user, data: { balance: newShopBal } }) 
+                });
+
+                myBalance = newShopBal;
+                document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
+                
+                alert(`✅ تمت العملية بنجاح!\nالرصيد وصل للكابتن ${verifiedCaptain.name}`);
+                
+                document.getElementById('cap_id').value = '';
+                document.getElementById('charge_amount').value = '';
+                document.getElementById('cap-check-result').style.display = 'none';
+                document.getElementById('btn-charge').style.display = 'none';
+                verifiedCaptain = null;
+
+            } catch (e) {
+                showToast("❌ حدث خطأ أثناء التحويل");
+            } finally {
+                setLoading('btn-charge', false, "✅ تأكيد وتحويل الرصيد");
+            }
+        }
+
+        // --- وظائف الواجهة المساعدة ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
         function updateUI() {
-            // 1. شريط الإنجاز
-            const count = shopData.ordersToday;
-            const max = 10;
-            const percent = Math.min((count / max) * 100, 100);
-            document.getElementById('progress-bar').style.width = percent + "%";
-            document.getElementById('orders-count').innerText = count;
+            document.getElementById('orders-today').innerText = shopData.ordersToday;
+            document.getElementById('orders-total').innerText = shopData.ordersTotal;
 
-            // 2. زر VIP
-            const vipBtn = document.getElementById('vip-quota');
-            vipBtn.innerText = shopData.vipCredits + " محاولات";
-            if (shopData.vipCredits <= 0) vipBtn.style.background = "#94a3b8"; // رمادي
-            else vipBtn.style.background = "var(--danger)"; // أحمر
-
-            // 3. السجل
             const list = document.getElementById('history-list');
             list.innerHTML = '';
-            shopData.history.slice(0, 3).forEach(item => {
-                const isVip = item.type === 'vip';
-                const statusClass = isVip ? 'status-vip' : 'status-new';
-                const icon = isVip ? '⚡' : '📦';
-                
-                list.innerHTML += `
-                    <div class="history-card ${statusClass}">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="background:#f1f5f9; padding:8px; border-radius:10px;">${icon}</div>
+            if (shopData.history.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color:#cbd5e1; padding:10px;">لا توجد طلبات حديثة</div>';
+            } else {
+                shopData.history.forEach(item => {
+                    list.innerHTML += `
+                        <div class="history-item">
                             <div>
-                                <div style="font-weight:bold; color:var(--primary); font-size:14px;">${item.dest}</div>
-                                <div style="font-size:11px; color:#94a3b8;">${item.time}</div>
+                                <div class="h-dest">📍 ${item.dest}</div>
+                                <div class="h-time">🕐 ${item.time}</div>
                             </div>
+                            <div class="h-price">${item.val} د.أ</div>
                         </div>
-                        <div style="font-weight:800; color:var(--primary);">${item.val} د.أ</div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
+        }
+
+        // --- نظام المغادرة الجديد (Logout System) ---
+        function logout() {
+            if(confirm("هل تريد مغادرة النظام؟")) {
+                localStorage.removeItem('currentUser');
+                window.location.replace('index.html'); // عودة فورية وسلسة
+            }
         }
 
         function showToast(msg) {
@@ -427,6 +558,23 @@
             toast.innerText = msg;
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        function setLoading(btnId, isLoading, originalText) {
+            const btn = document.getElementById(btnId);
+            const loader = document.getElementById('loader');
+            if (isLoading) {
+                btn.dataset.text = btn.innerText;
+                btn.innerText = "جاري التنفيذ...";
+                btn.style.opacity = 0.7;
+                btn.disabled = true;
+                loader.style.width = "100%";
+            } else {
+                btn.innerText = originalText || btn.dataset.text;
+                btn.style.opacity = 1;
+                btn.disabled = false;
+                loader.style.width = "0%";
+            }
         }
 
     </script>
