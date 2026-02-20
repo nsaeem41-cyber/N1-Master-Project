@@ -199,7 +199,7 @@
                 <div class="action-btns">
                     <button class="btn-main" style="background:#37474f;" onclick="addArea()">+ منطقة</button>
                     <button class="btn-main" style="background:var(--primary);" onclick="window.print()">🖨️ طباعة</button>
-                    <button class="btn-main btn-save" onclick="saveData()">💾 حفظ واعتماد الأسعار</button>
+                    <button class="btn-main btn-save" id="save-btn" onclick="saveData()">💾 حفظ واعتماد الأسعار</button>
                 </div>
             </div>
         </div>
@@ -216,72 +216,84 @@
 
     <script>
         // ========================================================
-        // كود المصفوفة الماسية - v5.0 (Full Manual Control)
+        // كود المصفوفة الماسية - v6.0 (Cloud Sync & Auto-Guard)
         // ========================================================
         
-        // البيانات الافتراضية
+        if (typeof N_ONE_CORE !== 'undefined') {
+            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
+        }
+
         const defaultData = {
             "الجبيهة": [
-                { area: "حي الريان / الزوتنية", price: 1.50, isOffer: false, lastMod: Date.now() },
-                { area: "ضاحية الرشيد", price: 2.00, isOffer: true, lastMod: Date.now() },
-                { area: "تلاع العلي / سوق السلطان", price: 2.50, isOffer: false, lastMod: Date.now() },
-                { area: "خلدا / أم السماق", price: 3.00, isOffer: false, lastMod: Date.now() },
-                { area: "دابوق / الرابية", price: 4.00, isOffer: false, lastMod: Date.now() },
-                { area: "مرج الحمام", price: 6.00, isOffer: false, lastMod: Date.now() }
+                { id: "PRC_1", area: "حي الريان / الزوتنية", price: 1.50, isOffer: false, lastMod: Date.now() },
+                { id: "PRC_2", area: "ضاحية الرشيد", price: 2.00, isOffer: true, lastMod: Date.now() }
             ]
         };
 
-        // استرجاع البيانات
-        let pricingData = JSON.parse(localStorage.getItem('nOne_global_prices')) || defaultData;
-        let isNightActive = false; // هل التسعير الليلي مفعل حالياً؟
+        let pricingData = {};
+        let isNightActive = false; 
 
-        window.onload = function() {
-            // استرجاع حالة مفتاح الأمان الليلي
+        window.onload = async function() {
             const savedToggle = localStorage.getItem('nOne_night_toggle');
             if (savedToggle !== null) {
                 document.getElementById('night-toggle').checked = (savedToggle === 'true');
             }
             
             checkNightMode();
-            populateSources();
-            renderMatrix();
+            await fetchPricesFromCloud();
             
-            // فحص الوقت كل دقيقة
             setInterval(checkNightMode, 60000);
         };
 
-        // 1. منطق الحارس الليلي (يدوي + أوتوماتيك)
+        async function fetchPricesFromCloud() {
+            try {
+                const data = await N_ONE_CORE.fetchData('read');
+                const priceRows = data.filter(d => d.Price_ID);
+                
+                if (priceRows.length > 0) {
+                    pricingData = {};
+                    priceRows.forEach(r => {
+                        if (!pricingData[r.Price_Source]) pricingData[r.Price_Source] = [];
+                        pricingData[r.Price_Source].push({
+                            id: r.Price_ID,
+                            area: r.Price_Area,
+                            price: parseFloat(r.Price_Base),
+                            isOffer: r.Price_Offer === 'true',
+                            lastMod: r.Price_Date ? new Date(r.Price_Date).getTime() : Date.now()
+                        });
+                    });
+                } else {
+                    pricingData = defaultData; 
+                }
+                
+                populateSources();
+                renderMatrix();
+            } catch(e) { console.error(e); }
+        }
+
         function checkNightMode() {
             const hour = new Date().getHours();
-            // الوقت: من 11 م (23) إلى 6 ص (6)
             const isNightTime = (hour >= 23 || hour < 6);
-            // المفتاح اليدوي: هل سمح المستخدم بالتسعير الليلي؟
             const isToggleOn = document.getElementById('night-toggle').checked;
             
-            // النتيجة النهائية: الوقت ليل + المفتاح شغال
             const shouldBeNight = isNightTime && isToggleOn;
 
             if (shouldBeNight !== isNightActive) {
                 isNightActive = shouldBeNight;
-                renderMatrix(); // إعادة رسم الأسعار
+                renderMatrix(); 
             }
 
-            // تحديث ستايل الهيدر فقط
             const nav = document.getElementById('main-nav');
             if (isNightActive) nav.classList.add('night-mode');
             else nav.classList.remove('night-mode');
         }
 
         function toggleNightModeOverride() {
-            // حفظ تفضيل المستخدم
             const isChecked = document.getElementById('night-toggle').checked;
             localStorage.setItem('nOne_night_toggle', isChecked);
-            
-            // إعادة الفحص الفوري
             checkNightMode();
         }
 
-        // 2. إدارة المصادر
         function populateSources() {
             const select = document.getElementById('source-select');
             const currentVal = select.value;
@@ -302,7 +314,6 @@
                 populateSources();
                 document.getElementById('source-select').value = name;
                 renderMatrix();
-                saveData(true);
             }
         }
 
@@ -311,27 +322,26 @@
             const newName = prompt(`نسخ قائمة (${current}) إلى مدينة جديدة باسم:`);
             if (newName && !pricingData[newName]) {
                 pricingData[newName] = JSON.parse(JSON.stringify(pricingData[current]));
+                pricingData[newName].forEach(item => { item.id = "PRC_" + Date.now() + Math.floor(Math.random()*1000); });
                 populateSources();
                 document.getElementById('source-select').value = newName;
                 renderMatrix();
-                saveData(true);
             }
         }
 
         function deleteSource() {
             const current = document.getElementById('source-select').value;
-            if (confirm(`حذف قائمة (${current}) نهائياً؟`)) {
+            if (confirm(`حذف قائمة (${current}) نهائياً`)) {
                 delete pricingData[current];
                 if (Object.keys(pricingData).length === 0) pricingData["Default"] = [];
                 populateSources();
                 renderMatrix();
-                saveData(true);
             }
         }
 
-        // 3. رسم المصفوفة (Smart Render)
         function renderMatrix() {
             const source = document.getElementById('source-select').value;
+            if(!source) return;
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
             const container = document.getElementById('matrix-grid');
             
@@ -343,10 +353,8 @@
             areas.forEach((item, index) => {
                 if (searchTerm && !item.area.toLowerCase().includes(searchTerm)) return;
 
-                // السعر الأساسي (للتعديل)
                 const basePrice = parseFloat(item.price);
                 
-                // السعر المعروض (مع الزيادة إذا كان الوضع الليلي نشطاً)
                 let displayPrice = basePrice;
                 let nightBadgeHtml = '';
                 
@@ -355,7 +363,6 @@
                     nightBadgeHtml = `<span class="night-badge">+0.50 ليلي 🌙</span>`;
                 }
 
-                // الألوان والترند
                 let colorClass = 'med-price';
                 if (basePrice < 3) colorClass = 'low-price';
                 if (basePrice >= 5) colorClass = 'high-price';
@@ -395,17 +402,12 @@
             });
         }
 
-        // 4. التعديل الذكي (Manual Edit)
         function updateItem(source, index, field, value) {
-            // إذا عدل المستخدم السعر، بدنا نحفظ "السعر الأساسي"
             if (field === 'price') {
                 let newVal = parseFloat(value);
-                // إذا كان الوضع الليلي شغال، المستخدم شايف (السعر + 0.50)
-                // لما يعدل، هو بيعدل القيمة النهائية، فلازم نخصم الزيادة عشان نحفظ الأساس
                 if (isNightActive) {
                     newVal -= 0.50; 
                 }
-                // منع القيم السالبة
                 if (newVal < 0) newVal = 0;
                 
                 pricingData[source][index].price = newVal;
@@ -420,13 +422,13 @@
             const source = document.getElementById('source-select').value;
             const name = prompt("اسم المنطقة الجديدة:");
             if (name) {
-                pricingData[source].push({ area: name, price: 0, isOffer: false, lastMod: Date.now() });
+                pricingData[source].push({ id: "PRC_" + Date.now() + Math.floor(Math.random()*1000), area: name, price: 0, isOffer: false, lastMod: Date.now() });
                 renderMatrix();
             }
         }
 
         function deleteItem(source, index) {
-            if(confirm("حذف المنطقة؟")) {
+            if(confirm("حذف المنطقة")) {
                 pricingData[source].splice(index, 1);
                 renderMatrix();
             }
@@ -442,20 +444,63 @@
             window.open(`http://googleusercontent.com/maps.google.com/search?q=${query}`, '_blank');
         }
 
-        // 5. الحفظ (The Bridge)
-        function saveData(silent = false) {
-            localStorage.setItem('nOne_global_prices', JSON.stringify(pricingData));
+        async function saveData() {
+            const btn = document.getElementById('save-btn');
+            btn.innerHTML = "جاري اللحام ⏳";
+            btn.style.background = "#f59e0b";
             
-            if (!silent) {
-                const btn = document.querySelector('.btn-save');
-                const originalHtml = btn.innerHTML;
+            try {
+                const dbData = await N_ONE_CORE.fetchData('read');
+                const dbPrices = dbData.filter(d => d.Price_ID);
+                
+                let toAdd = [];
+                let currentIds = [];
+                
+                for (const source in pricingData) {
+                    pricingData[source].forEach(item => {
+                        if (!item.id) item.id = "PRC_" + Date.now() + Math.floor(Math.random()*1000);
+                        
+                        currentIds.push(item.id);
+                        
+                        const exists = dbPrices.some(p => p.Price_ID === item.id);
+                        
+                        const payload = {
+                            Price_ID: item.id,
+                            Price_Source: source,
+                            Price_Area: item.area,
+                            Price_Base: item.price,
+                            Price_Offer: item.isOffer ? 'true' : 'false',
+                            Price_Date: new Date().toISOString()
+                        };
+
+                        if (!exists) {
+                            toAdd.push(payload);
+                        } else {
+                            N_ONE_CORE.postData('update', { user: item.id, data: payload }); 
+                        }
+                    });
+                }
+                
+                const dbIds = dbPrices.map(p => p.Price_ID);
+                const deletedIds = dbIds.filter(id => !currentIds.includes(id));
+                
+                deletedIds.forEach(id => {
+                    N_ONE_CORE.postData('delete', { user: id });
+                });
+                
+                if (toAdd.length > 0) {
+                    await N_ONE_CORE.postData('add', toAdd);
+                }
+                
                 btn.innerHTML = "تم التعميم 📡";
                 btn.style.background = "#004d40";
                 setTimeout(() => {
-                    btn.innerHTML = originalHtml;
+                    btn.innerHTML = "💾 حفظ واعتماد الأسعار";
                     btn.style.background = "var(--success)";
-                    alert("✅ تم حفظ المصفوفة!\n- التسعير الليلي: " + (isNightActive ? "نشط (+0.50)" : "متوقف") + "\n- تم تحديث الأسعار لدى جميع المنشآت.");
-                }, 1000);
+                    alert("✅ تم حفظ المصفوفة وتثبيتها في الخزنة الحديدية بنجاح");
+                }, 1500);
+            } catch(e) {
+                alert("حدث خطأ أثناء الحفظ يا بطة");
             }
         }
 
