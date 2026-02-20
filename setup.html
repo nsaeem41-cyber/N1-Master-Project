@@ -92,24 +92,19 @@
     </div>
 
     <script>
-        // الرابط الملكي المعتمد للعقل المدبر v13.0
-        const API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
 
-        // الفحص الذكي المطور للتعرف على هوية الكستمر الجديدة (Column V Sync)
+        // الفحص الذكي أول ما تفتح الصفحة
         window.onload = async function() {
             try {
                 const response = await fetch(API_URL + "?action=read");
                 const data = await response.json();
                 
-                // 🧠 نباهة حبة السكر: التحقق من وجود "مدير" في العواميد القديمة أو المشفرة الجديدة
-                const adminExists = data.some(user => 
-                    (user.role === 'admin' || user.Client_Role === 'admin')
-                );
+                // التأكد إذا كان هناك حساب مدير موجود مسبقا
+                const adminExists = data.some(user => user.role === 'admin');
                 
                 if (adminExists) {
                     showStatus("error", "النظام منصب ومحمي مسبقا ☺️ لا يمكن إنشاء مدير جديد");
-                    // إذا كان المستخدم داخل الصفحة وهو أصلاً مسجل، نمنع الطرد هنا
-                    console.log("System verified and secured.");
                 } else {
                     showStatus("success", "السيرفر جاهز للتنصيب ☺️ أدخل بياناتك الملكية");
                     document.getElementById('setup-form').style.display = 'block';
@@ -139,10 +134,9 @@
             btn.innerHTML = "جاري الاتصال بالسيرفر ⏳";
             btn.disabled = true;
 
-            // تشفير كلمة المرور لحظيا
+            // تشفير كلمة المرور لحظيا قبل إرسالها للسيرفر
             const encodedPass = btoa(passVal);
 
-            // إنشاء حساب المدير العام بالمنطق المزدوج (قديم ومشفر) لضمان التوافق المطلق
             const adminUser = {
                 id: "ADMIN_" + Date.now(),
                 user: userVal,
@@ -151,16 +145,7 @@
                 role: "admin",      
                 type: "admin",      
                 status: "active",   
-                expiry: "2099-12-31",
-                // صب البيانات في الأعمدة المشفرة أيضاً (من العمود V)
-                Client_ID: "ADMIN_" + Date.now(),
-                Client_User: userVal,
-                Client_Pass: encodedPass,
-                Client_Name: "مدير النظام (نسيم)",
-                Client_Role: "admin",
-                Client_Type: "admin",
-                Client_Status: "active",
-                Client_Expiry: "2099-12-31"
+                expiry: "2099-12-31" 
             };
 
             try {
