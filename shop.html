@@ -47,7 +47,7 @@
         .brand { font-size: 24px; font-weight: 900; color: white; letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
         
-        /* زر الخروج الآمن (New Logout System) */
+        /* زر الخروج الآمن */
         .btn-logout {
             background: rgba(239, 68, 68, 0.15); color: #fecaca; 
             border: 1px solid rgba(239, 68, 68, 0.5);
@@ -276,7 +276,7 @@
 
     <script>
         // ========================================================
-        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v19.0) 💎
+        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v20.0 - Anti-Kick) 💎
         // ========================================================
 
         const API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
@@ -293,16 +293,34 @@
         let myBalance = 0;
         let verifiedCaptain = null;
 
-        if (typeof N_ONE_CORE !== 'undefined') {
-            currentUser = N_ONE_CORE.checkSession('shop');
-        } else {
-            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        // 🧠 تطوير "الحارس الملكي" لمنع الطرد العشوائي
+        function secureCheckSession() {
+            let user = null;
+            if (typeof N_ONE_CORE !== 'undefined') {
+                try { user = N_ONE_CORE.checkSession('shop'); } catch(e) {}
+            }
+            
+            if (!user) {
+                const local = JSON.parse(localStorage.getItem('currentUser'));
+                // التحقق من الهوية سواء كانت قديمة أو مشفرة (Column V+)
+                if (local && (local.role === 'shop' || local.Client_Role === 'shop' || local.type === 'shop' || local.Client_Type === 'shop')) {
+                    user = local;
+                }
+            }
+            return user;
         }
 
         window.onload = async function() {
-            if (!currentUser) { window.location.href = 'index.html'; return; }
+            currentUser = secureCheckSession();
             
-            document.getElementById('shop-name-display').innerText = currentUser.name;
+            if (!currentUser) { 
+                console.log("No valid session found. Redirecting...");
+                window.location.replace('index.html'); 
+                return; 
+            }
+            
+            // عرض الاسم (يدعم المشفر والقديم)
+            document.getElementById('shop-name-display').innerText = currentUser.Client_Name || currentUser.name;
             
             loadMatrix();
             checkDailyReset(); 
@@ -310,13 +328,12 @@
             
             await fetchMyBalance(); 
             
-            // شريان الضخ التلقائي لجلب الرصيد الحي من العقل المدبر بدون عوائق
+            // شريان الضخ التلقائي الحي
             setInterval(fetchMyBalanceSilent, 15000);
         };
 
         function checkDailyReset() {
             const todayStr = new Date().toDateString(); 
-            
             if (shopData.lastActiveDate !== todayStr) {
                 shopData.ordersToday = 0; 
                 shopData.lastActiveDate = todayStr;
@@ -324,26 +341,28 @@
             }
         }
 
-        // قراءة الرصيد الحي فور فتح الصفحة
+        // قراءة الرصيد الحي (يدعم البحث المشفر الجديد)
         async function fetchMyBalance() {
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                // القنص الجراحي برقم الهاتف أو الكود لضمان المطابقة الفولاذية
-                const me = data.find(u => String(u.user).trim() === String(currentUser.user).trim() || (currentUser.cap_phone && String(u.cap_phone).trim() === String(currentUser.cap_phone).trim()));
+                // القنص الجراحي: البحث في حقل user أو حقل Client_User المشفر
+                const me = data.find(u => 
+                    String(u.Client_User || u.user || "").trim().toLowerCase() === String(currentUser.Client_User || currentUser.user || "").trim().toLowerCase()
+                );
+                
                 if (me) {
                     myBalance = parseFloat(me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 }
-            } catch (e) {
-                console.error("Balance Fetch Error", e);
-            }
+            } catch (e) { console.error("Balance Fetch Error", e); }
         }
 
-        // شريان الاستقبال الصامت اللي بيخلي الرصيد يرتفع تلقائياً
         async function fetchMyBalanceSilent() {
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                const me = data.find(u => String(u.user).trim() === String(currentUser.user).trim() || (currentUser.cap_phone && String(u.cap_phone).trim() === String(currentUser.cap_phone).trim()));
+                const me = data.find(u => 
+                    String(u.Client_User || u.user || "").trim().toLowerCase() === String(currentUser.Client_User || currentUser.user || "").trim().toLowerCase()
+                );
                 if (me) {
                     myBalance = parseFloat(me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
@@ -357,7 +376,6 @@
                 const allData = JSON.parse(rawData);
                 const datalist = document.getElementById('areas-list');
                 datalist.innerHTML = '';
-                
                 Object.keys(allData).forEach(source => {
                     allData[source].forEach(item => {
                         pricingMatrix[item.area] = parseFloat(item.price);
@@ -378,20 +396,18 @@
 
         async function sendOrder() {
             checkDailyReset(); 
-            
             const dest = document.getElementById('destination').value;
             const val = document.getElementById('order_val').value;
             const fee = document.getElementById('delivery_fee').value;
 
             if (!dest || !val || !fee) { showToast("⚠️ يرجى تعبئة جميع الحقول 😊"); return; }
-            
             setLoading('btn-send', true);
 
             const orderData = {
                 id: "ORD_" + Date.now(),
                 type: "order",
-                client_user: currentUser.user,
-                cl_name: currentUser.name,
+                client_user: currentUser.Client_User || currentUser.user,
+                cl_name: currentUser.Client_Name || currentUser.name,
                 pickup: dest,
                 val: val,
                 fee: fee,
@@ -409,7 +425,6 @@
 
                 shopData.ordersToday++;
                 shopData.ordersTotal++; 
-                
                 shopData.history.unshift({
                     dest: dest, val: val, 
                     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
@@ -417,43 +432,32 @@
                 if (shopData.history.length > 5) shopData.history.pop(); 
 
                 localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
-                
                 updateUI();
                 showToast("✅ تم إرسال الطلب للرادار بنجاح 😊");
-                
                 document.getElementById('destination').value = '';
                 document.getElementById('order_val').value = '';
                 document.getElementById('delivery_fee').value = '';
-
-            } catch (e) {
-                showToast("❌ خطأ في الاتصال");
-            } finally {
-                setLoading('btn-send', false, "🚀 إرسال للرادار فوراً");
-            }
+            } catch (e) { showToast("❌ خطأ في الاتصال"); } 
+            finally { setLoading('btn-send', false, "🚀 إرسال للرادار فوراً"); }
         }
 
-        // فك عقدة البحث الحرفي بالتحويل الرقمي الصارم
         async function verifyCaptain() {
             const capId = String(document.getElementById('cap_id').value).trim();
             const amount = parseFloat(document.getElementById('charge_amount').value);
 
             if (!capId || !amount) { showToast("⚠️ أدخل الكود أو الهاتف والمبلغ 😊"); return; }
             if (amount <= 0) { showToast("⚠️ المبلغ غير صحيح 😊"); return; }
-            
-            if (myBalance < amount) { 
-                alert(`⛔ رصيدك الحالي (${myBalance}) غير كافٍ لإتمام العملية 😊`); 
-                return; 
-            }
+            if (myBalance < amount) { alert(`⛔ رصيدك الحالي (${myBalance}) غير كافٍ 😊`); return; }
 
             setLoading('btn-check', true);
 
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                // اللمسة الجراحية لربط الرقم والنص بذكاء نفاث
+                // البحث عن الكابتن (الكباتن لسه في العواميد القديمة)
                 const cap = data.find(c => String(c.user).trim() === capId || String(c.cap_phone).trim() === capId);
                 
                 if (!cap) {
-                    alert("❌ الكابتن غير موجود تأكد من الكود أو الهاتف 😊");
+                    alert("❌ الكابتن غير موجود 😊");
                     verifiedCaptain = null;
                     document.getElementById('cap-check-result').style.display = 'none';
                     document.getElementById('btn-charge').style.display = 'none';
@@ -462,15 +466,11 @@
                     document.getElementById('found-cap-name').innerText = cap.name;
                     document.getElementById('found-cap-balance').innerText = parseFloat(cap.balance||0).toFixed(2);
                     document.getElementById('future-cap-balance').innerText = (parseFloat(cap.balance||0) + amount).toFixed(2);
-                    
                     document.getElementById('cap-check-result').style.display = 'block';
                     document.getElementById('btn-charge').style.display = 'block';
                 }
-            } catch (e) {
-                showToast("❌ خطأ في الاتصال");
-            } finally {
-                setLoading('btn-check', false, "🔍 فحص الكابتن أولاً");
-            }
+            } catch (e) { showToast("❌ خطأ في الاتصال"); } 
+            finally { setLoading('btn-check', false, "🔍 فحص الكابتن أولاً"); }
         }
 
         async function executeTransfer() {
@@ -486,30 +486,25 @@
                 const newCapBal = parseFloat(verifiedCaptain.balance || 0) + amount;
                 const newShopBal = myBalance - amount;
 
-                // تحديث الكابتن بإستخدام المفتاح الفولاذي
-                const capKey = verifiedCaptain.user ? verifiedCaptain.user : verifiedCaptain.cap_phone;
+                // تحديث الكابتن (المفتاح القديم)
+                const capKey = verifiedCaptain.user || verifiedCaptain.cap_phone;
                 await N_ONE_CORE.postData('update', { user: capKey, data: { balance: newCapBal } });
                 
-                // تحديث المنشأة بإستخدام المفتاح الفولاذي عشان الإكسل ما يعاندنا
-                const shopKey = currentUser.user ? currentUser.user : currentUser.cap_phone;
+                // تحديث المنشأة (المفتاح المشفر الجديد)
+                const shopKey = currentUser.Client_User || currentUser.user;
                 await N_ONE_CORE.postData('update', { user: shopKey, data: { balance: newShopBal } });
 
                 myBalance = newShopBal;
                 document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
-                
-                alert(`✅ تمت العملية بنجاح\nالرصيد وصل للكابتن ${verifiedCaptain.name} 😊`);
+                alert(`✅ تمت العملية بنجاح للمنشأة والكابتن 😊`);
                 
                 document.getElementById('cap_id').value = '';
                 document.getElementById('charge_amount').value = '';
                 document.getElementById('cap-check-result').style.display = 'none';
                 document.getElementById('btn-charge').style.display = 'none';
                 verifiedCaptain = null;
-
-            } catch (e) {
-                showToast("❌ حدث خطأ أثناء التحويل");
-            } finally {
-                setLoading('btn-charge', false, "✅ تأكيد وتحويل الرصيد");
-            }
+            } catch (e) { showToast("❌ حدث خطأ أثناء التحويل"); } 
+            finally { setLoading('btn-charge', false, "✅ تأكيد وتحويل الرصيد"); }
         }
 
         function switchTab(tabId) {
@@ -522,7 +517,6 @@
         function updateUI() {
             document.getElementById('orders-today').innerText = shopData.ordersToday;
             document.getElementById('orders-total').innerText = shopData.ordersTotal;
-
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             if (shopData.history.length === 0) {
