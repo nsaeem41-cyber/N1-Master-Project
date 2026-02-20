@@ -277,7 +277,6 @@
     <script>
         // ========================================================
         // N ONE - SHOP SYSTEM (ULTIMATE EDITION v19.0) 💎
-        // نسخة مشفرة بهوية مستقلة للمنشآت
         // ========================================================
 
         const API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
@@ -303,7 +302,7 @@
         window.onload = async function() {
             if (!currentUser) { window.location.href = 'index.html'; return; }
             
-            document.getElementById('shop-name-display').innerText = currentUser.Shop_Name || currentUser.name || "منشأة تجارية";
+            document.getElementById('shop-name-display').innerText = currentUser.name;
             
             loadMatrix();
             checkDailyReset(); 
@@ -311,6 +310,7 @@
             
             await fetchMyBalance(); 
             
+            // شريان الضخ التلقائي لجلب الرصيد الحي من العقل المدبر بدون عوائق
             setInterval(fetchMyBalanceSilent, 15000);
         };
 
@@ -324,12 +324,14 @@
             }
         }
 
+        // قراءة الرصيد الحي فور فتح الصفحة
         async function fetchMyBalance() {
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                const me = data.find(u => String(u.Shop_User || "").trim() === String(currentUser.Shop_User || currentUser.user).trim() || (currentUser.cap_phone && String(u.Shop_Phone || "").trim() === String(currentUser.cap_phone).trim()));
+                // القنص الجراحي برقم الهاتف أو الكود لضمان المطابقة الفولاذية
+                const me = data.find(u => String(u.user).trim() === String(currentUser.user).trim() || (currentUser.cap_phone && String(u.cap_phone).trim() === String(currentUser.cap_phone).trim()));
                 if (me) {
-                    myBalance = parseFloat(me.Shop_Balance || 0);
+                    myBalance = parseFloat(me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 }
             } catch (e) {
@@ -337,12 +339,13 @@
             }
         }
 
+        // شريان الاستقبال الصامت اللي بيخلي الرصيد يرتفع تلقائياً
         async function fetchMyBalanceSilent() {
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                const me = data.find(u => String(u.Shop_User || "").trim() === String(currentUser.Shop_User || currentUser.user).trim() || (currentUser.cap_phone && String(u.Shop_Phone || "").trim() === String(currentUser.cap_phone).trim()));
+                const me = data.find(u => String(u.user).trim() === String(currentUser.user).trim() || (currentUser.cap_phone && String(u.cap_phone).trim() === String(currentUser.cap_phone).trim()));
                 if (me) {
-                    myBalance = parseFloat(me.Shop_Balance || 0);
+                    myBalance = parseFloat(me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 }
             } catch (e) {}
@@ -385,16 +388,16 @@
             setLoading('btn-send', true);
 
             const orderData = {
-                Shop_Ord_ID: "SHOP_ORD_" + Date.now(),
-                Shop_Type: "shop_order",
-                Shop_User: currentUser.Shop_User || currentUser.user,
-                Shop_Name: currentUser.Shop_Name || currentUser.name,
-                Shop_Pickup: dest,
-                Shop_Val: val,
-                Shop_Fee: fee,
-                Shop_Date: new Date().toISOString(),
-                Shop_IsEmergency: "false", 
-                Shop_Status: "new"
+                id: "ORD_" + Date.now(),
+                type: "order",
+                client_user: currentUser.user,
+                cl_name: currentUser.name,
+                pickup: dest,
+                val: val,
+                fee: fee,
+                date: new Date().toISOString(),
+                is_emergency: "false", 
+                status: "new"
             };
 
             try {
@@ -429,6 +432,7 @@
             }
         }
 
+        // فك عقدة البحث الحرفي بالتحويل الرقمي الصارم
         async function verifyCaptain() {
             const capId = String(document.getElementById('cap_id').value).trim();
             const amount = parseFloat(document.getElementById('charge_amount').value);
@@ -445,6 +449,7 @@
 
             try {
                 const data = await N_ONE_CORE.fetchData('read');
+                // اللمسة الجراحية لربط الرقم والنص بذكاء نفاث
                 const cap = data.find(c => String(c.user).trim() === capId || String(c.cap_phone).trim() === capId);
                 
                 if (!cap) {
@@ -454,7 +459,7 @@
                     document.getElementById('btn-charge').style.display = 'none';
                 } else {
                     verifiedCaptain = cap;
-                    document.getElementById('found-cap-name').innerText = cap.name || "كابتن";
+                    document.getElementById('found-cap-name').innerText = cap.name;
                     document.getElementById('found-cap-balance').innerText = parseFloat(cap.balance||0).toFixed(2);
                     document.getElementById('future-cap-balance').innerText = (parseFloat(cap.balance||0) + amount).toFixed(2);
                     
@@ -473,7 +478,7 @@
             const amount = parseFloat(document.getElementById('charge_amount').value);
             if (myBalance < amount) { alert("⛔ رصيدك نفذ 😊"); return; }
 
-            if (!confirm(`تأكيد نهائي\nخصم ${amount} د.أ من رصيدك\nوشحنها للكابتن ${verifiedCaptain.name || "الكابتن"} 😊`)) return;
+            if (!confirm(`تأكيد نهائي\nخصم ${amount} د.أ من رصيدك\nوشحنها للكابتن ${verifiedCaptain.name} 😊`)) return;
 
             setLoading('btn-charge', true);
 
@@ -481,16 +486,18 @@
                 const newCapBal = parseFloat(verifiedCaptain.balance || 0) + amount;
                 const newShopBal = myBalance - amount;
 
+                // تحديث الكابتن بإستخدام المفتاح الفولاذي
                 const capKey = verifiedCaptain.user ? verifiedCaptain.user : verifiedCaptain.cap_phone;
                 await N_ONE_CORE.postData('update', { user: capKey, data: { balance: newCapBal } });
                 
-                const shopKey = currentUser.Shop_User ? currentUser.Shop_User : currentUser.user;
-                await N_ONE_CORE.postData('update', { user: shopKey, data: { Shop_Balance: newShopBal } });
+                // تحديث المنشأة بإستخدام المفتاح الفولاذي عشان الإكسل ما يعاندنا
+                const shopKey = currentUser.user ? currentUser.user : currentUser.cap_phone;
+                await N_ONE_CORE.postData('update', { user: shopKey, data: { balance: newShopBal } });
 
                 myBalance = newShopBal;
                 document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 
-                alert(`✅ تمت العملية بنجاح\nالرصيد وصل للكابتن ${verifiedCaptain.name || "الكابتن"} 😊`);
+                alert(`✅ تمت العملية بنجاح\nالرصيد وصل للكابتن ${verifiedCaptain.name} 😊`);
                 
                 document.getElementById('cap_id').value = '';
                 document.getElementById('charge_amount').value = '';
