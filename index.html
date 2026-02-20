@@ -5,25 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N One | تسجيل الدخول</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(135deg, #000 0%, #1a237e 100%); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; overflow: hidden; }
-        .login-card { background: rgba(255, 255, 255, 0.96); width: 90%; max-width: 380px; padding: 40px; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; border-top: 5px solid #d4af37; }
-        .brand h1 { margin: 0; font-size: 32px; font-weight: 900; color: #1a237e; }
+        /* تصميم Pro عالمي ملكي */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a237e 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.96);
+            width: 90%;
+            max-width: 380px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            border-top: 5px solid #d4af37;
+            position: relative;
+        }
+
+        .brand h1 { margin: 0; font-size: 32px; font-weight: 900; color: #1a237e; letter-spacing: 1px; }
         .gold { color: #d4af37; }
+        .subtitle { color: #666; font-size: 13px; margin-bottom: 30px; margin-top: 5px; font-weight: 500; }
+
         .input-group { margin-bottom: 20px; text-align: right; }
         label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 12px; color: #555; }
-        input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; background: #f9f9f9; outline: none; box-sizing: border-box; }
-        .shop-login-option { background: rgba(26, 35, 126, 0.05); padding: 12px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
-        .btn-login { width: 100%; padding: 15px; background: #1a237e; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-login:disabled { background: #ccc; }
-        .msg-box { margin-top: 20px; padding: 12px; border-radius: 8px; font-size: 13px; display: none; font-weight: bold; }
-        .error { background: #ffebee; color: #c62828; }
+        
+        input {
+            width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px;
+            font-size: 15px; background: #f9f9f9; outline: none; transition: 0.3s;
+            box-sizing: border-box; 
+        }
+        input:focus { border-color: #1a237e; background: #fff; box-shadow: 0 0 0 4px rgba(26, 35, 126, 0.1); }
+
+        /* تصميم خيار المنشأة الراقي */
+        .shop-login-option {
+            background: rgba(26, 35, 126, 0.05); padding: 12px; border-radius: 10px; border: 1px solid #eee;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 20px;
+        }
+        .shop-login-option input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; padding: 0; }
+        .shop-login-option label { margin: 0; cursor: pointer; color: #1a237e; font-size: 13px; font-weight: bold; }
+
+        .btn-login {
+            width: 100%; padding: 15px; background: #1a237e; color: white;
+            border: none; border-radius: 10px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+        }
+        .btn-login:hover { background: #0d47a1; transform: translateY(-2px); }
+        .btn-login:disabled { background: #ccc; cursor: wait; transform: none; box-shadow: none; }
+
+        .msg-box {
+            margin-top: 20px; padding: 12px; border-radius: 8px; font-size: 13px;
+            display: none; font-weight: bold;
+        }
+        .error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+        
+        .footer { margin-top: 30px; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 20px; }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <div class="brand"><h1>N <span class="gold">One</span></h1></div>
-        <p style="color:#666; font-size:13px; margin-bottom:25px;">بوابة الدخول الموحدة | Pro Login</p>
+        <div class="brand">
+            <h1>N <span class="gold">One</span></h1>
+        </div>
+        <p class="subtitle">بوابة الدخول الموحدة | Pro Login</p>
 
         <div class="input-group">
             <label>اسم المستخدم (User ID)</label>
@@ -37,63 +90,76 @@
 
         <div class="shop-login-option">
             <input type="checkbox" id="is_shop">
-            <label for="is_shop" style="font-size:13px; font-weight:bold; color:#1a237e; cursor:pointer;">تسجيل دخول كمنشأة تجارية</label>
+            <label for="is_shop">تسجيل دخول كمنشأة تجارية مطعم ومحل</label>
         </div>
 
         <button class="btn-login" onclick="loginNow()" id="loginBtn">تسجيل الدخول 🚀</button>
+
         <div id="msg" class="msg-box error"></div>
+
+        <div class="footer">
+            &copy; 2026 N One Global Systems<br>
+            Secure Access v3.0 Ultimate
+        </div>
     </div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec"
 
+        window.onload = function() {
+            localStorage.removeItem('currentUser')
+            console.log("Session Cleared Ready for secure login")
+        }
+
         async function loginNow() {
             const u = document.getElementById('username').value.trim()
             const p = document.getElementById('password').value.trim()
-            const isShop = document.getElementById('is_shop').checked
+            const isShop = document.getElementById('is_shop').checked 
             const btn = document.getElementById('loginBtn')
             const msgBox = document.getElementById('msg')
 
-            if (!u || !p) { showError("يرجى إدخال البيانات يا حبة السكر ☺️"); return; }
-            
+            msgBox.style.display = 'none'
+
+            if (!u || !p) {
+                showError("يرجى إدخال اسم المستخدم وكلمة المرور يا حبة السكر ☺️")
+                return
+            }
+
             btn.innerHTML = "جاري التحقق الآمن ⏳"
             btn.disabled = true
-            msgBox.style.display = 'none'
 
             try {
                 const response = await fetch(API_URL + "?action=read")
                 const data = await response.json()
 
-                const userFound = data.find(item => {
+                const user = data.find(item => {
                     const oldMatch = String(item.user || "").trim().toLowerCase() === u.toLowerCase() && String(item.pass || "") === p
                     const newMatch = String(item.Client_User || "").trim().toLowerCase() === u.toLowerCase() && String(item.Client_Pass || "") === p
                     return oldMatch || newMatch
                 })
 
-                if (userFound) {
-                    const currentStatus = userFound.Client_Status || userFound.status
-                    if (currentStatus !== 'active') { 
-                        showError("عذراً الحساب موقوف راجع الإدارة ☺️")
+                if (user) {
+                    const status = user.Client_Status || user.status
+                    if (status !== 'active') {
+                        showError("عذرا هذا الحساب موقوف راجع الإدارة ☺️")
                         resetBtn()
                         return
                     }
 
-                    // 💎 اللحام البرمجي الملكي: إنشاء هوية "المرآة" لخداع الحارس القديم
+                    // 💎 بروتوكول مرآة الهوية الملكي 💎
                     const secureSession = {
-                        ...userFound,
-                        // صب البيانات المشفرة في القوالب القديمة خاوة
-                        user: userFound.Client_User || userFound.user,
-                        pass: userFound.Client_Pass || userFound.pass,
-                        name: userFound.Client_Name || userFound.name,
-                        role: userFound.Client_Role || userFound.role,
-                        type: userFound.Client_Type || userFound.type,
-                        status: currentStatus,
+                        ...user,
+                        user: user.Client_User || user.user,
+                        pass: user.Client_Pass || user.pass,
+                        name: user.Client_Name || user.name,
+                        role: user.Client_Role || user.role,
+                        type: user.Client_Type || user.type,
+                        status: status,
                         loginTime: Date.now()
                     }
                     
                     localStorage.setItem('currentUser', JSON.stringify(secureSession))
-                    console.log("Session Secured with Mirroring")
-
+                    
                     if (isShop) {
                         window.location.replace('shop.html')
                     } else if (secureSession.role === 'admin') {
@@ -103,13 +169,13 @@
                     }
 
                 } else {
-                    showError("بيانات الدخول غير صحيحة يا بطة ☺️")
+                    showError("اسم المستخدم أو كلمة المرور غير صحيحة يا بطة ☺️")
                     resetBtn()
                 }
 
             } catch (err) {
                 console.error(err)
-                showError("تعذر الاتصال بالسيرفر تأكد من الإنترنت ☺️")
+                showError("تعذر الاتصال بالسيرفر المركزي تأكد من الإنترنت ☺️")
                 resetBtn()
             }
         }
