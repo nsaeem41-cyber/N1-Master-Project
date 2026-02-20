@@ -260,7 +260,7 @@
 
     <script>
         // ========================================================
-        // كود الرادار الماسي - v10.0 (Diamond Edition)
+        // كود الرادار الماسي - v11.0 (Diamond Edition with Brain v17)
         // ========================================================
         
         if (typeof N_ONE_CORE !== 'undefined') {
@@ -268,7 +268,6 @@
         }
 
         let allData = [];
-        // ذاكرة دائمة للطلبات المؤكدة
         let acknowledgedSet = new Set(JSON.parse(localStorage.getItem('nOne_acked_orders') || '[]'));
         
         let soundEnabled = false;
@@ -317,12 +316,11 @@
 
         function renderLiveTable() {
             const tbody = document.getElementById('live-table-body');
-            const orders = allData.filter(i => i.type === 'order').reverse();
+            const orders = allData.filter(i => i.Shop_Type === 'shop_order').reverse();
             
             document.getElementById('stat-total').innerText = orders.length;
             
-            // حساب غير المؤكدين
-            const pendingCount = orders.filter(o => !acknowledgedSet.has(o.id)).length;
+            const pendingCount = orders.filter(o => !acknowledgedSet.has(o.Shop_Ord_ID)).length;
             document.getElementById('stat-pending').innerText = pendingCount;
             
             if (pendingCount > 0) playAlarm(); else stopAlarm();
@@ -332,10 +330,10 @@
             tbody.innerHTML = '';
             
             orders.forEach(ord => {
-                const isAck = acknowledgedSet.has(ord.id);
+                const isAck = acknowledgedSet.has(ord.Shop_Ord_ID);
                 
                 let rowClass = '';
-                const orderTime = new Date(ord.date).getTime();
+                const orderTime = new Date(ord.Shop_Date).getTime();
                 const now = Date.now();
                 const diffSec = Math.floor((now - orderTime) / 1000);
                 
@@ -348,35 +346,33 @@
 
                 const ackIcon = isAck ? '✔' : '✓';
                 
-                // === التأكد من رقم الهاتف (الأولوية للرقم المرسل مع الطلب) ===
-                // إذا لم يوجد cap_phone، نبحث في قاعدة بيانات المستخدمين
-                let shopPhone = ord.cap_phone;
+                let shopPhone = ord.Shop_Phone;
                 if (!shopPhone || shopPhone === "غير مسجل") {
-                    const userRecord = allData.find(u => u.user === ord.client_user && u.type === 'shop');
-                    if (userRecord && userRecord.cap_phone) shopPhone = userRecord.cap_phone;
+                    const userRecord = allData.find(u => u.Shop_User === ord.Shop_User && u.Shop_Type === 'shop');
+                    if (userRecord && userRecord.Shop_Phone) shopPhone = userRecord.Shop_Phone;
                     else shopPhone = "---";
                 }
                 
                 let shopLocLink = '#';
-                if (ord.pickup && ord.pickup.includes('http')) shopLocLink = ord.pickup;
-                else if (ord.pickup) shopLocLink = `http://googleusercontent.com/maps.google.com/search?q=${encodeURIComponent(ord.pickup)}`;
+                if (ord.Shop_Pickup && ord.Shop_Pickup.includes('http')) shopLocLink = ord.Shop_Pickup;
+                else if (ord.Shop_Pickup) shopLocLink = `http://googleusercontent.com/maps.google.com/search?q=${encodeURIComponent(ord.Shop_Pickup)}`;
 
-                const timeObj = new Date(ord.date);
+                const timeObj = new Date(ord.Shop_Date);
                 const exactTime = timeObj.toLocaleTimeString('en-US', {hour12:false}); 
 
                 tbody.innerHTML += `
-                    <tr class="${rowClass}" id="row-${ord.id}" data-time="${orderTime}" data-ack="${isAck}">
+                    <tr class="${rowClass}" id="row-${ord.Shop_Ord_ID}" data-time="${orderTime}" data-ack="${isAck}">
                         <td>
-                            <button class="btn-ack" onclick="acknowledgeOrder('${ord.id}')">${ackIcon}</button>
+                            <button class="btn-ack" onclick="acknowledgeOrder('${ord.Shop_Ord_ID}')">${ackIcon}</button>
                         </td>
                         <td class="bg-time">${exactTime}</td>
-                        <td><span class="timer-badge" id="timer-${ord.id}" style="color:${isAck ? '#cbd5e1' : 'var(--gold)'}">0s</span></td>
-                        <td class="bg-shop">${ord.cl_name || '---'}</td>
+                        <td><span class="timer-badge" id="timer-${ord.Shop_Ord_ID}" style="color:${isAck ? '#cbd5e1' : 'var(--gold)'}">0s</span></td>
+                        <td class="bg-shop">${ord.Shop_Name || '---'}</td>
                         <td><span class="badge bg-phone">${shopPhone}</span></td>
                         <td>
                             <div class="financial-cell">
-                                <span class="badge bg-money" title="قيمة الطلب">${ord.val} د.أ</span>
-                                <span class="badge bg-fee" title="التوصيل">+ ${ord.fee}</span>
+                                <span class="badge bg-money" title="قيمة الطلب">${ord.Shop_Val} د.أ</span>
+                                <span class="badge bg-fee" title="التوصيل">+ ${ord.Shop_Fee}</span>
                             </div>
                         </td>
                         <td><a href="${shopLocLink}" target="_blank" class="badge" style="background:#e0f2fe; color:#0284c7; text-decoration:none;">📍 خريطة</a></td>
@@ -414,7 +410,6 @@
             });
         }
 
-        // ================= المرسل اليدوي =================
         function checkCaptainMemory() {
             const phone = document.getElementById('man_phone').value;
             const hint = document.getElementById('mem_hint');
@@ -425,7 +420,7 @@
             } else hint.style.display = 'none';
         }
 
-        function sendManualOrder() {
+        async function sendManualOrder() {
             const phone = document.getElementById('man_phone').value;
             const capName = document.getElementById('man_cap_name').value;
             const restName = document.getElementById('man_rest_name').value;
@@ -434,7 +429,7 @@
             const ratio = document.getElementById('man_ratio').value || 0;
             const editIndex = document.getElementById('edit_mode_index').value;
 
-            if (!phone || !restName) { alert("بيانات ناقصة"); return; }
+            if (!phone || !restName) { alert("بيانات ناقصة يا بطة"); return; }
 
             if (capName) {
                 captainMemory[phone] = capName;
@@ -461,12 +456,36 @@
                         `-----------------------------%0a` +
                         `📊 اليوم: *${todayCount}* | 💵 المجموع: *${todayEarnings.toFixed(2)} د.أ*`;
 
-            if (confirm("إرسال واتساب؟")) {
+            if (confirm("إرسال واتساب وتوثيق مالي في الخزنة الحديدية")) {
                 window.open(`https://wa.me/${finalPhone}?text=${msg}`, '_blank');
             }
 
             const commission = (parseFloat(fee || 0) * (parseFloat(ratio) / 100)).toFixed(2);
             const entry = { cap: capName, phone: phone, rest: restName, val: val, fee: fee, ratio: ratio, comm: commission };
+
+            // اللحام المالي مع العقل 17 وخصم العمولة من الكابتن
+            try {
+                const targetCap = allData.find(c => c.Cap_Phone === phone || c.Cap_User === phone);
+                if(targetCap) {
+                    const newBal = parseFloat(targetCap.Cap_Balance || 0) - parseFloat(commission);
+                    const capKey = targetCap.Cap_User ? targetCap.Cap_User : targetCap.Cap_Phone;
+                    N_ONE_CORE.postData('update', { user: capKey, data: { Cap_Balance: newBal } });
+                }
+
+                // تسجيل حركة الرادار في الأعمدة الجديدة
+                const radarDbEntry = {
+                    Radar_ID: "RAD_" + Date.now(),
+                    Radar_CapPhone: phone,
+                    Radar_CapName: capName,
+                    Radar_ShopName: restName,
+                    Radar_OrderVal: val,
+                    Radar_OrderFee: fee,
+                    Radar_CommRatio: ratio,
+                    Radar_CommValue: commission,
+                    Radar_Date: new Date().toISOString()
+                };
+                N_ONE_CORE.postData('add', [radarDbEntry]);
+            } catch(e) { console.error(e); }
 
             if (editIndex > -1) { dailyArchive[editIndex] = entry; cancelEdit(); } 
             else { dailyArchive.unshift(entry); }
@@ -499,7 +518,7 @@
             document.getElementById('stat-comm').innerText = totalComm.toFixed(2);
         }
 
-        function deleteItem(index) { if(confirm("حذف؟")) { dailyArchive.splice(index, 1); saveAndRender(); } }
+        function deleteItem(index) { if(confirm("حذف العملية")) { dailyArchive.splice(index, 1); saveAndRender(); } }
         function editItem(index) { 
             const item = dailyArchive[index];
             document.getElementById('man_phone').value = item.phone;
@@ -520,7 +539,7 @@
             document.getElementById('man_val').value = '';
             document.getElementById('man_fee').value = '';
         }
-        function clearDailyArchive() { if(confirm("تصفير؟")) { dailyArchive = []; saveAndRender(); } }
+        function clearDailyArchive() { if(confirm("تصفير الأرشيف اليومي")) { dailyArchive = []; saveAndRender(); } }
         function saveAndRender() { localStorage.setItem('n1_daily_archive', JSON.stringify(dailyArchive)); renderArchive(); }
     </script>
 </body>
