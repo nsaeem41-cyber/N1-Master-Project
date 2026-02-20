@@ -16,7 +16,7 @@
             color: #333;
         }
 
-        .Set_SetupCard {
+        .setup-card {
             background: rgba(255, 255, 255, 0.95);
             width: 90%;
             max-width: 450px;
@@ -47,7 +47,7 @@
         .btn-install:hover { background: #1b5e20; transform: translateY(-2px); }
         .btn-install:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        #Set_Status {
+        #status {
             margin-top: 20px; padding: 15px; border-radius: 8px; display: none;
             font-weight: bold; font-size: 14px;
         }
@@ -58,129 +58,129 @@
         .footer { margin-top: 30px; font-size: 11px; color: #aaa; }
         
         /* إخفاء فورم التنصيب حتى يتم الفحص من السيرفر */
-        #Set_SetupForm { display: none; } 
+        #setup-form { display: none; } 
     </style>
 </head>
 <body>
 
-    <div class="Set_SetupCard">
+    <div class="setup-card">
         <h1>N One <span style="color:#d4af37">System</span></h1>
         <p>تهيئة السيرفر الملكي وإنشاء حساب المدير العام</p>
 
-        <div id="Set_Status" class="info" style="display:block;">جاري فحص السيرفر والتحقق من الأمان ⏳</div>
+        <div id="status" class="info" style="display:block;">جاري فحص السيرفر والتحقق من الأمان ⏳</div>
 
-        <div id="Set_SetupForm">
+        <div id="setup-form">
             <div class="input-group">
                 <label>اسم المستخدم للإدارة (User ID)</label>
-                <input type="text" id="Set_AdminUser" placeholder="أدخل اسم المستخدم">
+                <input type="text" id="admin_user" placeholder="أدخل اسم المستخدم">
             </div>
             
             <div class="input-group">
                 <label>كلمة المرور (Password)</label>
-                <input type="password" id="Set_AdminPass" placeholder="أدخل كلمة المرور القوية">
+                <input type="password" id="admin_pass" placeholder="أدخل كلمة المرور القوية">
             </div>
 
             <div class="input-group">
                 <label>مفتاح الأمان السري (Setup Key)</label>
-                <input type="password" id="Set_SetupKey" placeholder="أدخل كود التنصيب السري">
+                <input type="password" id="setup_key" placeholder="أدخل كود التنصيب السري">
             </div>
 
-            <button id="Set_Btn" class="btn-install" onclick="Set_InstallSystem()">بدء التثبيت الآن 🚀</button>
+            <button id="btn" class="btn-install" onclick="installSystem()">بدء التثبيت الآن 🚀</button>
         </div>
 
         <div class="footer">N One Global Systems V6.0 Ultimate</div>
     </div>
 
     <script>
-        const Set_API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
 
         // الفحص الذكي أول ما تفتح الصفحة
         window.onload = async function() {
             try {
-                const Set_Response = await fetch(Set_API_URL + "?action=read");
-                const Set_Data = await Set_Response.json();
+                const response = await fetch(API_URL + "?action=read");
+                const data = await response.json();
                 
                 // التأكد إذا كان هناك حساب مدير موجود مسبقا
-                const Set_AdminExists = Set_Data.some(Set_Item => Set_Item.Auth_Role === 'admin');
+                const adminExists = data.some(user => user.role === 'admin');
                 
-                if (Set_AdminExists) {
-                    Set_ShowStatus("error", "النظام منصب ومحمي مسبقا ☺️ لا يمكن إنشاء مدير جديد");
+                if (adminExists) {
+                    showStatus("error", "النظام منصب ومحمي مسبقا ☺️ لا يمكن إنشاء مدير جديد");
                 } else {
-                    Set_ShowStatus("success", "السيرفر جاهز للتنصيب ☺️ أدخل بياناتك الملكية");
-                    document.getElementById('Set_SetupForm').style.display = 'block';
+                    showStatus("success", "السيرفر جاهز للتنصيب ☺️ أدخل بياناتك الملكية");
+                    document.getElementById('setup-form').style.display = 'block';
                 }
-            } catch (Set_Error) {
-                Set_ShowStatus("error", "خطأ في الاتصال بالسيرفر تأكد من الإنترنت ☺️");
+            } catch (error) {
+                showStatus("error", "خطأ في الاتصال بالسيرفر تأكد من الإنترنت ☺️");
             }
         };
 
-        async function Set_InstallSystem() {
-            const Set_BtnEl = document.getElementById('Set_Btn');
-            const Set_UserVal = document.getElementById('Set_AdminUser').value.trim();
-            const Set_PassVal = document.getElementById('Set_AdminPass').value.trim();
-            const Set_KeyVal = document.getElementById('Set_SetupKey').value.trim();
+        async function installSystem() {
+            const btn = document.getElementById('btn');
+            const userVal = document.getElementById('admin_user').value.trim();
+            const passVal = document.getElementById('admin_pass').value.trim();
+            const keyVal = document.getElementById('setup_key').value.trim();
 
-            if (!Set_UserVal || !Set_PassVal || !Set_KeyVal) {
-                Set_ShowStatus("error", "الرجاء تعبئة جميع الحقول ☺️");
+            if (!userVal || !passVal || !keyVal) {
+                showStatus("error", "الرجاء تعبئة جميع الحقول ☺️");
                 return;
             }
 
             // التحقق من مفتاح الأمان السري
-            if (Set_KeyVal !== "555") {
-                Set_ShowStatus("error", "مفتاح الأمان السري غير صحيح ☺️");
+            if (keyVal !== "555") {
+                showStatus("error", "مفتاح الأمان السري غير صحيح ☺️");
                 return;
             }
 
-            Set_BtnEl.innerHTML = "جاري الاتصال بالسيرفر ⏳";
-            Set_BtnEl.disabled = true;
+            btn.innerHTML = "جاري الاتصال بالسيرفر ⏳";
+            btn.disabled = true;
 
             // تشفير كلمة المرور لحظيا قبل إرسالها للسيرفر
-            const Set_EncodedPass = btoa(Set_PassVal);
+            const encodedPass = btoa(passVal);
 
-            const Set_AdminUserObj = {
-                Auth_ID: "ADMIN_" + Date.now(),
-                Auth_User: Set_UserVal,
-                Auth_Pass: Set_EncodedPass, 
-                Auth_Name: "مدير النظام (نسيم)",
-                Auth_Role: "admin",      
-                Auth_Type: "admin",      
-                Auth_Status: "active",   
-                Auth_Expiry: "2099-12-31" 
+            const adminUser = {
+                id: "ADMIN_" + Date.now(),
+                user: userVal,
+                pass: encodedPass, 
+                name: "مدير النظام (نسيم)",
+                role: "admin",      
+                type: "admin",      
+                status: "active",   
+                expiry: "2099-12-31" 
             };
 
             try {
-                await fetch(Set_API_URL, {
+                await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         action: 'add',
-                        data: Set_AdminUserObj
+                        data: adminUser
                     })
                 });
 
-                Set_ShowStatus("success", "تم تثبيت النظام بنجاح ☺️ حساب المدير جاهز");
-                Set_BtnEl.innerHTML = "تم التثبيت ✔️";
-                document.getElementById('Set_SetupForm').style.display = 'none';
+                showStatus("success", "تم تثبيت النظام بنجاح ☺️ حساب المدير جاهز");
+                btn.innerHTML = "تم التثبيت ✔️";
+                document.getElementById('setup-form').style.display = 'none';
 
                 // توجيه تلقائي لصفحة الدخول
                 setTimeout(() => {
                     window.location.replace('index.html');
                 }, 2000);
 
-            } catch (Set_Error) {
-                console.error(Set_Error);
-                Set_ShowStatus("error", "حدث خطأ في الاتصال ☺️ تأكد من الإنترنت");
-                Set_BtnEl.innerHTML = "حاول مرة أخرى 🔄";
-                Set_BtnEl.disabled = false;
+            } catch (error) {
+                console.error(error);
+                showStatus("error", "حدث خطأ في الاتصال ☺️ تأكد من الإنترنت");
+                btn.innerHTML = "حاول مرة أخرى 🔄";
+                btn.disabled = false;
             }
         }
 
-        function Set_ShowStatus(Set_Type, Set_Msg) {
-            const Set_El = document.getElementById('Set_Status');
-            Set_El.className = Set_Type;
-            Set_El.innerText = Set_Msg;
-            Set_El.style.display = 'block';
+        function showStatus(type, msg) {
+            const el = document.getElementById('status');
+            el.className = type;
+            el.innerText = msg;
+            el.style.display = 'block';
         }
     </script>
 
