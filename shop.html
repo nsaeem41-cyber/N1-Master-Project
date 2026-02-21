@@ -8,20 +8,17 @@
     <script src="https://cdn.jsdelivr.net/gh/nsaeem41-cyber/N1-Master-Project@main/n-one-core.js"></script>
 
     <style>
-        /* ============================================================
-           تصميم ROYAL LIGHT - قمة الفخامة للمنشآت (Unified Theme)
-           ============================================================ */
         :root {
-            --primary: #0f172a;      /* كحلي ملكي عميق */
-            --bg: #f8fafc;           /* خلفية رمادية ثلجية */
-            --card-bg: #ffffff;      /* أبيض ناصع للكروت */
-            --gold: #d4af37;         /* ذهبي للأيقونات والحدود */
-            --text-main: #334155;    /* رمادي غامق للنصوص */
-            --text-light: #64748b;   /* رمادي فاتح للعناوين */
-            --success: #10b981;      /* أخضر للعمليات الناجحة */
-            --danger: #ef4444;       /* أحمر للخروج والتنبيه */
-            --border: #e2e8f0;       /* حدود ناعمة */
-            --input-bg: #f1f5f9;     /* خلفية الحقول */
+            --primary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --gold: #d4af37;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --input-bg: #f1f5f9;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -32,7 +29,6 @@
             color: var(--text-main); user-select: none; padding-bottom: 80px;
         }
 
-        /* --- الهيدر الملكي --- */
         .header {
             background: var(--primary);
             padding: 25px 20px;
@@ -47,7 +43,6 @@
         .brand { font-size: 24px; font-weight: 900; color: white; letter-spacing: 1px; }
         .gold-text { color: var(--gold); }
         
-        /* زر الخروج الآمن (New Logout System) */
         .btn-logout {
             background: rgba(239, 68, 68, 0.15); color: #fecaca; 
             border: 1px solid rgba(239, 68, 68, 0.5);
@@ -57,7 +52,6 @@
         }
         .btn-logout:active { transform: scale(0.95); background: var(--danger); color: white; }
 
-        /* عرض اسم المطعم */
         .shop-info-badge { 
             background: rgba(255, 255, 255, 0.1); color: var(--gold);
             padding: 8px 20px; border-radius: 20px; display: inline-block;
@@ -65,7 +59,6 @@
             margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        /* --- التبويبات (Tabs) --- */
         .nav-tabs {
             display: flex; justify-content: center; gap: 12px; margin-top: 10px;
             background: rgba(255,255,255,0.05); padding: 6px; border-radius: 20px;
@@ -80,22 +73,18 @@
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); transform: translateY(-2px);
         }
 
-        /* --- الحاوية الرئيسية --- */
         .container { max-width: 500px; margin: 20px auto; padding: 0 20px; }
 
-        /* الأقسام (Fade In Animation) */
         .section { display: none; animation: slideUp 0.4s ease-out; }
         .section.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- الكروت --- */
         .card {
             background: var(--card-bg); padding: 25px; border-radius: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border);
             margin-bottom: 20px; position: relative; overflow: hidden;
         }
 
-        /* --- العدادات (Daily & Total) --- */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-box {
             background: white; padding: 20px; border-radius: 20px; text-align: center;
@@ -109,7 +98,6 @@
         .stat-val { font-size: 24px; font-weight: 900; color: var(--primary); }
         .stat-val.gold { color: var(--gold); }
 
-        /* --- حقول الإدخال --- */
         .input-group { margin-bottom: 18px; position: relative; }
         label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 800; color: var(--text-light); }
         input, select {
@@ -120,7 +108,6 @@
         input:focus, select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05); }
         input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; }
 
-        /* --- الأزرار --- */
         .btn-main {
             width: 100%; padding: 18px; border: none; border-radius: 16px;
             font-size: 16px; font-weight: 800; cursor: pointer; color: white;
@@ -132,7 +119,6 @@
         .btn-check { background: var(--text-light); margin-bottom: 10px; }
         .btn-confirm { background: var(--success); display: none; }
 
-        /* --- تفاصيل التحقق من الكابتن --- */
         #cap-check-result {
             display: none; background: #ecfdf5; padding: 15px; border-radius: 15px;
             border: 1px solid #a7f3d0; margin-bottom: 15px; text-align: center;
@@ -141,8 +127,7 @@
         .check-info { font-size: 14px; color: #064e3b; margin-bottom: 5px; }
         .check-balance { font-size: 18px; font-weight: 900; color: var(--success); }
 
-        /* --- السجل --- */
-        .history-list { margin-top: 10px; }
+        .history-list { margin-top: 10px; max-height: 250px; overflow-y: auto; }
         .history-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px; border-bottom: 1px solid #f1f5f9;
@@ -152,7 +137,6 @@
         .h-time { font-size: 11px; color: #94a3b8; }
         .h-price { font-weight: 900; color: var(--gold); }
 
-        /* --- إشعارات وشريط تحميل --- */
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: var(--primary); color: white; padding: 12px 30px; border-radius: 30px;
@@ -165,7 +149,6 @@
             box-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
         }
 
-        /* --- نافذة الخيارات الملكية (Sovereign Choice Menu) --- */
         .modal-overlay {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
@@ -179,13 +162,8 @@
         .modal-title { font-size: 20px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
         .modal-desc { font-size: 14px; color: var(--text-light); margin-bottom: 20px; line-height: 1.5; }
         
-        /* التكتيك والمشاكسة - حقل الإدخال السري */
-        .secret-footer {
-            text-align: center; padding: 15px;
-        }
-        .secret-input {
-            width: 50px; background: transparent; border: none; text-align: center; color: var(--border); outline: none; font-size: 10px;
-        }
+        .secret-footer { text-align: center; padding: 15px; }
+        .secret-input { width: 50px; background: transparent; border: none; text-align: center; color: var(--border); outline: none; font-size: 10px; }
         .secret-input::placeholder { color: #e2e8f0; }
 
     </style>
@@ -199,7 +177,7 @@
             <div class="modal-title">أهلاً بكِ في N One 👑</div>
             <div class="modal-desc">
                 عذراً الموقع غير معروف<br>
-                يرجى اختيار منطقتك الصحيحة (لمرة واحدة فقط) لضمان استقرار الأسعار والتسعير التلقائي
+                يرجى اختيار منطقتك الصحيحة لضمان استقرار الأسعار
             </div>
             
             <div class="input-group" style="text-align: right;">
@@ -251,7 +229,7 @@
             <div class="card">
                 <div class="input-group">
                     <label>📍 وجهة الطلب (اختر من القائمة المعتمدة)</label>
-                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." onchange="calculateFee()">
+                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." oninput="calculateFee()">
                     <datalist id="areas-list"></datalist>
                 </div>
 
@@ -272,8 +250,7 @@
 
             <div class="card" style="padding: 20px;">
                 <div style="font-size:13px; font-weight:800; color:var(--text-light); margin-bottom:10px;">🕒 آخر الطلبات (Operations Trace)</div>
-                <div id="history-list" class="history-list">
-                    </div>
+                <div id="history-list" class="history-list"></div>
             </div>
         </div>
 
@@ -324,11 +301,6 @@
     <div id="toast" class="toast">تمت العملية بنجاح!</div>
 
     <script>
-        // ========================================================
-        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v21.5) 💎
-        // نسخة اللحام الأبدي للذاكرة الحديدية الشاملة
-        // ========================================================
-
         const API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
         
         let shopData = JSON.parse(localStorage.getItem('nOne_shop_legacy_v1')) || { 
@@ -456,14 +428,14 @@
             
             if (!currentUser.Shop_Location) return;
 
-            const myPrices = dbPrices.filter(p => p.Price_Source === currentUser.Shop_Location);
+            const myPrices = dbPrices.filter(p => String(p.Price_Source).trim() === String(currentUser.Shop_Location).trim());
             
             myPrices.forEach(p => {
                 const currentPrice = parseFloat(p.Price_Current || p.Price_Base || 0);
-                pricingMatrix[p.Price_Area] = currentPrice;
+                pricingMatrix[String(p.Price_Area).trim()] = currentPrice;
                 
                 const opt = document.createElement('option');
-                opt.value = p.Price_Area;
+                opt.value = String(p.Price_Area).trim();
                 datalist.appendChild(opt);
             });
         }
@@ -498,8 +470,8 @@
         }
 
         function calculateFee() {
-            const dest = document.getElementById('destination').value;
-            if (pricingMatrix[dest]) {
+            const dest = String(document.getElementById('destination').value).trim();
+            if (pricingMatrix[dest] !== undefined) {
                 document.getElementById('delivery_fee').value = pricingMatrix[dest].toFixed(2);
             } else {
                 document.getElementById('delivery_fee').value = '';
@@ -509,12 +481,12 @@
         async function sendOrder() {
             checkDailyReset(); 
             
-            const dest = document.getElementById('destination').value;
+            const dest = String(document.getElementById('destination').value).trim();
             const val = document.getElementById('order_val').value;
             const fee = document.getElementById('delivery_fee').value;
 
             if (!dest || !val || !fee) { showToast("يرجى تعبئة جميع الحقول وتحديد منطقة صحيحة"); return; }
-            if (!pricingMatrix[dest]) { showToast("المنطقة المدخلة غير معتمدة في التسعيرة"); return; }
+            if (pricingMatrix[dest] === undefined) { showToast("المنطقة المدخلة غير معتمدة في التسعيرة"); return; }
             
             setLoading('btn-send', true);
             
@@ -548,7 +520,7 @@
                     dest: dest, val: val, 
                     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
                 });
-                if (shopData.history.length > 5) shopData.history.pop(); 
+                if (shopData.history.length > 20) shopData.history.pop(); 
 
                 localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
                 
