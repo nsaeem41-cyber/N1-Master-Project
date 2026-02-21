@@ -142,7 +142,7 @@
         .check-balance { font-size: 18px; font-weight: 900; color: var(--success); }
 
         /* --- السجل --- */
-        .history-list { margin-top: 10px; }
+        .history-list { margin-top: 10px; max-height: 250px; overflow-y: auto; }
         .history-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px; border-bottom: 1px solid #f1f5f9;
@@ -250,8 +250,8 @@
 
             <div class="card">
                 <div class="input-group">
-                    <label>📍 وجهة الطلب (اختر من القائمة المعتمدة)</label>
-                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." onchange="calculateFee()">
+                    <label>📍 وجهة الطلب (البحث الذكي)</label>
+                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." oninput="calculateFee()" onchange="calculateFee()">
                     <datalist id="areas-list"></datalist>
                 </div>
 
@@ -271,7 +271,7 @@
             </div>
 
             <div class="card" style="padding: 20px;">
-                <div style="font-size:13px; font-weight:800; color:var(--text-light); margin-bottom:10px;">🕒 آخر الطلبات (Operations Trace)</div>
+                <div style="font-size:13px; font-weight:800; color:var(--text-light); margin-bottom:10px;">🕒 سجل العمليات (Operations Trace)</div>
                 <div id="history-list" class="history-list">
                     </div>
             </div>
@@ -325,8 +325,8 @@
 
     <script>
         // ========================================================
-        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v20.0) 💎
-        // نسخة اللحام الأبدي للذاكرة الحديدية الشاملة
+        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v22.0) 💎
+        // نسخة اللحام الأبدي للذاكرة الحديدية الشاملة مع البحث الدقيق
         // ========================================================
 
         const API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
@@ -364,7 +364,6 @@
             setInterval(fetchMyBalanceSilent, 15000);
         };
 
-        // الدالة الشاملة لجلب البيانات والاعتماد الكلي على الخزنة الحديدية
         async function fetchAllData() {
             try {
                 const data = await N_ONE_CORE.fetchData('read');
@@ -375,11 +374,9 @@
                 dbPrices = data.filter(d => d.Price_ID);
 
                 if (me) {
-                    // سحب الرصيد من أي عمود متاح لضمان الوصول
-                    myBalance = parseFloat(me.Shop_Balance || me.balance || me.Client_Balance || 0);
+                    myBalance = parseFloat(me.Shop_Balance || me.Client_Balance || me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                     
-                    // سحب الموقع من أي عمود متاح لضمان قفل النافذة
                     const savedLocation = me.Shop_Location || me.Client_Location || "";
                     
                     if (savedLocation && String(savedLocation).trim() !== "") {
@@ -428,7 +425,6 @@
             try {
                 const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user).trim();
                 
-                // تحديث الموقع في عمود Shop_Location وعمود Client_Location عشان الخزنة تكون مسطرة مية بالمية
                 await N_ONE_CORE.postData('update', { 
                     user: shopKey, 
                     data: { 
@@ -460,14 +456,14 @@
             
             if (!currentUser.Shop_Location) return;
 
-            const myPrices = dbPrices.filter(p => p.Price_Source === currentUser.Shop_Location);
+            const myPrices = dbPrices.filter(p => String(p.Price_Source).trim() === String(currentUser.Shop_Location).trim());
             
             myPrices.forEach(p => {
                 const currentPrice = parseFloat(p.Price_Current || p.Price_Base || 0);
-                pricingMatrix[p.Price_Area] = currentPrice;
+                pricingMatrix[String(p.Price_Area).trim()] = currentPrice;
                 
                 const opt = document.createElement('option');
-                opt.value = p.Price_Area;
+                opt.value = String(p.Price_Area).trim();
                 datalist.appendChild(opt);
             });
         }
@@ -495,15 +491,15 @@
                 const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || "").trim();
                 const me = data.find(u => String(u.Shop_User || u.Client_User || u.user || "").trim() === shopKey);
                 if (me) {
-                    myBalance = parseFloat(me.Shop_Balance || me.balance || me.Client_Balance || 0);
+                    myBalance = parseFloat(me.Shop_Balance || me.Client_Balance || me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 }
             } catch (e) {}
         }
 
         function calculateFee() {
-            const dest = document.getElementById('destination').value;
-            if (pricingMatrix[dest]) {
+            const dest = String(document.getElementById('destination').value).trim();
+            if (pricingMatrix[dest] !== undefined) {
                 document.getElementById('delivery_fee').value = pricingMatrix[dest].toFixed(2);
             } else {
                 document.getElementById('delivery_fee').value = '';
@@ -513,12 +509,12 @@
         async function sendOrder() {
             checkDailyReset(); 
             
-            const dest = document.getElementById('destination').value;
+            const dest = String(document.getElementById('destination').value).trim();
             const val = document.getElementById('order_val').value;
             const fee = document.getElementById('delivery_fee').value;
 
             if (!dest || !val || !fee) { showToast("يرجى تعبئة جميع الحقول وتحديد منطقة صحيحة"); return; }
-            if (!pricingMatrix[dest]) { showToast("المنطقة المدخلة غير معتمدة في التسعيرة"); return; }
+            if (pricingMatrix[dest] === undefined) { showToast("المنطقة المدخلة غير معتمدة في التسعيرة"); return; }
             
             setLoading('btn-send', true);
             
@@ -552,7 +548,7 @@
                     dest: dest, val: val, 
                     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
                 });
-                if (shopData.history.length > 5) shopData.history.pop(); 
+                if (shopData.history.length > 20) shopData.history.pop(); 
 
                 localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
                 
@@ -629,13 +625,14 @@
                 const newShopBal = myBalance - amount;
 
                 const capKey = verifiedCaptain.Cap_User ? verifiedCaptain.Cap_User : (verifiedCaptain.user || verifiedCaptain.cap_phone);
-                await N_ONE_CORE.postData('update', { user: capKey, data: { Cap_Balance: newCapBal } });
+                await N_ONE_CORE.postData('update', { user: capKey, data: { Cap_Balance: newCapBal, balance: newCapBal } });
                 
                 const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user).trim();
                 await N_ONE_CORE.postData('update', { 
                     user: shopKey, 
                     data: { 
                         Shop_Balance: newShopBal,
+                        Client_Balance: newShopBal,
                         balance: newShopBal
                     } 
                 });
