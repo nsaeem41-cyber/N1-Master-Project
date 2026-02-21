@@ -325,8 +325,8 @@
 
     <script>
         // ========================================================
-        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v19.5) 💎
-        // نسخة اللحام الأبدي والتشفير العكسي للأسعار والاعتماد على الخزنة
+        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v20.0) 💎
+        // نسخة اللحام الأبدي للذاكرة الحديدية الشاملة
         // ========================================================
 
         const API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
@@ -353,7 +353,8 @@
         window.onload = async function() {
             if (!currentUser) { window.location.href = 'index.html'; return; }
             
-            document.getElementById('shop-name-display').innerText = currentUser.Shop_Name || currentUser.name || "منشأة تجارية";
+            const shopNameStr = currentUser.Shop_Name || currentUser.Client_Name || currentUser.name || "منشأة تجارية";
+            document.getElementById('shop-name-display').innerText = shopNameStr;
             
             checkDailyReset(); 
             updateUI();
@@ -368,18 +369,21 @@
             try {
                 const data = await N_ONE_CORE.fetchData('read');
                 
-                const shopKey = String(currentUser.Shop_User || currentUser.user).trim();
-                const me = data.find(u => String(u.Shop_User || u.user || "").trim() === shopKey || (currentUser.cap_phone && String(u.Shop_Phone || "").trim() === String(currentUser.cap_phone).trim()));
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || "").trim();
+                const me = data.find(u => String(u.Shop_User || u.Client_User || u.user || "").trim() === shopKey || (currentUser.cap_phone && String(u.Shop_Phone || u.Client_Phone || "").trim() === String(currentUser.cap_phone).trim()));
                 
                 dbPrices = data.filter(d => d.Price_ID);
 
                 if (me) {
-                    myBalance = parseFloat(me.Shop_Balance || 0);
+                    // سحب الرصيد من أي عمود متاح لضمان الوصول
+                    myBalance = parseFloat(me.Shop_Balance || me.balance || me.Client_Balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                     
-                    // الاعتماد الكلي على العقل والإكسل مش المتصفح
-                    if (me.Shop_Location && String(me.Shop_Location).trim() !== "") {
-                        currentUser.Shop_Location = me.Shop_Location;
+                    // سحب الموقع من أي عمود متاح لضمان قفل النافذة
+                    const savedLocation = me.Shop_Location || me.Client_Location || "";
+                    
+                    if (savedLocation && String(savedLocation).trim() !== "") {
+                        currentUser.Shop_Location = savedLocation;
                         localStorage.setItem('currentUser', JSON.stringify(currentUser));
                         document.getElementById('location-modal').style.display = 'none';
                         loadShopPrices();
@@ -412,30 +416,37 @@
         async function saveShopLocation() {
             const selectedLocation = document.getElementById('modal-location-select').value;
             if (!selectedLocation) {
-                alert("⚠️ يرجى اختيار المنطقة من القائمة للاستمرار 😊");
+                alert("يرجى اختيار المنطقة من القائمة للاستمرار");
                 return;
             }
 
             const btn = document.querySelector('#location-modal .btn-main');
             const originalText = btn.innerText;
-            btn.innerText = "جاري اللحام ⏳...";
+            btn.innerText = "جاري اللحام ...";
             btn.style.opacity = 0.7;
 
             try {
-                const shopKey = currentUser.Shop_User ? currentUser.Shop_User : currentUser.user;
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user).trim();
                 
-                await N_ONE_CORE.postData('update', { user: shopKey, data: { Shop_Location: selectedLocation } });
+                // تحديث الموقع في عمود Shop_Location وعمود Client_Location عشان الخزنة تكون مسطرة مية بالمية
+                await N_ONE_CORE.postData('update', { 
+                    user: shopKey, 
+                    data: { 
+                        Shop_Location: selectedLocation,
+                        Client_Location: selectedLocation
+                    } 
+                });
                 
                 currentUser.Shop_Location = selectedLocation;
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 
                 document.getElementById('location-modal').style.display = 'none';
-                showToast("✅ تم تثبيت منطقتك بنجاح للأبد 😊");
+                showToast("تم تثبيت منطقتك بنجاح للأبد");
                 
                 loadShopPrices();
 
             } catch(e) {
-                alert("❌ حدث خطأ يرجى المحاولة مرة أخرى");
+                alert("حدث خطأ يرجى المحاولة مرة أخرى");
             } finally {
                 btn.innerText = originalText;
                 btn.style.opacity = 1;
@@ -481,9 +492,10 @@
         async function fetchMyBalanceSilent() {
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                const me = data.find(u => String(u.Shop_User || u.user || "").trim() === String(currentUser.Shop_User || currentUser.user).trim());
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || "").trim();
+                const me = data.find(u => String(u.Shop_User || u.Client_User || u.user || "").trim() === shopKey);
                 if (me) {
-                    myBalance = parseFloat(me.Shop_Balance || 0);
+                    myBalance = parseFloat(me.Shop_Balance || me.balance || me.Client_Balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 }
             } catch (e) {}
@@ -505,16 +517,19 @@
             const val = document.getElementById('order_val').value;
             const fee = document.getElementById('delivery_fee').value;
 
-            if (!dest || !val || !fee) { showToast("⚠️ يرجى تعبئة جميع الحقول وتحديد منطقة صحيحة 😊"); return; }
-            if (!pricingMatrix[dest]) { showToast("⚠️ المنطقة المدخلة غير معتمدة في التسعيرة 😊"); return; }
+            if (!dest || !val || !fee) { showToast("يرجى تعبئة جميع الحقول وتحديد منطقة صحيحة"); return; }
+            if (!pricingMatrix[dest]) { showToast("المنطقة المدخلة غير معتمدة في التسعيرة"); return; }
             
             setLoading('btn-send', true);
+            
+            const shopUserStr = currentUser.Shop_User || currentUser.Client_User || currentUser.user;
+            const shopNameStr = currentUser.Shop_Name || currentUser.Client_Name || currentUser.name;
 
             const orderData = {
                 Shop_Ord_ID: "SHOP_ORD_" + Date.now(),
                 Shop_Type: "shop_order",
-                Shop_User: currentUser.Shop_User || currentUser.user,
-                Shop_Name: currentUser.Shop_Name || currentUser.name,
+                Shop_User: shopUserStr,
+                Shop_Name: shopNameStr,
                 Shop_Pickup: dest,
                 Shop_Val: val,
                 Shop_Fee: fee,
@@ -542,14 +557,14 @@
                 localStorage.setItem('nOne_shop_legacy_v1', JSON.stringify(shopData));
                 
                 updateUI();
-                showToast("✅ تم إرسال الطلب للرادار بنجاح 😊");
+                showToast("تم إرسال الطلب للرادار بنجاح");
                 
                 document.getElementById('destination').value = '';
                 document.getElementById('order_val').value = '';
                 document.getElementById('delivery_fee').value = '';
 
             } catch (e) {
-                showToast("❌ خطأ في الاتصال");
+                showToast("خطأ في الاتصال");
             } finally {
                 setLoading('btn-send', false, "🚀 إرسال للرادار فوراً");
             }
@@ -559,11 +574,11 @@
             const capId = String(document.getElementById('cap_id').value).trim();
             const amount = parseFloat(document.getElementById('charge_amount').value);
 
-            if (!capId || !amount) { showToast("⚠️ أدخل الكود أو الهاتف والمبلغ 😊"); return; }
-            if (amount <= 0) { showToast("⚠️ المبلغ غير صحيح 😊"); return; }
+            if (!capId || !amount) { showToast("أدخل الكود أو الهاتف والمبلغ"); return; }
+            if (amount <= 0) { showToast("المبلغ غير صحيح"); return; }
             
             if (myBalance < amount) { 
-                alert(`⛔ رصيدك الحالي (${myBalance}) غير كاف لإتمام العملية 😊`); 
+                alert(`رصيدك الحالي (${myBalance}) غير كاف لإتمام العملية`); 
                 return; 
             }
 
@@ -574,7 +589,7 @@
                 const cap = data.find(c => String(c.Cap_User || c.user || "").trim() === capId || String(c.Cap_Phone || c.cap_phone || "").trim() === capId);
                 
                 if (!cap) {
-                    alert("❌ الكابتن غير موجود تأكد من الكود أو الهاتف 😊");
+                    alert("الكابتن غير موجود تأكد من الكود أو الهاتف");
                     verifiedCaptain = null;
                     document.getElementById('cap-check-result').style.display = 'none';
                     document.getElementById('btn-charge').style.display = 'none';
@@ -591,7 +606,7 @@
                     document.getElementById('btn-charge').style.display = 'block';
                 }
             } catch (e) {
-                showToast("❌ خطأ في الاتصال");
+                showToast("خطأ في الاتصال");
             } finally {
                 setLoading('btn-check', false, "🔍 فحص الكابتن أولا");
             }
@@ -600,11 +615,11 @@
         async function executeTransfer() {
             if (!verifiedCaptain) return;
             const amount = parseFloat(document.getElementById('charge_amount').value);
-            if (myBalance < amount) { alert("⛔ رصيدك نفذ 😊"); return; }
+            if (myBalance < amount) { alert("رصيدك نفذ"); return; }
 
             const capName = verifiedCaptain.Cap_Name || verifiedCaptain.name || "الكابتن";
 
-            if (!confirm(`تأكيد نهائي خصم ${amount} د.أ من رصيدك وشحنها للكابتن ${capName} 😊`)) return;
+            if (!confirm(`تأكيد نهائي خصم ${amount} د.أ من رصيدك وشحنها للكابتن ${capName}`)) return;
 
             setLoading('btn-charge', true);
 
@@ -616,13 +631,19 @@
                 const capKey = verifiedCaptain.Cap_User ? verifiedCaptain.Cap_User : (verifiedCaptain.user || verifiedCaptain.cap_phone);
                 await N_ONE_CORE.postData('update', { user: capKey, data: { Cap_Balance: newCapBal } });
                 
-                const shopKey = currentUser.Shop_User ? currentUser.Shop_User : currentUser.user;
-                await N_ONE_CORE.postData('update', { user: shopKey, data: { Shop_Balance: newShopBal } });
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user).trim();
+                await N_ONE_CORE.postData('update', { 
+                    user: shopKey, 
+                    data: { 
+                        Shop_Balance: newShopBal,
+                        balance: newShopBal
+                    } 
+                });
 
                 myBalance = newShopBal;
                 document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 
-                alert(`✅ تمت العملية بنجاح الرصيد وصل للكابتن ${capName} 😊`);
+                alert(`تمت العملية بنجاح الرصيد وصل للكابتن ${capName}`);
                 
                 document.getElementById('cap_id').value = '';
                 document.getElementById('charge_amount').value = '';
@@ -631,7 +652,7 @@
                 verifiedCaptain = null;
 
             } catch (e) {
-                showToast("❌ حدث خطأ أثناء التحويل");
+                showToast("حدث خطأ أثناء التحويل");
             } finally {
                 setLoading('btn-charge', false, "✅ تأكيد وتحويل الرصيد");
             }
@@ -668,7 +689,7 @@
         }
 
         function logout() {
-            if(confirm("هل تريد مغادرة النظام 😊")) {
+            if(confirm("هل تريد مغادرة النظام")) {
                 localStorage.removeItem('currentUser');
                 window.location.replace('index.html'); 
             }
