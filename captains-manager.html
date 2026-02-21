@@ -300,11 +300,12 @@
 
     <script>
         // ========================================================
-        // العقل المدبر لغرفة العمليات (Ops Brain v21.0 - Sovereign Encryption) 💎
+        // العقل المدبر لغرفة العمليات (Ops Brain v21.5 - Sovereign Encryption) 💎
+        // التحديث: حل لغز البحث الشامل للمنشآت والمحفظة اللحظية
         // ========================================================
         
         if (typeof N_ONE_CORE !== 'undefined') {
-            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbzKQKytFxtHRh1J6tG2GHJjJVl5I2Iz0eYomc963sqn-V8M4Vd3t3Hmm6daykMWUjHj/exec";
+            N_ONE_CORE.API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
         }
 
         let allData = [];
@@ -340,7 +341,7 @@
         function processData() {
             captains = allData.filter(i => (i.Cap_Type === 'captain' || i.role === 'captain' || i.type === 'captain') && (i.Cap_Status !== 'pending' && i.status !== 'pending')).reverse();
             requests = allData.filter(i => (i.Cap_Type === 'captain' || i.role === 'captain' || i.type === 'captain') && (i.Cap_Status === 'pending' || i.status === 'pending'));
-            shops = allData.filter(i => i.Shop_Type === 'shop' || i.Shop_Type === 'shop_order' || i.role === 'client' || i.type === 'shop');
+            shops = allData.filter(i => i.Shop_Type === 'shop' || i.Shop_Type === 'shop_order' || i.role === 'client' || i.type === 'shop' || i.Client_User);
 
             document.getElementById('stat-caps-count').innerText = captains.length;
             document.getElementById('stat-shops-count').innerText = shops.length;
@@ -435,7 +436,7 @@
             currentWalletCaptain.Cap_Balance = newBal;
             document.getElementById('wr_bal').innerText = newBal.toFixed(2);
 
-            const keyToSend = currentWalletCaptain.Cap_User || currentWalletCaptain.user || currentWalletCaptain.Cap_Phone;
+            const keyToSend = currentWalletCaptain.Cap_User || currentWalletCaptain.user || currentWalletCaptain.Cap_Phone || currentWalletCaptain.cap_phone;
             
             await N_ONE_CORE.postData('update', { 
                 user: keyToSend, 
@@ -462,6 +463,7 @@
 
             showLoader(true);
 
+            // توسعة البحث لتشمل Client_Phone و Client_User لحل اللغز
             const target = shops.find(u => 
                 String(u.Shop_User || u.Client_User || u.user).trim() === targetInput || 
                 String(u.Shop_Phone || u.Client_Phone || u.phone).trim() === targetInput
@@ -479,7 +481,7 @@
                 showLoader(false); return;
             }
 
-            const keyToSend = target.Shop_User || target.Client_User || target.user || target.Shop_Phone;
+            const keyToSend = target.Shop_User || target.Client_User || target.user || target.Shop_Phone || target.Client_Phone;
             const currentShopBal = parseFloat(target.Shop_Balance || target.Client_Balance || target.balance || 0);
             const newBal = currentShopBal + amount;
             
@@ -493,6 +495,7 @@
             });
             
             target.Shop_Balance = newBal;
+            target.Client_Balance = newBal;
             
             alert(`تم شحن المنشأة بنجاح الرصيد الجديد ${newBal.toFixed(2)}`);
             
