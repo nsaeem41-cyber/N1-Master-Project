@@ -229,13 +229,13 @@
             <div class="card">
                 <div class="input-group">
                     <label>📍 وجهة الطلب (اختر من القائمة المعتمدة)</label>
-                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." oninput="calculateFee()">
+                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." oninput="calculateFee()" onchange="calculateFee()">
                     <datalist id="areas-list"></datalist>
                 </div>
 
                 <div class="input-group">
                     <label>💰 قيمة التحصيل (دينار)</label>
-                    <input type="number" id="order_val" placeholder="سعر الطلب (مثلاً 20, 50)">
+                    <input type="number" id="order_val" placeholder="سعر الطلب (مثلاً 20 50)">
                 </div>
 
                 <div class="input-group">
@@ -265,7 +265,7 @@
 
                 <div class="input-group">
                     <label>🔍 كود الكابتن أو رقم الهاتف</label>
-                    <input type="text" id="cap_id" placeholder="مثلاً: C-101 أو 07xxxxxxxx">
+                    <input type="text" id="cap_id" placeholder="مثلاً C-101 أو 07xxxxxxxx">
                 </div>
 
                 <div class="input-group">
@@ -278,11 +278,11 @@
                 </button>
 
                 <div id="cap-check-result">
-                    <div class="check-info">تم العثور على الكابتن: <b id="found-cap-name">---</b></div>
-                    <div class="check-info">رصيده الحالي: <b id="found-cap-balance">---</b> د.أ</div>
+                    <div class="check-info">تم العثور على الكابتن <b id="found-cap-name">---</b></div>
+                    <div class="check-info">رصيده الحالي <b id="found-cap-balance">---</b> د.أ</div>
                     <hr style="border:0; border-top:1px dashed #a7f3d0; margin:10px 0;">
                     <div style="font-size:12px; font-weight:bold; color:var(--primary);">
-                        سيصبح رصيده: <span id="future-cap-balance" style="color:var(--success);">---</span>
+                        سيصبح رصيده <span id="future-cap-balance" style="color:var(--success);">---</span>
                     </div>
                 </div>
 
@@ -298,7 +298,7 @@
         <input type="password" id="secret-pin" class="secret-input" placeholder="🔑" oninput="checkSecretPin(this.value)">
     </div>
 
-    <div id="toast" class="toast">تمت العملية بنجاح!</div>
+    <div id="toast" class="toast">تمت العملية بنجاح</div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbxFVz0QTi_7TgWQEMImtMGYRBzlD1CwM5X4DbprUvVJkURs_75aD5n5IcpbS87d8Q5j/exec";
@@ -340,8 +340,16 @@
             try {
                 const data = await N_ONE_CORE.fetchData('read');
                 
-                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || "").trim();
-                const me = data.find(u => String(u.Shop_User || u.Client_User || u.user || "").trim() === shopKey || (currentUser.cap_phone && String(u.Shop_Phone || u.Client_Phone || "").trim() === String(currentUser.cap_phone).trim()));
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || currentUser.Shop_Phone || currentUser.phone || "").trim();
+                
+                const me = data.find(u => 
+                    String(u.Shop_User || "").trim() === shopKey || 
+                    String(u.Client_User || "").trim() === shopKey || 
+                    String(u.user || "").trim() === shopKey || 
+                    String(u.Shop_Phone || "").trim() === shopKey || 
+                    String(u.Client_Phone || "").trim() === shopKey || 
+                    String(u.phone || "").trim() === shopKey
+                );
                 
                 dbPrices = data.filter(d => d.Price_ID);
 
@@ -391,11 +399,11 @@
 
             const btn = document.querySelector('#location-modal .btn-main');
             const originalText = btn.innerText;
-            btn.innerText = "جاري اللحام ...";
+            btn.innerText = "جاري اللحام";
             btn.style.opacity = 0.7;
 
             try {
-                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user).trim();
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || currentUser.Shop_Phone || currentUser.phone).trim();
                 
                 await N_ONE_CORE.postData('update', { 
                     user: shopKey, 
@@ -460,8 +468,17 @@
         async function fetchMyBalanceSilent() {
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || "").trim();
-                const me = data.find(u => String(u.Shop_User || u.Client_User || u.user || "").trim() === shopKey);
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || currentUser.Shop_Phone || currentUser.phone || "").trim();
+                
+                const me = data.find(u => 
+                    String(u.Shop_User || "").trim() === shopKey || 
+                    String(u.Client_User || "").trim() === shopKey || 
+                    String(u.user || "").trim() === shopKey || 
+                    String(u.Shop_Phone || "").trim() === shopKey || 
+                    String(u.Client_Phone || "").trim() === shopKey || 
+                    String(u.phone || "").trim() === shopKey
+                );
+
                 if (me) {
                     myBalance = parseFloat(me.Shop_Balance || me.Client_Balance || me.balance || 0);
                     document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
@@ -490,7 +507,7 @@
             
             setLoading('btn-send', true);
             
-            const shopUserStr = currentUser.Shop_User || currentUser.Client_User || currentUser.user;
+            const shopUserStr = currentUser.Shop_User || currentUser.Client_User || currentUser.user || currentUser.Shop_Phone;
             const shopNameStr = currentUser.Shop_Name || currentUser.Client_Name || currentUser.name;
 
             const orderData = {
@@ -546,7 +563,7 @@
             if (amount <= 0) { showToast("المبلغ غير صحيح"); return; }
             
             if (myBalance < amount) { 
-                alert(`رصيدك الحالي (${myBalance}) غير كاف لإتمام العملية`); 
+                alert(`رصيدك الحالي غير كاف لإتمام العملية`); 
                 return; 
             }
 
@@ -554,7 +571,13 @@
 
             try {
                 const data = await N_ONE_CORE.fetchData('read');
-                const cap = data.find(c => String(c.Cap_User || c.user || "").trim() === capId || String(c.Cap_Phone || c.cap_phone || "").trim() === capId);
+                const cap = data.find(c => 
+                    String(c.Cap_User || "").trim() === capId || 
+                    String(c.user || "").trim() === capId || 
+                    String(c.Cap_Phone || "").trim() === capId || 
+                    String(c.Client_Phone || "").trim() === capId || 
+                    String(c.phone || "").trim() === capId
+                );
                 
                 if (!cap) {
                     alert("الكابتن غير موجود تأكد من الكود أو الهاتف");
@@ -587,7 +610,7 @@
 
             const capName = verifiedCaptain.Cap_Name || verifiedCaptain.name || "الكابتن";
 
-            if (!confirm(`تأكيد نهائي خصم ${amount} د.أ من رصيدك وشحنها للكابتن ${capName}`)) return;
+            if (!confirm(`تأكيد نهائي خصم المبلغ من رصيدك وشحنها للكابتن`)) return;
 
             setLoading('btn-charge', true);
 
@@ -596,10 +619,16 @@
                 const newCapBal = currentCapBal + amount;
                 const newShopBal = myBalance - amount;
 
-                const capKey = verifiedCaptain.Cap_User ? verifiedCaptain.Cap_User : (verifiedCaptain.user || verifiedCaptain.cap_phone);
-                await N_ONE_CORE.postData('update', { user: capKey, data: { Cap_Balance: newCapBal, balance: newCapBal } });
+                const capKey = String(verifiedCaptain.Cap_User || verifiedCaptain.user || verifiedCaptain.Cap_Phone || verifiedCaptain.phone).trim();
+                await N_ONE_CORE.postData('update', { 
+                    user: capKey, 
+                    data: { 
+                        Cap_Balance: newCapBal, 
+                        balance: newCapBal 
+                    } 
+                });
                 
-                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user).trim();
+                const shopKey = String(currentUser.Shop_User || currentUser.Client_User || currentUser.user || currentUser.Shop_Phone || currentUser.phone).trim();
                 await N_ONE_CORE.postData('update', { 
                     user: shopKey, 
                     data: { 
@@ -612,7 +641,7 @@
                 myBalance = newShopBal;
                 document.getElementById('my-shop-balance').innerText = myBalance.toFixed(2);
                 
-                alert(`تمت العملية بنجاح الرصيد وصل للكابتن ${capName}`);
+                alert(`تمت العملية بنجاح الرصيد وصل للكابتن`);
                 
                 document.getElementById('cap_id').value = '';
                 document.getElementById('charge_amount').value = '';
@@ -676,7 +705,7 @@
             const loader = document.getElementById('loader');
             if (isLoading) {
                 btn.dataset.text = btn.innerText;
-                btn.innerText = "جاري التنفيذ...";
+                btn.innerText = "جاري التنفيذ";
                 btn.style.opacity = 0.7;
                 btn.disabled = true;
                 loader.style.width = "100%";
