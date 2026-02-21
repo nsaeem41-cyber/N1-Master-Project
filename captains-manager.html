@@ -188,7 +188,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>نوع السيارة</label>
-                            <input type="text" id="reg_car" placeholder="مثلاً: تويوتا">
+                            <input type="text" id="reg_car" placeholder="مثلا تويوتا">
                         </div>
                         <div class="form-group">
                             <label>موديل السيارة (السنة)</label>
@@ -200,12 +200,12 @@
             </div>
 
             <div class="card" style="flex-grow:1;">
-                <div class="card-header"><div class="card-title">💸 المحفظة السريعة (للكباتن حصراً)</div></div>
+                <div class="card-header"><div class="card-title">💸 المحفظة السريعة (للكباتن حصرا)</div></div>
                 <div class="card-body">
                     <div class="form-group" style="margin-bottom:8px;">
                         <label>البحث بالبصمة (هاتف الكابتن / الترميز)</label>
                         <div style="display:flex; gap:5px;">
-                            <input type="text" id="wallet_q" placeholder="ادخل رقم الهاتف أو الترميز...">
+                            <input type="text" id="wallet_q" placeholder="ادخل رقم الهاتف أو الترميز">
                             <button class="btn-main btn-blue" style="width:auto;" onclick="searchWallet()">🔎 بحث</button>
                         </div>
                     </div>
@@ -253,7 +253,7 @@
             <div class="card" style="flex-grow:1;">
                 <div class="card-header">
                     <div class="card-title">👮‍♂️ الأسطول النشط (Active Fleet Monitor)</div>
-                    <input type="text" id="fleet-search" placeholder="بحث شامل..." oninput="renderFleet()" 
+                    <input type="text" id="fleet-search" placeholder="بحث شامل" oninput="renderFleet()" 
                            style="width:200px; padding:4px 8px; font-size:11px;">
                 </div>
                 <div class="table-container">
@@ -271,7 +271,7 @@
                             </tr>
                         </thead>
                         <tbody id="fleet-body">
-                            <tr><td colspan="8" style="text-align:center; padding:50px;">جاري تحميل بيانات الأسطول...</td></tr>
+                            <tr><td colspan="8" style="text-align:center; padding:50px;">جاري تحميل بيانات الأسطول</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -284,11 +284,11 @@
         <div class="modal-box">
             <h3 style="margin:0 0 15px 0; text-align:center; color:var(--primary); border-bottom:2px solid var(--gold); padding-bottom:10px;">🏦 الصندوق المركزي (للمنشآت فقط)</h3>
             <p style="font-size:12px; color:#64748b; text-align:center; margin-bottom:15px;">
-                نظام الارتباط الخارجي: شحن رصيد المنشآت حصراً عبر رقم الهاتف المسجل
+                نظام الارتباط الخارجي شحن رصيد المنشآت حصرا عبر رقم الهاتف المسجل
             </p>
 
-            <label>رقم هاتف المنشأة (المفتاح)</label>
-            <input type="text" id="tr-target" placeholder="مثلاً: 079xxxxxxx" style="background:#f8fafc; margin-bottom:10px;">
+            <label>رقم هاتف المنشأة أو الكود (المفتاح)</label>
+            <input type="text" id="tr-target" placeholder="مثلا 079xxxxxxx" style="background:#f8fafc; margin-bottom:10px;">
             
             <label>المبلغ (د.أ)</label>
             <input type="number" id="tr-amount" placeholder="0.00" style="background:#f8fafc; margin-bottom:20px;">
@@ -300,7 +300,7 @@
 
     <script>
         // ========================================================
-        // العقل المدبر لغرفة العمليات (Ops Brain v20.0 - Sovereign Encryption) 💎
+        // العقل المدبر لغرفة العمليات (Ops Brain v21.0 - Sovereign Encryption) 💎
         // ========================================================
         
         if (typeof N_ONE_CORE !== 'undefined') {
@@ -338,15 +338,15 @@
         }
 
         function processData() {
-            captains = allData.filter(i => i.Cap_Type === 'captain' && i.Cap_Status !== 'pending').reverse();
-            requests = allData.filter(i => i.Cap_Type === 'captain' && i.Cap_Status === 'pending');
-            shops = allData.filter(i => i.Shop_Type === 'shop');
+            captains = allData.filter(i => (i.Cap_Type === 'captain' || i.role === 'captain' || i.type === 'captain') && (i.Cap_Status !== 'pending' && i.status !== 'pending')).reverse();
+            requests = allData.filter(i => (i.Cap_Type === 'captain' || i.role === 'captain' || i.type === 'captain') && (i.Cap_Status === 'pending' || i.status === 'pending'));
+            shops = allData.filter(i => i.Shop_Type === 'shop' || i.Shop_Type === 'shop_order' || i.role === 'client' || i.type === 'shop');
 
             document.getElementById('stat-caps-count').innerText = captains.length;
             document.getElementById('stat-shops-count').innerText = shops.length;
             
-            const totalLiquidity = captains.reduce((sum, c) => sum + parseFloat(c.Cap_Balance || 0), 0) + 
-                                   shops.reduce((sum, s) => sum + parseFloat(s.Shop_Balance || 0), 0);
+            const totalLiquidity = captains.reduce((sum, c) => sum + parseFloat(c.Cap_Balance || c.balance || 0), 0) + 
+                                   shops.reduce((sum, s) => sum + parseFloat(s.Shop_Balance || s.Client_Balance || s.balance || 0), 0);
             document.getElementById('stat-liquidity').innerText = totalLiquidity.toFixed(2);
 
             renderRequests();
@@ -362,8 +362,8 @@
 
             if(!name || !phone || !code || !carType) return alert("البيانات ناقصة يرجى تعبئة كافة الحقول");
 
-            if(captains.some(c => c.Cap_User === code || c.Cap_Phone === phone)) {
-                return alert("⛔ الكابتن مسجل مسبقاً الهاتف أو الترميز مكرر");
+            if(captains.some(c => c.Cap_User === code || c.Cap_Phone === phone || c.user === code || c.phone === phone)) {
+                return alert("الكابتن مسجل مسبقا الهاتف أو الترميز مكرر");
             }
 
             showLoader(true);
@@ -383,7 +383,7 @@
             };
 
             await N_ONE_CORE.postData('add', [newCap]);
-            alert("تم اعتماد الكابتن في الأسطول بنجاح ✅");
+            alert("تم اعتماد الكابتن في الأسطول بنجاح");
             
             document.getElementById('reg_name').value = '';
             document.getElementById('reg_phone').value = '';
@@ -400,48 +400,54 @@
             if(!q) return;
 
             const target = captains.find(c => 
-                String(c.Cap_Phone).trim() == q || 
-                String(c.Cap_User).trim() == q
+                String(c.Cap_Phone || c.cap_phone || c.phone).trim() === q || 
+                String(c.Cap_User || c.user).trim() === q
             );
 
             if(target) {
                 currentWalletCaptain = target;
                 document.getElementById('wallet-result').style.display = 'block';
-                document.getElementById('wr_name').innerText = target.Cap_Name;
-                document.getElementById('wr_bal').innerText = parseFloat(target.Cap_Balance||0).toFixed(2);
-                document.getElementById('wr_code').innerText = target.Cap_User;
-                document.getElementById('wr_phone').innerText = target.Cap_Phone;
+                document.getElementById('wr_name').innerText = target.Cap_Name || target.name || "كابتن";
+                document.getElementById('wr_bal').innerText = parseFloat(target.Cap_Balance || target.balance || 0).toFixed(2);
+                document.getElementById('wr_code').innerText = target.Cap_User || target.user || "--";
+                document.getElementById('wr_phone').innerText = target.Cap_Phone || target.cap_phone || target.phone || "--";
             } else {
-                alert("❌ كابتن غير موجود تأكد من الرقم أو الترميز");
+                alert("كابتن غير موجود تأكد من الرقم أو الترميز");
                 document.getElementById('wallet-result').style.display = 'none';
                 currentWalletCaptain = null;
             }
         }
 
         async function updateBalance(action) {
-            if(!currentWalletCaptain) return alert("⚠️ يرجى البحث عن كابتن أولاً");
+            if(!currentWalletCaptain) return alert("يرجى البحث عن كابتن أولا");
             
             const amt = parseFloat(document.getElementById('wallet_amt').value);
-            if(!amt || amt <= 0) return alert("⚠️ المبلغ غير صحيح");
+            if(!amt || amt <= 0) return alert("المبلغ غير صحيح");
 
-            const oldBal = parseFloat(currentWalletCaptain.Cap_Balance || 0);
+            const oldBal = parseFloat(currentWalletCaptain.Cap_Balance || currentWalletCaptain.balance || 0);
             const newBal = action === 'add' ? oldBal + amt : oldBal - amt;
 
             const actionText = action === 'add' ? 'إيداع' : 'خصم';
-            if(!confirm(`هل أنت متأكد من ${actionText} مبلغ ${amt} د.أ\n👤 الكابتن: ${currentWalletCaptain.Cap_Name}\n💰 الرصيد الجديد سيصبح: ${newBal.toFixed(2)}`)) return;
+            if(!confirm(`تأكيد عملية ${actionText} مبلغ ${amt} للكابتن والرصيد سيصبح ${newBal.toFixed(2)}`)) return;
 
             showLoader(true);
             
             currentWalletCaptain.Cap_Balance = newBal;
             document.getElementById('wr_bal').innerText = newBal.toFixed(2);
 
-            const keyToSend = currentWalletCaptain.Cap_User ? currentWalletCaptain.Cap_User : currentWalletCaptain.Cap_Phone;
+            const keyToSend = currentWalletCaptain.Cap_User || currentWalletCaptain.user || currentWalletCaptain.Cap_Phone;
             
-            await N_ONE_CORE.postData('update', { user: keyToSend, data: { Cap_Balance: newBal } });
+            await N_ONE_CORE.postData('update', { 
+                user: keyToSend, 
+                data: { 
+                    Cap_Balance: newBal,
+                    balance: newBal 
+                } 
+            });
             
             renderFleet(); 
             
-            alert(`✅ تمت عملية ال${actionText} بنجاح\nالرصيد المحدث: ${newBal.toFixed(2)} د.أ`);
+            alert(`تمت العملية بنجاح الرصيد المحدث ${newBal.toFixed(2)}`);
             showLoader(false);
         }
 
@@ -452,33 +458,43 @@
             const targetInput = String(document.getElementById('tr-target').value).trim();
             const amount = parseFloat(document.getElementById('tr-amount').value);
 
-            if(!targetInput || !amount) return alert("البيانات ناقصة يرجى إدخال الرقم والمبلغ ☺️");
+            if(!targetInput || !amount) return alert("البيانات ناقصة يرجى إدخال الرقم والمبلغ");
 
             showLoader(true);
 
             const target = shops.find(u => 
-                String(u.Shop_User).trim() === targetInput || 
-                String(u.Shop_Phone).trim() === targetInput
+                String(u.Shop_User || u.Client_User || u.user).trim() === targetInput || 
+                String(u.Shop_Phone || u.Client_Phone || u.phone).trim() === targetInput
             );
 
             if(!target) {
-                alert("❌ منشأة غير موجودة تأكد أن الرقم صحيح ومسجل كمنشأة");
+                alert("منشأة غير موجودة تأكد أن الرقم صحيح ومسجل كمنشأة");
                 showLoader(false);
                 return;
             }
 
-            if(!confirm(`هل أنت متأكد من شحن رصيد\n👤 المنشأة: ${target.Shop_Name}\n💰 المبلغ: ${amount} د.أ`)) {
+            const shopNameStr = target.Shop_Name || target.Client_Name || target.name || "منشأة";
+
+            if(!confirm(`تأكيد شحن رصيد المنشأة ${shopNameStr} بقيمة ${amount}`)) {
                 showLoader(false); return;
             }
 
-            const keyToSend = target.Shop_User ? target.Shop_User : target.Shop_Phone;
-            const newBal = parseFloat(target.Shop_Balance || 0) + amount;
+            const keyToSend = target.Shop_User || target.Client_User || target.user || target.Shop_Phone;
+            const currentShopBal = parseFloat(target.Shop_Balance || target.Client_Balance || target.balance || 0);
+            const newBal = currentShopBal + amount;
             
-            await N_ONE_CORE.postData('update', { user: keyToSend, data: { Shop_Balance: newBal } });
+            await N_ONE_CORE.postData('update', { 
+                user: keyToSend, 
+                data: { 
+                    Shop_Balance: newBal,
+                    Client_Balance: newBal,
+                    balance: newBal
+                } 
+            });
             
             target.Shop_Balance = newBal;
             
-            alert(`✅ تم شحن المنشأة بنجاح\nالرصيد الجديد: ${newBal.toFixed(2)} د.أ`);
+            alert(`تم شحن المنشأة بنجاح الرصيد الجديد ${newBal.toFixed(2)}`);
             
             document.getElementById('tr-target').value = '';
             document.getElementById('tr-amount').value = '';
@@ -494,30 +510,33 @@
             tbody.innerHTML = '';
 
             captains.forEach(c => {
-                const cName = String(c.Cap_Name).toLowerCase();
-                const cUser = String(c.Cap_User).toLowerCase();
-                const cPhone = String(c.Cap_Phone).toLowerCase();
+                const cName = String(c.Cap_Name || c.name || "").toLowerCase();
+                const cUser = String(c.Cap_User || c.user || "").toLowerCase();
+                const cPhone = String(c.Cap_Phone || c.phone || c.cap_phone || "").toLowerCase();
 
                 if(q && !cName.includes(q) && !cUser.includes(q) && !cPhone.includes(q)) return;
 
-                const statusClass = c.Cap_Status === 'active' ? 'dot-active' : 'dot-paused';
+                const cStatus = c.Cap_Status || c.status;
+                const statusClass = cStatus === 'active' ? 'dot-active' : 'dot-paused';
                 const emergIcon = c.Cap_Emergency === 'true' ? '⚠️ طوارئ' : '✅ آمن';
-                const freezeIcon = c.Cap_Status === 'active' ? '⏸ تجميد' : '▶ تفعيل';
-                const carInfo = c.Cap_Vehicle || 'غير محدد';
+                const freezeIcon = cStatus === 'active' ? '⏸ تجميد' : '▶ تفعيل';
+                const carInfo = c.Cap_Vehicle || c.vehicle || 'غير محدد';
+                const currentBal = parseFloat(c.Cap_Balance || c.balance || 0).toFixed(2);
+                const displayUser = c.Cap_User || c.user || "--";
 
                 tbody.innerHTML += `
                     <tr>
                         <td style="text-align:center;"><span class="status-dot ${statusClass}"></span></td>
-                        <td><strong>${c.Cap_Name}</strong></td>
-                        <td style="font-family:monospace; color:var(--primary); font-weight:bold;">${c.Cap_User}</td>
-                        <td style="font-family:monospace; color:var(--text-muted);">${c.Cap_Phone}</td>
+                        <td><strong>${c.Cap_Name || c.name || "كابتن"}</strong></td>
+                        <td style="font-family:monospace; color:var(--primary); font-weight:bold;">${displayUser}</td>
+                        <td style="font-family:monospace; color:var(--text-muted);">${c.Cap_Phone || c.phone || c.cap_phone || "--"}</td>
                         <td style="font-size:11px;">${carInfo}</td>
-                        <td style="font-weight:900; color:var(--success); font-size:14px;">${parseFloat(c.Cap_Balance||0).toFixed(2)}</td>
+                        <td style="font-weight:900; color:var(--success); font-size:14px;">${currentBal}</td>
                         <td style="text-align:center; font-size:11px;">${emergIcon}</td>
                         <td>
-                            <button class="action-icon" onclick="editUser('${c.Cap_User}', '${c.Cap_Name}', '${c.Cap_Phone}')" title="تعديل">✏️</button>
-                            <button class="action-icon" onclick="freezeUser('${c.Cap_User}')" title="حالة">${freezeIcon}</button>
-                            <button class="action-icon" style="color:var(--danger);" onclick="deleteUser('${c.Cap_User}')" title="حذف">🗑</button>
+                            <button class="action-icon" onclick="editUser('${displayUser}', '${c.Cap_Name || c.name}', '${c.Cap_Phone || c.phone}')" title="تعديل">✏️</button>
+                            <button class="action-icon" onclick="freezeUser('${displayUser}')" title="حالة">${freezeIcon}</button>
+                            <button class="action-icon" style="color:var(--danger);" onclick="deleteUser('${displayUser}')" title="حذف">🗑</button>
                         </td>
                     </tr>
                 `;
@@ -525,11 +544,15 @@
         }
 
         async function freezeUser(u) {
-            const c = captains.find(i => i.Cap_User === u);
-            const ns = c.Cap_Status === 'active' ? 'paused' : 'active';
-            if(confirm("تغيير حالة الكابتن")) {
-                c.Cap_Status = ns; renderFleet(); 
-                await N_ONE_CORE.postData('update', { user: u, data: { Cap_Status: ns } });
+            const c = captains.find(i => i.Cap_User === u || i.user === u);
+            if(!c) return;
+            const currentStatus = c.Cap_Status || c.status;
+            const ns = currentStatus === 'active' ? 'paused' : 'active';
+            if(confirm("تأكيد تغيير حالة الكابتن")) {
+                c.Cap_Status = ns;
+                c.status = ns;
+                renderFleet(); 
+                await N_ONE_CORE.postData('update', { user: u, data: { Cap_Status: ns, status: ns } });
             }
         }
 
@@ -540,16 +563,17 @@
             if(!newPhone) return;
 
             document.getElementById('loading-line').style.width = '100%';
-            await N_ONE_CORE.postData('update', { user: u, data: { Cap_Name: newName, Cap_Phone: newPhone } });
+            await N_ONE_CORE.postData('update', { user: u, data: { Cap_Name: newName, name: newName, Cap_Phone: newPhone, phone: newPhone } });
             await refreshData();
             document.getElementById('loading-line').style.width = '0%';
         }
 
         async function deleteUser(u) {
-            if(confirm("⚠️ تحذير هل أنت متأكد من حذف الكابتن نهائياً")) {
+            if(confirm("تحذير هل أنت متأكد من حذف الكابتن نهائيا")) {
                 showLoader(true);
-                captains = captains.filter(i => i.Cap_User !== u); renderFleet();
-                await N_ONE_CORE.fetchData('delete', { user: u });
+                captains = captains.filter(i => i.Cap_User !== u && i.user !== u); 
+                renderFleet();
+                await N_ONE_CORE.postData('delete', { user: u });
                 showLoader(false);
             }
         }
@@ -562,15 +586,16 @@
                 return;
             }
             requests.forEach(r => {
+                const reqUser = r.Cap_User || r.user || "--";
                 tbody.innerHTML += `
                     <tr>
-                        <td>${r.Cap_Name}</td>
-                        <td>${r.Cap_Phone}</td>
-                        <td>${r.Cap_Vehicle || '-'}</td>
-                        <td style="font-size:10px; color:#64748b;">${new Date(r.Cap_Date).toLocaleDateString() || '-'}</td>
+                        <td>${r.Cap_Name || r.name || "--"}</td>
+                        <td>${r.Cap_Phone || r.phone || r.cap_phone || "--"}</td>
+                        <td>${r.Cap_Vehicle || r.vehicle || '-'}</td>
+                        <td style="font-size:10px; color:#64748b;">${new Date(r.Cap_Date || r.date || Date.now()).toLocaleDateString() || '-'}</td>
                         <td>
-                            <button class="action-icon" style="color:var(--success);" onclick="approveReq('${r.Cap_User}')" title="قبول">✔</button>
-                            <button class="action-icon" style="color:var(--danger);" onclick="deleteUser('${r.Cap_User}')" title="رفض">✖</button>
+                            <button class="action-icon" style="color:var(--success);" onclick="approveReq('${reqUser}')" title="قبول">✔</button>
+                            <button class="action-icon" style="color:var(--danger);" onclick="deleteUser('${reqUser}')" title="رفض">✖</button>
                         </td>
                     </tr>
                 `;
@@ -578,9 +603,9 @@
         }
 
         async function approveReq(u) {
-            if(confirm("قبول الكابتن في الأسطول")) {
+            if(confirm("تأكيد قبول الكابتن في الأسطول")) {
                 showLoader(true);
-                await N_ONE_CORE.postData('update', { user: u, data: { Cap_Status: 'active', Cap_Balance: '0' } });
+                await N_ONE_CORE.postData('update', { user: u, data: { Cap_Status: 'active', status: 'active', Cap_Balance: '0', balance: '0' } });
                 await refreshData();
                 showLoader(false);
             }
