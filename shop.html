@@ -141,7 +141,7 @@
         .check-info { font-size: 14px; color: #064e3b; margin-bottom: 5px; }
         .check-balance { font-size: 18px; font-weight: 900; color: var(--success); }
 
-        /* --- السجل --- */
+        /* --- السجل والجرد --- */
         .history-list { margin-top: 10px; max-height: 250px; overflow-y: auto; }
         .history-item {
             display: flex; justify-content: space-between; align-items: center;
@@ -251,7 +251,7 @@
             <div class="card">
                 <div class="input-group">
                     <label>📍 وجهة الطلب (البحث الذكي)</label>
-                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة..." oninput="calculateFee()" onchange="calculateFee()">
+                    <input type="text" id="destination" list="areas-list" placeholder="ابحث عن المنطقة واسمها..." oninput="calculateFee()" onchange="calculateFee()">
                     <datalist id="areas-list"></datalist>
                 </div>
 
@@ -271,7 +271,7 @@
             </div>
 
             <div class="card" style="padding: 20px;">
-                <div style="font-size:13px; font-weight:800; color:var(--text-light); margin-bottom:10px;">🕒 سجل العمليات (Operations Trace)</div>
+                <div style="font-size:13px; font-weight:800; color:var(--text-light); margin-bottom:10px;">🕒 سجل العمليات والجرد (Operations Trace)</div>
                 <div id="history-list" class="history-list">
                     </div>
             </div>
@@ -325,7 +325,7 @@
 
     <script>
         // ========================================================
-        // N ONE - SHOP SYSTEM (ULTIMATE EDITION v22.0) 💎
+        // N ONE - SHOP SYSTEM (ULTIMATE EDITION FULL) 💎
         // نسخة اللحام الأبدي للذاكرة الحديدية الشاملة مع البحث الدقيق
         // ========================================================
 
